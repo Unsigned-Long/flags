@@ -26,39 +26,7 @@ struct ArgType {
   using BOOL_VEC = std::vector<bool>;
   using STRING_VEC = std::vector<std::string>;
 
- public:
-  /**
-   * @brief cast the 'any' type to 'Type'
-   *
-   * @tparam Type the target type
-   * @param any the std::any object, it containes a sheard pointer
-   * @return Type&
-   */
-  template <typename Type>
-  static Type &any_cast(const std::any &any) {
-    try {
-      return *(std::any_cast<std::shared_ptr<Type>>(any));
-    } catch (const std::exception &e) {
-      auto error_info =
-          std::string(
-              "[ error from lib-flags ] can't cast type 'any' to type '") +
-          typeid(Type).name() + "' in 'ArgType::any_cast'" + ", exception: \"" +
-          e.what() + '\"';
-      throw std::runtime_error(error_info);
-    }
-  }
-
-  /**
-   * @brief make a std::any object
-   *
-   * @tparam Type the source type
-   * @param arg_val the value
-   * @return std::any
-   */
-  template <typename Type>
-  static std::any make_any(Type arg_val) {
-    return std::any(std::make_shared<Type>(arg_val));
-  }
+  friend class ArgParser;
 
   /**
    * @brief cast a std::any type object to a string
@@ -101,6 +69,41 @@ struct ArgType {
         "in 'ArgType::to_string'");
     return "'to_string' failed";
   }
+
+ protected:
+  /**
+   * @brief cast the 'any' type to 'Type'
+   *
+   * @tparam Type the target type
+   * @param any the std::any object, it containes a sheard pointer
+   * @return Type&
+   */
+  template <typename Type>
+  static Type &any_cast(const std::any &any) {
+    try {
+      return *(std::any_cast<std::shared_ptr<Type>>(any));
+    } catch (const std::exception &e) {
+      auto error_info =
+          std::string(
+              "[ error from lib-flags ] can't cast type 'any' to type '") +
+          typeid(Type).name() + "' in 'ArgType::any_cast'" + ", exception: \"" +
+          e.what() + '\"';
+      throw std::runtime_error(error_info);
+    }
+  }
+
+  /**
+   * @brief make a std::any object
+   *
+   * @tparam Type the source type
+   * @param arg_val the value
+   * @return std::any
+   */
+  template <typename Type>
+  static std::any make_any(Type arg_val) {
+    return std::any(std::make_shared<Type>(arg_val));
+  }
+
 
   /**
    * @brief using a string vector to asign a std::any type object
@@ -192,7 +195,6 @@ struct ArgType {
     return false;
   }
 
- protected:
   /**
    * @brief translate a string to a lower string
    *
@@ -474,7 +476,7 @@ class ArgParser {
   }
 
   /**
-   * @brief Get the describe of the arguement named 'name' 
+   * @brief Get the describe of the arguement named 'name'
    *
    * @param name
    * @return const std::string&
