@@ -1,0 +1,16 @@
+[ info  ] [1644319759] here is the information of a person:
+name: csl
+age: 21
+sex: 1
+likes: [coding, sleep, play]
+
+[ info  ] [1644319759] the init param setup values:
+[{'option': likes, 'initVal': [coding, sleep, play]}, {'option': sex, 'initVal': [1]}, {'option': age, 'initVal': [21.0]}, {'option': name, 'initVal': [csl]}]
+
+[ info  ] [1644319759] the describes of params:
+[{'option': likes, 'desc': the likes of the person},
+{'option': sex, 'desc': the sex of the person[female: 0, male:1]},
+{'option': name, 'desc': the name of the person},
+{'option': age, 'desc': the age of the person},
+{'option': help, 'desc': display the help docs[default: false]},
+{'option': version, 'desc': the version of this program[default: 1.0]}]
