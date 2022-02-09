@@ -1,0 +1,35 @@
+./flags --height 98.8 --sex true --usr csl --id 12 --choice true false true --ids 12 34 123 --scores 12.3 45.6 78.9 --lans cpp java python html
+
+{'name': choice, 'value': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
+{'name': ids, 'value': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
+{'name': scores, 'value': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
+{'name': lans, 'value': [cpp, java, python, html], 'defult': [cpp, python], 'desc': the used langusges of usr}
+{'name': height, 'value': 98.800000, 'defult': 1.700000, 'desc': the height of usr}
+{'name': sex, 'value': true, 'defult': true, 'desc': the sex of usr [male: true, female: false]}
+{'name': usr, 'value': csl, 'defult': null, 'desc': the name of usr}
+{'name': id, 'value': 12, 'defult': 0, 'desc': the id of current thread}
+{'name': help, 'value': false, 'defult': false, 'desc': get help docs of this program}
+{'name': version, 'value': , 'defult': 1.0, 'desc': the version of this program}
+
+./flags --help
+
+Usage: ./flags [options] [target] ...
+
+    Options        Default Value       Describes
+----------------------------------------------------
+  --choice         [true, false]       the choice of usr
+  --ids            [1, 2, 3]           the ids of threads
+  --scores         [2.3, 4.5]          the score of usr
+  --lans           [cpp, python]       the used langusges of usr
+  --height         1.700000            the height of usr
+  --sex            true                the sex of usr [male: true, female: false]
+  --usr            null                the name of usr
+  --id             0                   the id of current thread
+  --help           false               get help docs of this program
+  --version        1.0                 the version of this program
+
+program help docs
+
+./flags --version
+
+./flags version: 2.0
