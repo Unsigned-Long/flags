@@ -104,7 +104,6 @@ struct ArgType {
     return std::any(std::make_shared<Type>(arg_val));
   }
 
-
   /**
    * @brief using a string vector to asign a std::any type object
    * @attention it just supports the types in ArgType
@@ -249,7 +248,7 @@ struct ArgInfo {
           const std::any &defult_value, const std::string &desc)
       : _name(name), _value(value), _defult_value(defult_value), _desc(desc) {}
 
-  ArgInfo() = delete;
+  ArgInfo() = default;
 
   inline const std::string &name() const { return this->_name; }
 
@@ -274,15 +273,25 @@ std::ostream &operator<<(std::ostream &os, const ArgInfo &obj) {
 class ArgParser {
  private:
   std::unordered_map<std::string, ArgInfo> _args;
+
   bool _auto_gen_help;
   std::string _help_str;
+
   std::string _version_str;
+
+  bool _set_nopt_arg;
+
+  ArgInfo _nopt_arg;
 
  public:
   /**
    * @brief the default and only constructor for ArgParser
    */
-  ArgParser() : _auto_gen_help(true), _help_str(""), _version_str("1.0") {
+  ArgParser()
+      : _auto_gen_help(true),
+        _help_str(""),
+        _version_str("1.0"),
+        _set_nopt_arg(false) {
     this->add_arg<ArgType::STRING>("version", "1.0",
                                    "the version of this program");
     this->add_arg<ArgType::BOOL>("help", false,
@@ -311,11 +320,45 @@ class ArgParser {
   }
 
   /**
+   * @brief Set the no-option arguement
+   *
+   * @tparam Type the type of arguement
+   * @param default_value the default value of the no-option arguement
+   * @param desc
+   */
+  template <typename Type>
+  void set_nopt_arg(
+      const Type &default_value,
+      const std::string &desc = "arguement(s) without any option") {
+    this->_nopt_arg = ArgInfo("nopt_arg", ArgType::make_any<Type>(Type()),
+                              ArgType::make_any<Type>(default_value), desc);
+    this->_set_nopt_arg = true;
+  }
+
+  /**
+   * @brief Get the no-option arguement's value
+   *
+   * @tparam Type the vaule type
+   * @return const Type&
+   */
+  template <typename Type>
+  inline const Type &get_nopt_argv() const {
+    return ArgType::any_cast<Type>(this->_nopt_arg.value());
+  }
+
+  /**
+   * @brief Get the no-option arguement info object
+   *
+   * @return const ArgInfo
+   */
+  inline const ArgInfo get_nopt_argi() const { return this->_nopt_arg; }
+
+  /**
    * @brief get the count of the arguements in the parser
    *
    * @return auto
    */
-  auto get_argc() const { return this->_args.size(); }
+  inline std::size_t get_argc() const { return this->_args.size(); }
 
   /**
    * @brief Get the arg info object in the parser according to the name
@@ -323,7 +366,7 @@ class ArgParser {
    * @param name the name of the arguement
    * @return const ArgInfo&
    */
-  inline const ArgInfo &get_arg_info(const std::string &name) const {
+  inline const ArgInfo &get_argi(const std::string &name) const {
     try {
       return this->_args.at(name);
     } catch (const std::exception &e) {
@@ -341,7 +384,66 @@ class ArgParser {
    *
    * @return const auto&
    */
-  const auto &get_all_args() const { return this->_args; }
+  inline const auto &get_args() const { return this->_args; }
+
+  /**
+   * @brief Get the value of an arguement according to name
+   *
+   * @tparam Type the type of this arguement
+   * @param name the name of this arguement
+   * @return Type&
+   */
+  template <typename Type>
+  inline const Type &get_argv(const std::string &name) const {
+    try {
+      return ArgType::any_cast<Type>(this->_args.at(name).value());
+    } catch (const std::exception &e) {
+      auto error_info = std::string(
+                            "[ error from lib-flags ] can't get the 'value' of "
+                            "the arguement named '") +
+                        name + "', exception \"" + e.what() + '\"';
+      throw std::runtime_error(error_info);
+    }
+  }
+
+  /**
+   * @brief Get the default value of an arguement according to name
+   *
+   * @tparam Type the type of this arguement
+   * @param name the name of this arguement
+   * @return const Type&
+   */
+  template <typename Type>
+  inline const Type &get_argdv(const std::string &name) const {
+    try {
+      return ArgType::any_cast<Type>(this->_args.at(name).defult_value());
+    } catch (const std::exception &e) {
+      auto error_info =
+          std::string(
+              "[ error from lib-flags ] can't get the 'defalut-value' of "
+              "the arguement named '") +
+          name + "', exception: \"" + e.what() + '\"';
+      throw std::runtime_error(error_info);
+    }
+  }
+
+  /**
+   * @brief Get the describe of the arguement named 'name'
+   *
+   * @param name
+   * @return const std::string&
+   */
+  inline const std::string &get_argdc(const std::string &name) const {
+    try {
+      return this->_args.at(name).desc();
+    } catch (const std::exception &e) {
+      auto error_info = std::string(
+                            "[ error from lib-flags ] can't get the 'desc' of "
+                            "the arguement named '") +
+                        name + "', exception: \"" + e.what() + '\"';
+      throw std::runtime_error(error_info);
+    }
+  }
 
   /**
    * @brief Set the up the parser
@@ -351,7 +453,7 @@ class ArgParser {
    */
   void setup_parser(int argc, char const *argv[]) {
     // gen the help docs for arguements
-    this->gen_args_help(argv[0]);
+    this->gen_help(argv[0]);
 
     std::string cur_arg_name("");
     std::string last_arg_name("");
@@ -380,13 +482,28 @@ class ArgParser {
           }
           // cast the arguement
           if (!argv_vec.empty()) {
-            // for the first time, the argvVec is empty
-            auto arg_value = this->get_arg_info(last_arg_name).value();
-            if (!ArgType::any_asign(arg_value, argv_vec.front())) {
-              if (!ArgType::any_asign(arg_value, argv_vec)) {
-                throw std::runtime_error(
-                    "[ error from lib-flags ] unknow werror happened in "
-                    "'ArgType::any-asign'");
+            if (last_arg_name.empty()) {
+              // try to asign the no option arguement
+              if (this->_set_nopt_arg) {
+                if (!ArgType::any_asign(this->_nopt_arg.value(),
+                                        argv_vec.front())) {
+                  if (!ArgType::any_asign(this->_nopt_arg.value(), argv_vec)) {
+                    throw std::runtime_error(
+                        "[ error from lib-flags ] unknow werror happened in "
+                        "'ArgType::any-asign' when asign the 'no-option' "
+                        "arguement");
+                  }
+                }
+              }
+            } else {
+              // try to asign the option arguements
+              auto arg_value = this->_args.at(last_arg_name).value();
+              if (!ArgType::any_asign(arg_value, argv_vec.front())) {
+                if (!ArgType::any_asign(arg_value, argv_vec)) {
+                  throw std::runtime_error(
+                      "[ error from lib-flags ] unknow werror happened in "
+                      "'ArgType::any-asign'");
+                }
               }
             }
             // clean the last argvVec
@@ -399,14 +516,28 @@ class ArgParser {
         argv_vec.push_back(temp_str);
       }
     }
-    if (!argv_vec.empty() && !last_arg_name.empty()) {
-      // for the first time, the argvVec is empty
-      auto arg_value = this->get_arg_info(last_arg_name).value();
-      if (!ArgType::any_asign(arg_value, argv_vec.front())) {
-        if (!ArgType::any_asign(arg_value, argv_vec)) {
-          throw std::runtime_error(
-              "[ error from lib-flags ] unknow werror happened in "
-              "'ArgType::any-asign'");
+    if (!argv_vec.empty()) {
+      if (last_arg_name.empty()) {
+        // try to asign the no option arguement
+        if (this->_set_nopt_arg) {
+          if (!ArgType::any_asign(this->_nopt_arg.value(), argv_vec.front())) {
+            if (!ArgType::any_asign(this->_nopt_arg.value(), argv_vec)) {
+              throw std::runtime_error(
+                  "[ error from lib-flags ] unknow werror happened in "
+                  "'ArgType::any-asign' when asign the 'no-option' "
+                  "arguement");
+            }
+          }
+        }
+      } else {
+        // try to asign the option arguements
+        auto arg_value = this->_args.at(last_arg_name).value();
+        if (!ArgType::any_asign(arg_value, argv_vec.front())) {
+          if (!ArgType::any_asign(arg_value, argv_vec)) {
+            throw std::runtime_error(
+                "[ error from lib-flags ] unknow werror happened in "
+                "'ArgType::any-asign'");
+          }
         }
       }
     }
@@ -418,7 +549,7 @@ class ArgParser {
    *
    * @param str the help str to set
    */
-  void set_help(const std::string &str) {
+  inline void set_help(const std::string &str) {
     this->_help_str = str;
     this->_auto_gen_help = false;
     return;
@@ -429,68 +560,9 @@ class ArgParser {
    *
    * @param str the version str
    */
-  void set_version(const std::string &str) {
+  inline void set_version(const std::string &str) {
     this->_version_str = str;
     return;
-  }
-
-  /**
-   * @brief Get the value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return Type&
-   */
-  template <typename Type>
-  inline Type &get_arg_value(const std::string &name) {
-    try {
-      return ArgType::any_cast<Type>(this->_args.at(name).value());
-    } catch (const std::exception &e) {
-      auto error_info = std::string(
-                            "[ error from lib-flags ] can't get the 'value' of "
-                            "the arguement named '") +
-                        name + "', exception \"" + e.what() + '\"';
-      throw std::runtime_error(error_info);
-    }
-  }
-
-  /**
-   * @brief Get the default value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return const Type&
-   */
-  template <typename Type>
-  inline const Type &get_arg_default_value(const std::string &name) {
-    try {
-      return ArgType::any_cast<Type>(this->_args.at(name).defult_value());
-    } catch (const std::exception &e) {
-      auto error_info =
-          std::string(
-              "[ error from lib-flags ] can't get the 'defalut-value' of "
-              "the arguement named '") +
-          name + "', exception: \"" + e.what() + '\"';
-      throw std::runtime_error(error_info);
-    }
-  }
-
-  /**
-   * @brief Get the describe of the arguement named 'name'
-   *
-   * @param name
-   * @return const std::string&
-   */
-  inline const std::string &get_arg_desc(const std::string &name) const {
-    try {
-      return this->_args.at(name).desc();
-    } catch (const std::exception &e) {
-      auto error_info = std::string(
-                            "[ error from lib-flags ] can't get the 'desc' of "
-                            "the arguement named '") +
-                        name + "', exception: \"" + e.what() + '\"';
-      throw std::runtime_error(error_info);
-    }
   }
 
  protected:
@@ -499,17 +571,24 @@ class ArgParser {
    *
    * @param program_name
    */
-  inline void gen_args_help(const std::string &program_name) {
+  void gen_help(const std::string &program_name) {
     if (!this->_auto_gen_help) {
       return;
     }
     std::stringstream stream;
-    stream << "Usage: " << program_name << " [options] [target] ...\n\n    "
-           << std::setw(15) << std::left << "Options" << std::setw(20)
-           << "Default Value"
+    stream << "Usage: " << program_name;
+    if (this->_set_nopt_arg) {
+      stream << " [nopt-arg(s)] ";
+    }
+    stream << "[--option target(s)] ...\n\n    " << std::setw(15) << std::left
+           << "Options" << std::setw(20) << "Default Value"
            << "Describes\n"
            << std::string(52, '-') << '\n';
-
+    if (this->_set_nopt_arg) {
+      stream << "  --" << std::setw(15) << std::left << "nopt-arg(s)"
+             << std::setw(20) << this->_nopt_arg.defult_value()
+             << this->_nopt_arg.desc() << "\n\n";
+    }
     for (const auto &[name, info] : this->_args)
       stream << "  --" << std::setw(15) << std::left << name << std::setw(20)
              << info.defult_value() << info.desc() << '\n';

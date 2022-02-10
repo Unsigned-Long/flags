@@ -22,11 +22,13 @@ _|_|_|_|    _|_|    _|_|_|  _|_|    _|_|_|    _|    _|_|_|  _|_|_|_|    _|_|
                                     _|                                
 ```
 
-## OverRide
+## OverView
 
 this is a simple 'program-command-line-parameter-parsing' library using cpp-template.
 
 ## Usage
+
+### example source code
 
 ```cpp
 #include "flags.hpp"
@@ -65,6 +67,7 @@ int main(int argc, char const* argv[]) {
     parser.set_version("2.0");
     // parser.set_help("");
 
+    parser.set_nopt_arg<ArgType::STRING_VEC>({""});
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
@@ -73,13 +76,14 @@ int main(int argc, char const* argv[]) {
     /**
      * @brief print the info of arguements
      */
-    for (const auto& [key, value] : parser.get_all_args())
+    std::cout << parser.get_nopt_argi() << std::endl;
+    for (const auto& [key, value] : parser.get_args())
       std::cout << value << std::endl;
 
     /**
      * @brief use the arguements
      */
-    auto id = parser.get_arg_value<ArgType::INT>("id");
+    auto id = parser.get_argv<ArgType::INT>("id");
     std::cout << "the 'id' I get is: " << id << std::endl;
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
@@ -90,15 +94,18 @@ int main(int argc, char const* argv[]) {
 
 ### output
 
+_if you want to over view the example command lines and outputs, please click [the log file](./output/log.log)._
+
 if run command line:
 
 ```shell
-./flags --height 98.8 --sex true --usr csl --id 12 --choice true false true --ids 12 34 123 --scores 12.3 45.6 78.9 --lans cpp java python html
+/flags hello "I'm" flags!  --height 98.8 --sex true --usr csl --id 12 --choice true false true --ids 12 34 123 --scores 12.3 45.6 78.9 --lans cpp java python html
 ```
 
 will output:
 
 ```cpp
+{'name': nopt_arg, 'value': [hello, I'm, flags!], 'defult': [], 'desc': arguement(s) without any option}
 {'name': choice, 'value': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
 {'name': ids, 'value': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
 {'name': scores, 'value': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
@@ -109,6 +116,7 @@ will output:
 {'name': id, 'value': 12, 'defult': 0, 'desc': the id of current thread}
 {'name': help, 'value': false, 'defult': false, 'desc': get help docs of this program}
 {'name': version, 'value': , 'defult': 1.0, 'desc': the version of this program}
+the 'id' I get is: 12
 ```
 
 if run command line:
@@ -120,10 +128,12 @@ if run command line:
 will output:
 
 ```cpp
-Usage: ./flags [options] [target] ...
+Usage: ./flags [nopt-arg(s)] [--option target(s)] ...
 
     Options        Default Value       Describes
 ----------------------------------------------------
+  --nopt-arg(s)    []                  arguement(s) without any option
+
   --choice         [true, false]       the choice of usr
   --ids            [1, 2, 3]           the ids of threads
   --scores         [2.3, 4.5]          the score of usr
@@ -134,6 +144,8 @@ Usage: ./flags [options] [target] ...
   --id             0                   the id of current thread
   --help           false               get help docs of this program
   --version        1.0                 the version of this program
+
+program help docs
 ```
 
 if run command line:
@@ -148,11 +160,24 @@ will output:
 ./flags version: 2.0
 ```
 
+if run command line:
+
+```shell
+./flags --nema 12
+```
+
+will output:
+
+```cpp
+some error(s) happened in the command line:
+[ error from lib-flags ] the option named '--nema' is invalid, use '--help' option for help.
+```
+
 ## Apis
 
-### the types can use
+### Arguement Types
 
-___ArgType___
+Here are the types you can use in the 'arguement-parser':
 
 ```cpp
   using INT = int;
@@ -165,7 +190,9 @@ ___ArgType___
   using STRING_VEC = std::vector<std::string>;
 ```
 
-### each arguement cantains
+### Arguement Info
+
+These members are config objects in an 'arguement-info' object:
 
 ```cpp
   std::string _name;
@@ -174,7 +201,7 @@ ___ArgType___
   std::string _desc;
 ```
 
-### operate the ArgParser
+### Apis in the ArgParser
 
 ___ArgParser()___
 
@@ -197,17 +224,50 @@ ___template <typename Type> void add_arg(const std::string &name, const Type &de
    */
 ```
 
-___auto get_argc() const___
+___template <typename Type> void set_nopt_arg___
+
+```cpp
+  /**
+   * @brief Set the no-option arguement
+   *
+   * @tparam Type the type of arguement
+   * @param default_value the default value of the no-option arguement
+   * @param desc
+   */
+```
+
+___template <typename Type> inline const Type &get_nopt_argv() const___
+
+```cpp
+  /**
+   * @brief Get the no-option arguement's value
+   *
+   * @tparam Type the vaule type
+   * @return const Type&
+   */
+```
+
+___inline const ArgInfo get_nopt_argi() const___
+
+```cpp
+  /**
+   * @brief Get the no-option arguement info object
+   *
+   * @return const ArgInfo
+   */
+```
+
+___inline std::size_t get_argc() const___
 
 ```cpp
   /**
    * @brief get the count of the arguements in the parser
    *
-   * @return auto
+   * @return size_t
    */
 ```
 
-___const ArgInfo &get_arg_info(const std::string &name) const___
+___inline const ArgInfo &get_argi(const std::string &name) const___
 
 ```cpp
   /**
@@ -218,13 +278,48 @@ ___const ArgInfo &get_arg_info(const std::string &name) const___
    */
 ```
 
-___const auto &get_all_args() const___
+___inline const auto &get_args() const___
 
 ```cpp
   /**
    * @brief Get the all arguements in the parser
    *
    * @return const auto&
+   */
+```
+
+___template <typename Type> inline const Type &get_argv(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the value of an arguement according to name
+   *
+   * @tparam Type the type of this arguement
+   * @param name the name of this arguement
+   * @return Type&
+   */
+```
+
+___template <typename Type> inline const Type &get_argdv(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the default value of an arguement according to name
+   *
+   * @tparam Type the type of this arguement
+   * @param name the name of this arguement
+   * @return const Type&
+   */
+```
+
+___inline const std::string &get_argdc(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the describe of the arguement named 'name' 
+   *
+   * @param name
+   * @return const std::string&
    */
 ```
 
@@ -239,7 +334,7 @@ ___void setup_parser(int argc, char const *argv[])___
    */
 ```
 
-___void set_help(const std::string &str)___
+___inline void set_help(const std::string &str)___
 
 ```cpp
   /**
@@ -249,48 +344,13 @@ ___void set_help(const std::string &str)___
    */
 ```
 
-___void set_version(const std::string &str)___
+___inline void set_version(const std::string &str)___
 
 ```cpp
   /**
    * @brief Set the version of the program
    *
    * @param str the version str
-   */
-```
-
-___template <typename Type> inline Type &get_arg_value(const std::string &name)___
-
-```cpp
-  /**
-   * @brief Get the value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return Type&
-   */
-```
-
-___template <typename Type> inline const Type &get_arg_default_value(const std::string &name)___
-
-```cpp
-  /**
-   * @brief Get the default value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return const Type&
-   */
-```
-
-___const std::string &get_arg_desc(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the describe of the arguement named 'name' 
-   *
-   * @param name
-   * @return const std::string&
    */
 ```
 

@@ -34,6 +34,7 @@ int main(int argc, char const* argv[]) {
     parser.set_version("2.0");
     // parser.set_help("");
 
+    parser.set_nopt_arg<ArgType::STRING_VEC>({""});
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
@@ -42,13 +43,14 @@ int main(int argc, char const* argv[]) {
     /**
      * @brief print the info of arguements
      */
-    for (const auto& [key, value] : parser.get_all_args())
+    std::cout << parser.get_nopt_argi() << std::endl;
+    for (const auto& [key, value] : parser.get_args())
       std::cout << value << std::endl;
 
     /**
      * @brief use the arguements
      */
-    auto id = parser.get_arg_value<ArgType::INT>("id");
+    auto id = parser.get_argv<ArgType::INT>("id");
     std::cout << "the 'id' I get is: " << id << std::endl;
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
