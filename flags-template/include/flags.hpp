@@ -1,5 +1,15 @@
 #pragma once
 
+/**
+ * @file flags.hpp
+ * @author csl (3079625093@qq.com)
+ * @version 0.1
+ * @date 2022-02-10
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
 #include <any>
 #include <exception>
 #include <iomanip>
@@ -15,7 +25,7 @@ namespace ns_flags {
 struct ArgType {
  public:
   /**
-   * @brief options
+   * @brief options' type
    */
   using INT = int;
   using DOUBLE = double;
@@ -36,17 +46,6 @@ struct ArgType {
    * @return std::string
    */
   static std::string to_string(const std::any &any) {
-#define TRY_RETURN(cast_type)                                 \
-  try {                                                       \
-    return std::to_string(ArgType::any_cast<cast_type>(any)); \
-  } catch (...) {                                             \
-  }
-#define TRY_RETURN_VEC(cast_type)                                     \
-  try {                                                               \
-    return ArgType::format_vector(ArgType::any_cast<cast_type>(any)); \
-  } catch (...) {                                                     \
-  }
-
     try {
       std::stringstream stream;
       stream << std::boolalpha << ArgType::any_cast<ArgType::BOOL>(any);
@@ -57,13 +56,32 @@ struct ArgType {
       return ArgType::any_cast<ArgType::STRING>(any);
     } catch (...) {
     }
-    TRY_RETURN(ArgType::INT);
-    TRY_RETURN(ArgType::DOUBLE);
-    TRY_RETURN_VEC(ArgType::INT_VEC);
-    TRY_RETURN_VEC(ArgType::DOUBLE_VEC);
-    TRY_RETURN_VEC(ArgType::BOOL_VEC);
-    TRY_RETURN_VEC(ArgType::STRING_VEC);
-
+    try {
+      return std::to_string(ArgType::any_cast<ArgType::INT>(any));
+    } catch (...) {
+    }
+    try {
+      return std::to_string(ArgType::any_cast<ArgType::DOUBLE>(any));
+    } catch (...) {
+    }
+    try {
+      return ArgType::format_vector(ArgType::any_cast<ArgType::INT_VEC>(any));
+    } catch (...) {
+    }
+    try {
+      return ArgType::format_vector(
+          ArgType::any_cast<ArgType::DOUBLE_VEC>(any));
+    } catch (...) {
+    }
+    try {
+      return ArgType::format_vector(ArgType::any_cast<ArgType::BOOL_VEC>(any));
+    } catch (...) {
+    }
+    try {
+      return ArgType::format_vector(
+          ArgType::any_cast<ArgType::STRING_VEC>(any));
+    } catch (...) {
+    }
     throw std::runtime_error(
         "[ error from lib-flags ] can't cast type 'any' to type 'std::string' "
         "in 'ArgType::to_string'");
@@ -165,19 +183,27 @@ struct ArgType {
    */
   static bool any_asign(const std::any &any, const std::string &str_val) {
     std::stringstream stream;
-
-#define TRY_ASIGN(asign_type)                           \
-  try {                                                 \
-    auto &arg_val = ArgType::any_cast<asign_type>(any); \
-    stream << str_val;                                  \
-    stream >> arg_val;                                  \
-    return true;                                        \
-  } catch (...) {                                       \
-  }
-
-    TRY_ASIGN(ArgType::INT);
-    TRY_ASIGN(ArgType::DOUBLE);
-    TRY_ASIGN(ArgType::STRING);
+    try {
+      auto &arg_val = ArgType::any_cast<ArgType::INT>(any);
+      stream << str_val;
+      stream >> arg_val;
+      return true;
+    } catch (...) {
+    }
+    try {
+      auto &arg_val = ArgType::any_cast<ArgType::DOUBLE>(any);
+      stream << str_val;
+      stream >> arg_val;
+      return true;
+    } catch (...) {
+    }
+    try {
+      auto &arg_val = ArgType::any_cast<ArgType::STRING>(any);
+      stream << str_val;
+      stream >> arg_val;
+      return true;
+    } catch (...) {
+    }
     try {
       auto &arg_val = ArgType::any_cast<ArgType::BOOL>(any);
       stream << str_val;
@@ -190,7 +216,6 @@ struct ArgType {
       return true;
     } catch (...) {
     }
-
     return false;
   }
 
@@ -280,7 +305,6 @@ class ArgParser {
   std::string _version_str;
 
   bool _set_nopt_arg;
-
   ArgInfo _nopt_arg;
 
  public:
