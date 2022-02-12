@@ -612,7 +612,7 @@ class ArgParser {
           throw std::runtime_error(this->_help.str());
         } else if (cur_arg_name == "version") {
           throw std::runtime_error(argv[0] + std::string(" version: ") +
-                                   this->_help.str());
+                                   this->_version.str());
         }
         auto iter = this->_args.find(cur_arg_name);
         if (iter == this->_args.end()) {
