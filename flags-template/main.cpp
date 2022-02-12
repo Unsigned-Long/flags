@@ -18,7 +18,8 @@ int main(int argc, char const* argv[]) {
     parser.add_arg<ArgType::STRING>("usr", "null", "the name of usr");
     parser.add_arg<ArgType::BOOL>("sex", true,
                                   "the sex of usr [male: true, female: false]");
-    parser.add_arg<ArgType::DOUBLE>("height", 1.7, "the height of usr");
+    parser.add_arg<ArgType::DOUBLE>("height", 1.7, "the height of usr",
+                                    OptProp::REQUIRED);
     parser.add_arg<ArgType::INT_VEC>("ids", {1, 2, 3}, "the ids of threads");
     parser.add_arg<ArgType::STRING_VEC>("lans", {"cpp", "python"},
                                         "the used langusges of usr");
@@ -34,7 +35,7 @@ int main(int argc, char const* argv[]) {
     parser.set_version("2.0");
     // parser.set_help("");
 
-    parser.set_nopt_arg<ArgType::STRING_VEC>({""});
+    parser.set_nopt_arg<ArgType::STRING_VEC>({""}, OptProp::REQUIRED);
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
