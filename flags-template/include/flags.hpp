@@ -770,7 +770,7 @@ class ArgParser {
            << std::left << this->_version.argi().prop() << std::setw(20)
            << this->_version.argi().defult_value()
            << this->_version.argi().desc() << '\n';
-    stream << "\nprogram help docs";
+    stream << "\nhelp docs for program \"" + program_name + "\"";
     this->_help.str() = stream.str();
     return;
   }
