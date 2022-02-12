@@ -747,7 +747,7 @@ class ArgParser {
            << "Options" << std::setw(15) << std::left << "property"
            << std::setw(20) << "Default Value"
            << "Describes\n"
-           << std::string(70, '-') << '\n';
+           << std::string(67, '-') << '\n';
     // display help docs for nopt-arg(s)
     if (this->use_nopt_arg()) {
       stream << "  --" << std::setw(15) << std::left
