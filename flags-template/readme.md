@@ -26,9 +26,15 @@ _|_|_|_|    _|_|    _|_|_|  _|_|    _|_|_|    _|    _|_|_|  _|_|_|_|    _|_|
 
 this is a simple 'program-command-line-parameter-parsing' library using cpp-template.
 
+the main functions:
+
++ Add command line parameters to the specified program and set the relevant properties of the command line parameters;
++ Parse the passed in parameters based on the set command line parameters;
++ During parsing, identify and check the command line parameters (such as wrong type, wrong option name, inconsistent selectability);
+
 ## Usage
 
-### example source code
+### Example for Source Code
 
 ```cpp
 #include "flags.hpp"
@@ -51,7 +57,8 @@ int main(int argc, char const* argv[]) {
     parser.add_arg<ArgType::STRING>("usr", "null", "the name of usr");
     parser.add_arg<ArgType::BOOL>("sex", true,
                                   "the sex of usr [male: true, female: false]");
-    parser.add_arg<ArgType::DOUBLE>("height", 1.7, "the height of usr");
+    parser.add_arg<ArgType::DOUBLE>("height", 1.7, "the height of usr",
+                                    OptProp::REQUIRED);
     parser.add_arg<ArgType::INT_VEC>("ids", {1, 2, 3}, "the ids of threads");
     parser.add_arg<ArgType::STRING_VEC>("lans", {"cpp", "python"},
                                         "the used langusges of usr");
@@ -67,7 +74,7 @@ int main(int argc, char const* argv[]) {
     parser.set_version("2.0");
     // parser.set_help("");
 
-    parser.set_nopt_arg<ArgType::STRING_VEC>({""});
+    parser.set_nopt_arg<ArgType::STRING_VEC>({""}, OptProp::REQUIRED);
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
@@ -92,9 +99,23 @@ int main(int argc, char const* argv[]) {
 }
 ```
 
-### output
+### Output
 
 _if you want to over view the example command lines and outputs, please click [the log file](./output/log.log)._
+
+if run command line:
+
+```shell
+./flags hello "I'm" flags!
+```
+
+will output:
+
+```cpp
+[ error from lib-flags ] the property of the '--height' is 'OptProp::required', but you didn't pass the arguement(s)
+```
+
+
 
 if run command line:
 
@@ -130,20 +151,21 @@ will output:
 ```cpp
 Usage: ./flags [nopt-arg(s)] [--option target(s)] ...
 
-    Options        Default Value       Describes
-----------------------------------------------------
-  --nopt-arg(s)    []                  arguement(s) without any option
+    Options        property       Default Value       Describes
+----------------------------------------------------------------------
+  --nopt-arg(s)    required       []                  arguement(s) without any option
 
-  --choice         [true, false]       the choice of usr
-  --ids            [1, 2, 3]           the ids of threads
-  --scores         [2.3, 4.5]          the score of usr
-  --lans           [cpp, python]       the used langusges of usr
-  --height         1.700000            the height of usr
-  --sex            true                the sex of usr [male: true, female: false]
-  --usr            null                the name of usr
-  --id             0                   the id of current thread
-  --help           false               get help docs of this program
-  --version        1.0                 the version of this program
+  --choice         optional       [true, false]       the choice of usr
+  --ids            optional       [1, 2, 3]           the ids of threads
+  --scores         optional       [2.3, 4.5]          the score of usr
+  --lans           optional       [cpp, python]       the used langusges of usr
+  --height         required       1.700000            the height of usr
+  --sex            optional       true                the sex of usr [male: true, female: false]
+  --usr            optional       null                the name of usr
+  --id             optional       0                   the id of current thread
+
+  --help           optional       help docs           get the help docs of this program
+  --version        optional       0.0.1               get the version of this program
 
 program help docs
 ```
@@ -190,14 +212,30 @@ Here are the types you can use in the 'arguement-parser':
   using STRING_VEC = std::vector<std::string>;
 ```
 
+### Option Property
+
+```cpp
+enum class OptProp {
+  /**
+   * @brief options
+   */
+  OPTIONAL,
+  REQUIRED
+};
+```
+
 ### Arguement Info
 
 These members are config objects in an 'arguement-info' object:
 
 ```cpp
   std::string _name;
+
+  OptProp _prop;
+
   std::any _value;
   std::any _defult_value;
+
   std::string _desc;
 ```
 
@@ -211,7 +249,7 @@ ___ArgParser()___
    */
 ```
 
-___template <typename Type> void add_arg(const std::string &name, const Type &defult_value, const std::string &desc)___
+___template <typename Type> void add_arg(const std::string &name, const Type &defult_value, const std::string &desc, OptProp prop = OptProp::OPTIONAL)___
 
 ```cpp
   /**
@@ -221,17 +259,19 @@ ___template <typename Type> void add_arg(const std::string &name, const Type &de
    * @param name the name of the arguement
    * @param defult_value the default value of the arguement
    * @param desc the describe of the arguement
+   * @param prop the property of this option
    */
 ```
 
-___template <typename Type> void set_nopt_arg___
+___template <typename Type> void set_nopt_arg(const Type &default_value, OptProp prop = OptProp::OPTIONAL, const std::string &desc = "arguement(s) without any option")___
 
 ```cpp
   /**
-   * @brief Set the no-option arguement
+   * @brief Set the nopt-arg(s) arguement
    *
    * @tparam Type the type of arguement
-   * @param default_value the default value of the no-option arguement
+   * @param default_value the default value of the nopt-arg(s) arguement
+   * @param prop the property of this option
    * @param desc
    */
 ```
