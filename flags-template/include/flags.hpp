@@ -51,6 +51,14 @@ struct ArgType {
    */
   static std::string to_string(const std::any &any) {
     try {
+      return std::to_string(any_cast<INT>(any));
+    } catch (...) {
+    }
+    try {
+      return std::to_string(any_cast<DOUBLE>(any));
+    } catch (...) {
+    }
+    try {
       std::stringstream stream;
       stream << std::boolalpha << any_cast<BOOL>(any);
       return stream.str();
@@ -60,14 +68,7 @@ struct ArgType {
       return any_cast<STRING>(any);
     } catch (...) {
     }
-    try {
-      return std::to_string(any_cast<INT>(any));
-    } catch (...) {
-    }
-    try {
-      return std::to_string(any_cast<DOUBLE>(any));
-    } catch (...) {
-    }
+
     try {
       return format_vector(any_cast<INT_VEC>(any));
     } catch (...) {
@@ -103,12 +104,11 @@ struct ArgType {
     try {
       return *(std::any_cast<std::shared_ptr<Type>>(any));
     } catch (const std::exception &e) {
-      auto error_info =
+      throw std::runtime_error(
           std::string(
               "[ error from lib-flags ] can't cast type 'any' to type '") +
           typeid(Type).name() + "' in 'ArgType::any_cast'" + ", exception: \"" +
-          e.what() + '\"';
-      throw std::runtime_error(error_info);
+          e.what() + '\"');
     }
   }
 
@@ -136,6 +136,20 @@ struct ArgType {
   static bool any_asign(const std::any &any,
                         const std::vector<std::string> &str_vec) {
     try {
+      auto &arg_val = ArgType::any_cast<ArgType::INT_VEC>(any);
+      arg_val.clear();
+      for (const auto &elem : str_vec) arg_val.push_back(std::stoi(elem));
+      return true;
+    } catch (...) {
+    }
+    try {
+      auto &arg_val = ArgType::any_cast<ArgType::DOUBLE_VEC>(any);
+      arg_val.clear();
+      for (const auto &elem : str_vec) arg_val.push_back(std::stod(elem));
+      return true;
+    } catch (...) {
+    }
+    try {
       auto &arg_val = ArgType::any_cast<ArgType::BOOL_VEC>(any);
       arg_val.clear();
       for (const auto &elem : str_vec) {
@@ -151,23 +165,9 @@ struct ArgType {
     } catch (...) {
     }
     try {
-      auto &arg_val = ArgType::any_cast<ArgType::INT_VEC>(any);
-      arg_val.clear();
-      for (const auto &elem : str_vec) arg_val.push_back(std::stoi(elem));
-      return true;
-    } catch (...) {
-    }
-    try {
       auto &arg_val = ArgType::any_cast<ArgType::STRING_VEC>(any);
       arg_val.clear();
       for (const auto &elem : str_vec) arg_val.push_back(elem);
-      return true;
-    } catch (...) {
-    }
-    try {
-      auto &arg_val = ArgType::any_cast<ArgType::DOUBLE_VEC>(any);
-      arg_val.clear();
-      for (const auto &elem : str_vec) arg_val.push_back(std::stod(elem));
       return true;
     } catch (...) {
     }
@@ -200,13 +200,6 @@ struct ArgType {
     } catch (...) {
     }
     try {
-      auto &arg_val = ArgType::any_cast<ArgType::STRING>(any);
-      stream << str_val;
-      stream >> arg_val;
-      return true;
-    } catch (...) {
-    }
-    try {
       auto &arg_val = ArgType::any_cast<ArgType::BOOL>(any);
       stream << str_val;
       stream >> arg_val;
@@ -215,6 +208,13 @@ struct ArgType {
         arg_val = true;
       else if (temp_str == "false" || temp_str == "off")
         arg_val = false;
+      return true;
+    } catch (...) {
+    }
+    try {
+      auto &arg_val = ArgType::any_cast<ArgType::STRING>(any);
+      stream << str_val;
+      stream >> arg_val;
       return true;
     } catch (...) {
     }
@@ -238,12 +238,12 @@ struct ArgType {
   static bool type_check() {
     if (std::is_same<Type, ArgType::INT>::value) return true;
     if (std::is_same<Type, ArgType::DOUBLE>::value) return true;
-    if (std::is_same<Type, ArgType::STRING>::value) return true;
     if (std::is_same<Type, ArgType::BOOL>::value) return true;
+    if (std::is_same<Type, ArgType::STRING>::value) return true;
     if (std::is_same<Type, ArgType::INT_VEC>::value) return true;
     if (std::is_same<Type, ArgType::DOUBLE_VEC>::value) return true;
-    if (std::is_same<Type, ArgType::STRING_VEC>::value) return true;
     if (std::is_same<Type, ArgType::BOOL_VEC>::value) return true;
+    if (std::is_same<Type, ArgType::STRING_VEC>::value) return true;
     return false;
   }
 
@@ -421,7 +421,7 @@ class ArgParser {
                             ArgType::make_any<Type>(defult_value), desc, prop);
     if (!this->_args.insert({name, arg_info}).second) {
       auto error_info =
-          std::string("[ error from lib-flags ] can't add arguement named '") +
+          std::string("[ error from lib-flags ] can't add option named '--") +
           name + "' in 'ArgParser::add_arg' again";
       throw std::runtime_error(error_info);
     }
@@ -495,7 +495,7 @@ class ArgParser {
       auto error_info =
           std::string(
               "[ error from lib-flags ] can't get the 'arg-info' of "
-              "the arguement named '") +
+              "the option named '--") +
           name + "' in 'ArgParser::get_argi', exception: \"" + e.what() + '\"';
       throw std::runtime_error(error_info);
     }
@@ -530,7 +530,7 @@ class ArgParser {
     } catch (const std::exception &e) {
       auto error_info = std::string(
                             "[ error from lib-flags ] can't get the 'value' of "
-                            "the arguement named '") +
+                            "the option named '--") +
                         name + "' in 'ArgParser::get_argv', exception \"" +
                         e.what() + '\"';
       throw std::runtime_error(error_info);
@@ -561,7 +561,7 @@ class ArgParser {
       auto error_info =
           std::string(
               "[ error from lib-flags ] can't get the 'defalut-value' of "
-              "the arguement named '") +
+              "the option named '--") +
           name + "' in 'ArgParser::get_argdv', exception: \"" + e.what() + '\"';
       throw std::runtime_error(error_info);
     }
@@ -579,7 +579,7 @@ class ArgParser {
     } catch (const std::exception &e) {
       auto error_info = std::string(
                             "[ error from lib-flags ] can't get the 'desc' of "
-                            "the arguement named '") +
+                            "the option named '--") +
                         name + "' in 'ArgParser::get_argdc', exception: \"" +
                         e.what() + '\"';
       throw std::runtime_error(error_info);
@@ -697,7 +697,8 @@ class ArgParser {
       if (!check_prop(used_options.find(name) != used_options.end(),
                       info.prop())) {
         throw std::runtime_error(
-            "[ error from lib-flags ] the property of the '--" + name +
+            "[ error from lib-flags ] the property of the option named '--" +
+            name +
             "' "
             "is 'OptProp::required', but you didn't pass the arguement(s)");
       }
