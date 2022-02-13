@@ -112,7 +112,7 @@ if run command line:
 will output:
 
 ```cpp
-[ error from lib-flags ] the property of the '--height' is 'OptProp::required', but you didn't pass the arguement(s)
+[ error from 'ArgParser::setup_parser' ] the property of the option named '--height' is 'OptProp::required', but you didn't pass the arguement(s)
 ```
 
 
@@ -126,17 +126,15 @@ if run command line:
 will output:
 
 ```cpp
-{'name': nopt_arg, 'value': [hello, I'm, flags!], 'defult': [], 'desc': arguement(s) without any option}
-{'name': choice, 'value': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
-{'name': ids, 'value': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
-{'name': scores, 'value': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
-{'name': lans, 'value': [cpp, java, python, html], 'defult': [cpp, python], 'desc': the used langusges of usr}
-{'name': height, 'value': 98.800000, 'defult': 1.700000, 'desc': the height of usr}
-{'name': sex, 'value': true, 'defult': true, 'desc': the sex of usr [male: true, female: false]}
-{'name': usr, 'value': csl, 'defult': null, 'desc': the name of usr}
-{'name': id, 'value': 12, 'defult': 0, 'desc': the id of current thread}
-{'name': help, 'value': false, 'defult': false, 'desc': get help docs of this program}
-{'name': version, 'value': , 'defult': 1.0, 'desc': the version of this program}
+{'name': no-opt, 'prop': required, 'argv': [hello, I'm, flags!], 'defult': [], 'desc': pass arguement(s) without any option}
+{'name': choice, 'prop': optional, 'argv': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
+{'name': ids, 'prop': optional, 'argv': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
+{'name': scores, 'prop': optional, 'argv': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
+{'name': lans, 'prop': optional, 'argv': [cpp, java, python, html], 'defult': [cpp, python], 'desc': the used langusges of usr}
+{'name': height, 'prop': required, 'argv': 98.800000, 'defult': 1.700000, 'desc': the height of usr}
+{'name': sex, 'prop': optional, 'argv': true, 'defult': true, 'desc': the sex of usr [male: true, female: false]}
+{'name': usr, 'prop': optional, 'argv': csl, 'defult': null, 'desc': the name of usr}
+{'name': id, 'prop': optional, 'argv': 12, 'defult': 0, 'desc': the id of current thread}
 the 'id' I get is: 12
 ```
 
@@ -149,11 +147,11 @@ if run command line:
 will output:
 
 ```cpp
-Usage: ./flags [nopt-arg(s)] [--option target(s)] ...
+Usage: ./flags [no-opt] [--option target(s)] ...
 
     Options        property       Default Value       Describes
-----------------------------------------------------------------------
-  --nopt-arg(s)    required       []                  arguement(s) without any option
+-------------------------------------------------------------------
+  --no-opt         required       []                  pass arguement(s) without any option
 
   --choice         optional       [true, false]       the choice of usr
   --ids            optional       [1, 2, 3]           the ids of threads
@@ -167,7 +165,7 @@ Usage: ./flags [nopt-arg(s)] [--option target(s)] ...
   --help           optional       help docs           get the help docs of this program
   --version        optional       0.0.1               get the version of this program
 
-program help docs
+help docs for program "./flags"
 ```
 
 if run command line:
@@ -192,7 +190,7 @@ will output:
 
 ```cpp
 some error(s) happened in the command line:
-[ error from lib-flags ] the option named '--nema' is invalid, use '--help' option for help.
+[ error from 'ArgParser::setup_parser' ] the option named '--nema' is invalid, use '--help' option for help
 ```
 
 ## Apis
@@ -241,7 +239,9 @@ These members are config objects in an 'arguement-info' object:
 
 ### Apis in the ArgParser
 
-___ArgParser()___
+#### constructor
+
++ ___ArgParser()___
 
 ```cpp
   /**
@@ -249,121 +249,23 @@ ___ArgParser()___
    */
 ```
 
-___template <typename Type> void add_arg(const std::string &name, const Type &defult_value, const std::string &desc, OptProp prop = OptProp::OPTIONAL)___
+#### main methods
+
++ ___template <typename Type> void add_opt(const std::string &name, const Type &defult_value, const std::string &desc, OptProp prop = OptProp::OPTIONAL)___
 
 ```cpp
   /**
-   * @brief add a arguement to the parser
+   * @brief add an option to the parser
    *
-   * @tparam Type the type of the arguement
-   * @param name the name of the arguement
-   * @param defult_value the default value of the arguement
-   * @param desc the describe of the arguement
+   * @tparam Type the type of the option's arguemrnt(s)
+   * @param name the name of the option
+   * @param defult_value the default value of the option's arguement(s)
+   * @param desc the describe of the option
    * @param prop the property of this option
    */
 ```
 
-___template <typename Type> void set_nopt_arg(const Type &default_value, OptProp prop = OptProp::OPTIONAL, const std::string &desc = "arguement(s) without any option")___
-
-```cpp
-  /**
-   * @brief Set the nopt-arg(s) arguement
-   *
-   * @tparam Type the type of arguement
-   * @param default_value the default value of the nopt-arg(s) arguement
-   * @param prop the property of this option
-   * @param desc
-   */
-```
-
-___template <typename Type> inline const Type &get_nopt_argv() const___
-
-```cpp
-  /**
-   * @brief Get the no-option arguement's value
-   *
-   * @tparam Type the vaule type
-   * @return const Type&
-   */
-```
-
-___inline const ArgInfo get_nopt_argi() const___
-
-```cpp
-  /**
-   * @brief Get the no-option arguement info object
-   *
-   * @return const ArgInfo
-   */
-```
-
-___inline std::size_t get_argc() const___
-
-```cpp
-  /**
-   * @brief get the count of the arguements in the parser
-   *
-   * @return size_t
-   */
-```
-
-___inline const ArgInfo &get_argi(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the arg info object in the parser according to the name
-   *
-   * @param name the name of the arguement
-   * @return const ArgInfo&
-   */
-```
-
-___inline const auto &get_args() const___
-
-```cpp
-  /**
-   * @brief Get the all arguements in the parser
-   *
-   * @return const auto&
-   */
-```
-
-___template <typename Type> inline const Type &get_argv(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return Type&
-   */
-```
-
-___template <typename Type> inline const Type &get_argdv(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the default value of an arguement according to name
-   *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return const Type&
-   */
-```
-
-___inline const std::string &get_argdc(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the describe of the arguement named 'name' 
-   *
-   * @param name
-   * @return const std::string&
-   */
-```
-
-___void setup_parser(int argc, char const *argv[])___
++ ___void setup_parser(int argc, char const *argv[])___
 
 ```cpp
   /**
@@ -374,7 +276,103 @@ ___void setup_parser(int argc, char const *argv[])___
    */
 ```
 
-___inline void set_help(const std::string &str)___
+#### methods for 'no-opt'
+
++ ___template <typename Type> inline void set_nopt___
+
+```cpp
+  /**
+   * @brief Set the 'no-opt'
+   *
+   * @tparam Type the type of 'no-opt'
+   * @param default_value the default value of the 'no-opt'
+   * @param prop the property of 'no-opt'
+   * @param desc the describe of 'no-opt'
+   */
+```
+
++ ___template <typename Type> inline const Type &get_noptv() const___
+
+```cpp
+  /**
+   * @brief Get the value of 'no-opt' arguement(s)
+   *
+   * @tparam Type the type of 'no-opt'
+   * @return const Type&
+   */
+```
+
+#### 'get' methods for 'opts'
+
++ ___inline std::size_t get_optc() const___
+
+```cpp
+  /**
+   * @brief get the count of the options in the parser
+   *
+   * @return std::size_t
+   */
+```
+
++ ___inline const OptInfo &get_opti(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the option's info named 'name'
+   *
+   * @param name the name of the option
+   * @return const OptInfo&
+   */
+```
+
++ ___inline const auto &get_opts() const___
+
+```cpp
+  /**
+   * @brief Get the all options in the parser
+   *
+   * @return const auto&
+   */
+```
+
++ ___template <typename Type> inline const Type &get_argv(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the value of an option according to name
+   *
+   * @tparam Type the type of this option's arguement(s)
+   * @param name the name of this option
+   * @return const Type&
+   */
+```
+
++ ___template <typename Type> inline const Type &get_argdv(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the default value of an option according to name
+   *
+   * @tparam Type the type of this option's arguement(s)
+   * @param name the name of this option
+   * @return const Type&
+   */
+```
+
++ ___inline const std::string &get_argdc(const std::string &name) const___
+
+```cpp
+  /**
+   * @brief Get the describe of the option named 'name'
+   *
+   * @param name the name of the option
+   * @return const std::string&
+   */
+```
+
+#### 'set' methods for 'help' and 'version' options
+
++ ___inline void set_help(const std::string &str)___
 
 ```cpp
   /**
@@ -384,7 +382,7 @@ ___inline void set_help(const std::string &str)___
    */
 ```
 
-___inline void set_version(const std::string &str)___
++ ___inline void set_version(const std::string &str)___
 
 ```cpp
   /**
@@ -393,4 +391,3 @@ ___inline void set_version(const std::string &str)___
    * @param str the version str
    */
 ```
-
