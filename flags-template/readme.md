@@ -53,18 +53,18 @@ int main(int argc, char const* argv[]) {
      * [int, std::string, bool, double]
      * std::vector<[int, std::string, bool, double]>
      */
-    parser.add_arg<ArgType::INT>("id", 0, "the id of current thread");
-    parser.add_arg<ArgType::STRING>("usr", "null", "the name of usr");
-    parser.add_arg<ArgType::BOOL>("sex", true,
+    parser.add_opt<ArgType::INT>("id", 0, "the id of current thread");
+    parser.add_opt<ArgType::STRING>("usr", "null", "the name of usr");
+    parser.add_opt<ArgType::BOOL>("sex", true,
                                   "the sex of usr [male: true, female: false]");
-    parser.add_arg<ArgType::DOUBLE>("height", 1.7, "the height of usr",
+    parser.add_opt<ArgType::DOUBLE>("height", 1.7, "the height of usr",
                                     OptProp::REQUIRED);
-    parser.add_arg<ArgType::INT_VEC>("ids", {1, 2, 3}, "the ids of threads");
-    parser.add_arg<ArgType::STRING_VEC>("lans", {"cpp", "python"},
+    parser.add_opt<ArgType::INT_VEC>("ids", {1, 2, 3}, "the ids of threads");
+    parser.add_opt<ArgType::STRING_VEC>("lans", {"cpp", "python"},
                                         "the used langusges of usr");
-    parser.add_arg<ArgType::BOOL_VEC>("choice", {true, false},
+    parser.add_opt<ArgType::BOOL_VEC>("choice", {true, false},
                                       "the choice of usr");
-    parser.add_arg<ArgType::DOUBLE_VEC>("scores", {2.3, 4.5},
+    parser.add_opt<ArgType::DOUBLE_VEC>("scores", {2.3, 4.5},
                                         "the score of usr");
     /**
      * @brief set version and help docs
@@ -74,7 +74,7 @@ int main(int argc, char const* argv[]) {
     parser.set_version("2.0");
     // parser.set_help("");
 
-    parser.set_nopt_arg<ArgType::STRING_VEC>({""}, OptProp::REQUIRED);
+    parser.set_nopt<ArgType::STRING_VEC>({""}, OptProp::REQUIRED);
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
@@ -83,8 +83,8 @@ int main(int argc, char const* argv[]) {
     /**
      * @brief print the info of arguements
      */
-    std::cout << parser.get_nopt_argi() << std::endl;
-    for (const auto& [key, value] : parser.get_args())
+    std::cout << parser.get_nopti() << std::endl;
+    for (const auto& [key, value] : parser.get_opts())
       std::cout << value << std::endl;
 
     /**
