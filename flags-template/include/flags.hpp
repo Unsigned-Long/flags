@@ -23,6 +23,8 @@
 
 namespace ns_flags {
 
+#pragma region struct 'ArgType'
+
 struct ArgType {
  public:
   friend class ArgParser;
@@ -68,7 +70,6 @@ struct ArgType {
       return any_cast<STRING>(any);
     } catch (...) {
     }
-
     try {
       return format_vector(any_cast<INT_VEC>(any));
     } catch (...) {
@@ -86,12 +87,13 @@ struct ArgType {
     } catch (...) {
     }
     throw std::runtime_error(
-        "[ error from lib-flags ] can't cast type 'any' to type 'std::string' "
-        "in 'ArgType::to_string'");
+        "[ error from 'ArgType::to_string' ] can't cast type 'any' to type "
+        "'std::string'");
     return "'to_string' failed";
   }
 
  protected:
+#pragma region 'cast' and 'make' methods for 'std::any'
   /**
    * @brief cast the 'any' type to 'Type'
    *
@@ -104,18 +106,16 @@ struct ArgType {
     try {
       return *(std::any_cast<std::shared_ptr<Type>>(any));
     } catch (const std::exception &e) {
-      throw std::runtime_error(
-          std::string(
-              "[ error from lib-flags ] can't cast type 'any' to type '") +
-          typeid(Type).name() + "' in 'ArgType::any_cast'" + ", exception: \"" +
-          e.what() + '\"');
+      throw std::runtime_error(std::string("[ error from 'ArgType::any_cast' ] "
+                                           "can't cast type 'any' to type '") +
+                               typeid(Type).name() + "'");
     }
   }
 
   /**
    * @brief make a std::any object
    *
-   * @tparam Type the source type
+   * @tparam Type the type of the arg_val
    * @param arg_val the value
    * @return std::any
    */
@@ -123,7 +123,9 @@ struct ArgType {
   static std::any make_any(Type arg_val) {
     return std::any(std::make_shared<Type>(arg_val));
   }
+#pragma endregion
 
+#pragma region 'asign' methods for 'std::any'
   /**
    * @brief using a string vector to asign a std::any type object
    * @attention it just supports the types in ArgType
@@ -220,6 +222,9 @@ struct ArgType {
     }
     return false;
   }
+#pragma endregion
+
+#pragma region help methods
 
   /**
    * @brief translate a string to a lower string
@@ -263,6 +268,7 @@ struct ArgType {
     stream << *iter << ']';
     return stream.str();
   }
+#pragma endregion
 };  // namespace ns_flags
 
 /**
@@ -273,6 +279,9 @@ static std::ostream &operator<<(std::ostream &os, const std::any &any) {
   return os;
 }
 
+#pragma endregion
+
+#pragma region enum 'OptProp'
 enum class OptProp {
   /**
    * @brief options
@@ -295,7 +304,11 @@ static std::ostream &operator<<(std::ostream &os, const OptProp &obj) {
   return os;
 };
 
-struct ArgInfo {
+#pragma endregion
+
+#pragma region struct 'OptInfo'
+
+struct OptInfo {
  private:
   /**
    * @brief the members
@@ -304,32 +317,27 @@ struct ArgInfo {
 
   OptProp _prop;
 
-  std::any _value;
-  std::any _defult_value;
+  std::any _argv;
+  std::any _argdv;
 
   std::string _desc;
 
  public:
   /**
-   * @brief construct a new ArgInfo object
+   * @brief construct a new OptInfo object
    */
-  ArgInfo(const std::string &name, const std::any &value,
-          const std::any &defult_value, const std::string &desc,
-          OptProp prop = OptProp::OPTIONAL)
-      : _name(name),
-        _prop(prop),
-        _value(value),
-        _defult_value(defult_value),
-        _desc(desc) {}
+  OptInfo(const std::string &name, const std::any &argv, const std::any &argdv,
+          const std::string &desc, OptProp prop = OptProp::OPTIONAL)
+      : _name(name), _prop(prop), _argv(argv), _argdv(argdv), _desc(desc) {}
 
-  ArgInfo() = default;
+  OptInfo() = default;
 
   inline const std::string &name() const { return this->_name; }
 
-  inline std::any &value() { return this->_value; }
-  inline const std::any &value() const { return this->_value; }
+  inline std::any &argv() { return this->_argv; }
+  inline const std::any &argv() const { return this->_argv; }
 
-  inline const std::any &defult_value() const { return this->_defult_value; }
+  inline const std::any &argdv() const { return this->_argdv; }
 
   inline const std::string &desc() const { return this->_desc; }
 
@@ -337,24 +345,27 @@ struct ArgInfo {
 };
 
 /**
- * @brief override operator '<<' for type 'ArgInfo'
+ * @brief override operator '<<' for type 'OptInfo'
  */
-std::ostream &operator<<(std::ostream &os, const ArgInfo &obj) {
+std::ostream &operator<<(std::ostream &os, const OptInfo &obj) {
   os << '{';
   os << "'name': " << obj.name() << ", 'prop': " << obj.prop()
-     << ", 'value': " << obj.value() << ", 'defult': " << obj.defult_value()
+     << ", 'argv': " << obj.argv() << ", 'defult': " << obj.argdv()
      << ", 'desc': " << obj.desc();
   os << '}';
   return os;
 }
 
+#pragma endregion
+
+#pragma region struct 'ExistOpt'
 // just for 'help' and 'version'
-struct ExistArg {
+struct ExistOpt {
  private:
   /**
    * @brief the members
    */
-  ArgInfo _argi;
+  OptInfo _opti;
   std::string _str;
 
  public:
@@ -362,186 +373,162 @@ struct ExistArg {
    * @brief
    *
    */
-  ExistArg(const ArgInfo &argi, const std::string &str)
-      : _argi(argi), _str(str) {}
+  ExistOpt(const OptInfo &opti, const std::string &str)
+      : _opti(opti), _str(str) {}
 
-  inline ArgInfo &argi() { return this->_argi; }
-  inline const ArgInfo &argi() const { return this->_argi; }
+  inline OptInfo &opti() { return this->_opti; }
+  inline const OptInfo &opti() const { return this->_opti; }
 
   inline std::string &str() { return this->_str; }
   inline const std::string &str() const { return this->_str; }
 };
 
+#pragma endregion
+
+#pragma region class 'ArgParser'
 class ArgParser {
  private:
-  std::unordered_map<std::string, ArgInfo> _args;
+  std::unordered_map<std::string, OptInfo> _opts;
 
-  ExistArg _help;
-  ExistArg _version;
-  ExistArg _nopt_arg;
+  ExistOpt _help;
+  ExistOpt _version;
+  ExistOpt _nopt;
 
  public:
   /**
    * @brief the default and only constructor for ArgParser
    */
   ArgParser()
-      : _help(ArgInfo("help", ArgType::make_any<ArgType::STRING>(""),
+      : _help(OptInfo("help", ArgType::make_any<ArgType::STRING>(""),
                       ArgType::make_any<ArgType::STRING>("help docs"),
                       "get the help docs of this program", OptProp::OPTIONAL),
               ""),
-        _version(ArgInfo("version", ArgType::make_any<ArgType::STRING>(""),
+        _version(OptInfo("version", ArgType::make_any<ArgType::STRING>(""),
                          ArgType::make_any<ArgType::STRING>("0.0.1"),
                          "get the version of this program", OptProp::OPTIONAL),
                  "0.0.1"),
-        _nopt_arg(ArgInfo("nopt-arg(s)", std::any(), std::any(),
-                          "arguement(s) without any option", OptProp::OPTIONAL),
-                  "N") {}
+        _nopt(
+            OptInfo("no-opt", std::any(), std::any(),
+                    "pass arguement(s) without any option", OptProp::OPTIONAL),
+            "N") {}
+
+#pragma region for 'no-opt'
 
   /**
-   * @brief add a arguement to the parser
+   * @brief Set the 'no-opt'
    *
-   * @tparam Type the type of the arguement
-   * @param name the name of the arguement
-   * @param defult_value the default value of the arguement
-   * @param desc the describe of the arguement
-   * @param prop the property of this option
+   * @tparam Type the type of 'no-opt'
+   * @param default_value the default value of the 'no-opt'
+   * @param prop the property of 'no-opt'
+   * @param desc the describe of 'no-opt'
    */
   template <typename Type>
-  void add_arg(const std::string &name, const Type &defult_value,
-               const std::string &desc, OptProp prop = OptProp::OPTIONAL) {
-    // check the 'type'
-    if (!ArgType::type_check<Type>())
-      throw std::runtime_error(
-          "[ error from lib-flags ] the template param 'Type' you passed for "
-          "option '--" +
-          name +
-          "' is invalid in 'ArgParser::add_arg', please pass 'Type' according "
-          "to types in 'ArgType'");
-    auto arg_info = ArgInfo(name, ArgType::make_any<Type>(Type()),
-                            ArgType::make_any<Type>(defult_value), desc, prop);
-    if (!this->_args.insert({name, arg_info}).second) {
-      auto error_info =
-          std::string("[ error from lib-flags ] can't add option named '--") +
-          name + "' in 'ArgParser::add_arg' again";
-      throw std::runtime_error(error_info);
-    }
-  }
-
-  /**
-   * @brief Set the nopt-arg(s) arguement
-   *
-   * @tparam Type the type of arguement
-   * @param default_value the default value of the nopt-arg(s) arguement
-   * @param prop the property of this option
-   * @param desc
-   */
-  template <typename Type>
-  void set_nopt_arg(
+  inline void set_nopt(
       const Type &default_value, OptProp prop = OptProp::OPTIONAL,
-      const std::string &desc = "arguement(s) without any option") {
+      const std::string &desc = "pass arguement(s) without any option") {
     // check the 'type'
     if (!ArgType::type_check<Type>())
       throw std::runtime_error(
-          "[ error from lib-flags ] the template param 'Type' you passed for "
-          "'--nopt-arg(s)' is invalid in 'ArgParser::set_nopt_argv', "
-          "please pass 'Type' according to types in 'ArgType'");
-    this->_nopt_arg =
-        ExistArg(ArgInfo("nopt-arg(s)", ArgType::make_any<Type>(Type()),
+          "[ error from 'ArgParser::set_nopt' ] the tparam 'Type' you passed "
+          "for '--no-opt' is invalid, please pass tparam according to types in "
+          "'ArgType'");
+    this->_nopt =
+        ExistOpt(OptInfo("no-opt", ArgType::make_any<Type>(Type()),
                          ArgType::make_any<Type>(default_value), desc, prop),
                  "Y");
   }
 
   /**
-   * @brief Get the nopt-arg(s) arguement's value
+   * @brief Get the value of 'no-opt' arguement(s)
    *
-   * @tparam Type the vaule type
+   * @tparam Type the type of 'no-opt'
    * @return const Type&
    */
   template <typename Type>
-  inline const Type &get_nopt_argv() const {
+  inline const Type &get_noptv() const {
     // check the 'type'
     if (!ArgType::type_check<Type>())
       throw std::runtime_error(
-          "[ error from lib-flags ] the template param 'Type' you passed for "
-          "'--nopt-arg(s)' is invalid in 'ArgParser::get_nopt_argv', "
-          "please pass 'Type' according to types in 'ArgType'");
-    return ArgType::any_cast<Type>(this->_nopt_arg.argi().value());
+          "[ error from 'ArgParser::get_noptv'] the tparam 'Type' "
+          "you passed for '--no-opt' is invalid, "
+          "please pass tparam according to types in 'ArgType'");
+    return ArgType::any_cast<Type>(this->_nopt.opti().argv());
   }
 
   /**
-   * @brief Get the nopt-arg(s) info object
+   * @brief Get the info of 'no-opt'
    *
-   * @return const ArgInfo
+   * @return const OptInfo
    */
-  inline const ArgInfo get_nopt_argi() const { return this->_nopt_arg.argi(); }
+  inline const OptInfo get_nopti() const { return this->_nopt.opti(); }
+
+#pragma endregion
+
+#pragma region 'get' methods for 'opts'
 
   /**
-   * @brief get the count of the arguements in the parser
+   * @brief get the count of the options in the parser
    *
-   * @return auto
+   * @return std::size_t
    */
-  inline std::size_t get_argc() const { return this->_args.size(); }
+  inline std::size_t get_optc() const { return this->_opts.size(); }
 
   /**
-   * @brief Get the arg info object in the parser according to the name
+   * @brief Get the option's info named 'name'
    *
-   * @param name the name of the arguement
-   * @return const ArgInfo&
+   * @param name the name of the option
+   * @return const OptInfo&
    */
-  inline const ArgInfo &get_argi(const std::string &name) const {
+  inline const OptInfo &get_opti(const std::string &name) const {
     try {
-      return this->_args.at(name);
+      return this->_opts.at(name);
     } catch (const std::exception &e) {
-      auto error_info =
-          std::string(
-              "[ error from lib-flags ] can't get the 'arg-info' of "
-              "the option named '--") +
-          name + "' in 'ArgParser::get_argi', exception: \"" + e.what() + '\"';
-      throw std::runtime_error(error_info);
+      throw std::runtime_error(
+          std::string("[ error from 'ArgParser::get_argi' ] there is not an "
+                      "option named '--") +
+          name + "'");
     }
   }
 
   /**
-   * @brief Get the all arguements in the parser
+   * @brief Get the all options in the parser
    *
    * @return const auto&
    */
-  inline const auto &get_args() const { return this->_args; }
+  inline const auto &get_opts() const { return this->_opts; }
 
   /**
-   * @brief Get the value of an arguement according to name
+   * @brief Get the value of an option according to name
    *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
-   * @return Type&
+   * @tparam Type the type of this option's arguement(s)
+   * @param name the name of this option
+   * @return const Type&
    */
   template <typename Type>
   inline const Type &get_argv(const std::string &name) const {
     // check the 'type'
     if (!ArgType::type_check<Type>())
       throw std::runtime_error(
-          "[ error from lib-flags ] the template param 'Type' you passed for "
-          "option '--" +
+          "[ error from 'ArgParser::get_argv' ] the tparam 'Type' you passed "
+          "for option '--" +
           name +
-          "' is invalid in 'ArgParser::get_argv', please pass 'Type' according "
-          "to types in 'ArgType'");
+          "' is invalid, please pass tparam according to types in 'ArgType'");
     try {
-      return ArgType::any_cast<Type>(this->_args.at(name).value());
+      return ArgType::any_cast<Type>(this->_opts.at(name).argv());
     } catch (const std::exception &e) {
-      auto error_info = std::string(
-                            "[ error from lib-flags ] can't get the 'value' of "
-                            "the option named '--") +
-                        name + "' in 'ArgParser::get_argv', exception \"" +
-                        e.what() + '\"';
-      throw std::runtime_error(error_info);
+      throw std::runtime_error(
+          std::string(
+              "[ error from 'ArgParser::get_argv' ] can't get the 'value' of "
+              "the option named '--") +
+          name + "'");
     }
   }
 
   /**
-   * @brief Get the default value of an arguement according to name
+   * @brief Get the default value of an option according to name
    *
-   * @tparam Type the type of this arguement
-   * @param name the name of this arguement
+   * @tparam Type the type of this option's arguement(s)
+   * @param name the name of this option
    * @return const Type&
    */
   template <typename Type>
@@ -549,39 +536,68 @@ class ArgParser {
     // check the 'type'
     if (!ArgType::type_check<Type>())
       throw std::runtime_error(
-          "[ error from lib-flags ] the template param 'Type' you passed for "
-          "option '--" +
+          "[ error from 'ArgParser::get_argdv' ] the tparam 'Type' you "
+          "passed for option '--" +
           name +
-          "' is invalid in 'ArgParser::get_argdv', please pass 'Type' "
-          "according "
-          "to types in 'ArgType'");
+          "' is invalid, please pass tparam according to types in 'ArgType'");
     try {
-      return ArgType::any_cast<Type>(this->_args.at(name).defult_value());
+      return ArgType::any_cast<Type>(this->_opts.at(name).argdv());
     } catch (const std::exception &e) {
-      auto error_info =
-          std::string(
-              "[ error from lib-flags ] can't get the 'defalut-value' of "
-              "the option named '--") +
-          name + "' in 'ArgParser::get_argdv', exception: \"" + e.what() + '\"';
-      throw std::runtime_error(error_info);
+      throw std::runtime_error(
+          std::string("[ error from 'ArgParser::get_argdv' ] can't get "
+                      "the 'defalut-value' of the option named '--") +
+          name + "'");
     }
   }
 
   /**
-   * @brief Get the describe of the arguement named 'name'
+   * @brief Get the describe of the option named 'name'
    *
-   * @param name
+   * @param name the name of the option
    * @return const std::string&
    */
   inline const std::string &get_argdc(const std::string &name) const {
     try {
-      return this->_args.at(name).desc();
+      return this->_opts.at(name).desc();
     } catch (const std::exception &e) {
+      throw std::runtime_error(
+          std::string(
+              "[ error from 'ArgParser::get_argdc' ] can't get the describe of "
+              "the option named '--") +
+          name + "'");
+    }
+  }
+#pragma endregion
+
+#pragma region main methods
+
+  /**
+   * @brief add an option to the parser
+   *
+   * @tparam Type the type of the option's arguemrnt(s)
+   * @param name the name of the option
+   * @param defult_value the default value of the option's arguement(s)
+   * @param desc the describe of the option
+   * @param prop the property of this option
+   */
+  template <typename Type>
+  void add_opt(const std::string &name, const Type &defult_value,
+               const std::string &desc, OptProp prop = OptProp::OPTIONAL) {
+    // check the 'type'
+    if (!ArgType::type_check<Type>())
+      throw std::runtime_error(
+          "[ error from 'ArgParser::add_opt' ] the tparam 'Type' you passed "
+          "for option '--" +
+          name +
+          "' is invalid, please pass tparam according "
+          "to types in 'ArgType'");
+    auto arg_info = OptInfo(name, ArgType::make_any<Type>(Type()),
+                            ArgType::make_any<Type>(defult_value), desc, prop);
+    if (!this->_opts.insert({name, arg_info}).second) {
       auto error_info = std::string(
-                            "[ error from lib-flags ] can't get the 'desc' of "
-                            "the option named '--") +
-                        name + "' in 'ArgParser::get_argdc', exception: \"" +
-                        e.what() + '\"';
+                            "[ error from 'ArgParser::add_opt' ] can't add "
+                            "option named '--") +
+                        name + "' again";
       throw std::runtime_error(error_info);
     }
   }
@@ -614,38 +630,39 @@ class ArgParser {
           throw std::runtime_error(argv[0] + std::string(" version: ") +
                                    this->_version.str());
         }
-        auto iter = this->_args.find(cur_arg_name);
-        if (iter == this->_args.end()) {
+        auto iter = this->_opts.find(cur_arg_name);
+        if (iter == this->_opts.end()) {
           // the param is invalid
           throw std::runtime_error(
               std::string("some error(s) happened in the command line:\n") +
-              "[ error from lib-flags ] the option named '--" + cur_arg_name +
-              "' is invalid, use '--help' option for help.");
+              "[ error from 'ArgParser::setup_parser' ] the option named '--" +
+              cur_arg_name + "' is invalid, use '--help' option for help");
         } else {
           // cast the arguement
           if (!argv_vec.empty()) {
             if (last_arg_name.empty()) {
               // try to asign the no option arguement
-              if (this->use_nopt_arg()) {
-                if (!ArgType::any_asign(this->_nopt_arg.argi().value(),
+              if (this->use_nopt()) {
+                if (!ArgType::any_asign(this->_nopt.opti().argv(),
                                         argv_vec.front())) {
-                  if (!ArgType::any_asign(this->_nopt_arg.argi().value(),
+                  if (!ArgType::any_asign(this->_nopt.opti().argv(),
                                           argv_vec)) {
                     throw std::runtime_error(
-                        "[ error from lib-flags ] unknow werror happened in "
-                        "'ArgType::any-asign' when asign the '--nopt-arg(s)'");
+                        "[ error from 'ArgParser::setup_parser' ] unknow "
+                        "error happened in 'ArgType::any-asign' when asign "
+                        "the '--no-opt'");
                   }
                 }
                 used_nopt = true;
               }
             } else {
               // try to asign the option arguements
-              auto arg_value = this->_args.at(last_arg_name).value();
+              auto arg_value = this->_opts.at(last_arg_name).argv();
               if (!ArgType::any_asign(arg_value, argv_vec.front())) {
                 if (!ArgType::any_asign(arg_value, argv_vec)) {
                   throw std::runtime_error(
-                      "[ error from lib-flags ] unknow werror happened in "
-                      "'ArgType::any-asign'");
+                      "[ error from 'ArgParser::setup_parser' ] unknow werror "
+                      "happened in 'ArgType::any-asign'");
                 }
               }
               used_options.insert(last_arg_name);
@@ -663,49 +680,53 @@ class ArgParser {
     if (!argv_vec.empty()) {
       if (last_arg_name.empty()) {
         // try to asign the no option arguement
-        if (this->use_nopt_arg()) {
-          if (!ArgType::any_asign(this->_nopt_arg.argi().value(),
+        if (this->use_nopt()) {
+          if (!ArgType::any_asign(this->_nopt.opti().argv(),
                                   argv_vec.front())) {
-            if (!ArgType::any_asign(this->_nopt_arg.argi().value(), argv_vec)) {
+            if (!ArgType::any_asign(this->_nopt.opti().argv(), argv_vec)) {
               throw std::runtime_error(
-                  "[ error from lib-flags ] unknow werror happened in "
-                  "'ArgType::any-asign' when asign the '--nopt-arg(s)'");
+                  "[ error from 'ArgParser::setup_parser' ] unknow werror "
+                  "happened in 'ArgType::any-asign' when asign the '--no-opt'");
             }
           }
           used_nopt = true;
         }
       } else {
         // try to asign the option arguements
-        auto arg_value = this->_args.at(last_arg_name).value();
+        auto arg_value = this->_opts.at(last_arg_name).argv();
         if (!ArgType::any_asign(arg_value, argv_vec.front())) {
           if (!ArgType::any_asign(arg_value, argv_vec)) {
             throw std::runtime_error(
-                "[ error from lib-flags ] unknow werror happened in "
-                "'ArgType::any-asign'");
+                "[ error from 'ArgParser::setup_parser' ] unknow werror "
+                "happened in 'ArgType::any-asign'");
           }
         }
         used_options.insert(last_arg_name);
       }
     }
     // check for the property of options
-    if (!check_prop(used_nopt, this->_nopt_arg.argi().prop())) {
+    if (prop_error(used_nopt, this->_nopt.opti().prop())) {
       throw std::runtime_error(
-          "[ error from lib-flags ] the property of the '--nopt-arg(s)' "
-          "is 'OptProp::required', but you didn't pass the arguement(s)");
+          "[ error from 'ArgParser::setup_parser' ] the property of the "
+          "'--no-opt' is 'OptProp::required', but you didn't pass the "
+          "arguement(s)");
     }
-    for (const auto [name, info] : this->_args) {
-      if (!check_prop(used_options.find(name) != used_options.end(),
-                      info.prop())) {
+    // check the options' property
+    for (const auto [name, info] : this->_opts) {
+      if (prop_error(used_options.find(name) != used_options.end(),
+                     info.prop())) {
         throw std::runtime_error(
-            "[ error from lib-flags ] the property of the option named '--" +
+            "[ error from 'ArgParser::setup_parser' ] the property of the "
+            "option named '--" +
             name +
-            "' "
-            "is 'OptProp::required', but you didn't pass the arguement(s)");
+            "' is 'OptProp::required', but you didn't pass the arguement(s)");
       }
     }
     return;
   }
+#pragma endregion
 
+#pragma region 'set' methods for 'help' and 'version' options
   /**
    * @brief Set the help docs string for the parser
    *
@@ -725,22 +746,25 @@ class ArgParser {
     this->_version.str() = str;
     return;
   }
+#pragma endregion
 
  protected:
+#pragma region help methods
   /**
    * @brief generate the help docs
    *
-   * @param program_name
+   * @param program_name the name of the program
    */
   void gen_help(const std::string &program_name) {
+    // of the help str is not empty, then it means the user has set it
     if (!this->_help.str().empty()) {
       return;
     }
     std::stringstream stream;
     // the main usage of this program
     stream << "Usage: " << program_name;
-    if (this->use_nopt_arg()) {
-      stream << " [nopt-arg(s)]";
+    if (this->use_nopt()) {
+      stream << " [no-opt]";
     }
     // the header of the help docs
     stream << " [--option target(s)] ...\n\n    " << std::setw(15) << std::left
@@ -748,37 +772,52 @@ class ArgParser {
            << std::setw(20) << "Default Value"
            << "Describes\n"
            << std::string(67, '-') << '\n';
-    // display help docs for nopt-arg(s)
-    if (this->use_nopt_arg()) {
+    // display help docs for no-opt
+    if (this->use_nopt()) {
       stream << "  --" << std::setw(15) << std::left
-             << this->_nopt_arg.argi().name() << std::setw(15) << std::left
-             << this->_nopt_arg.argi().prop() << std::setw(20)
-             << this->_nopt_arg.argi().defult_value()
-             << this->_nopt_arg.argi().desc() << "\n\n";
+             << this->_nopt.opti().name() << std::setw(15) << std::left
+             << this->_nopt.opti().prop() << std::setw(20)
+             << this->_nopt.opti().argdv() << this->_nopt.opti().desc()
+             << "\n\n";
     }
     // display help docs for options set by user
-    for (const auto &[name, info] : this->_args)
+    for (const auto &[name, info] : this->_opts)
       stream << "  --" << std::setw(15) << std::left << name << std::setw(15)
-             << std::left << info.prop() << std::setw(20) << info.defult_value()
+             << std::left << info.prop() << std::setw(20) << info.argdv()
              << info.desc() << '\n';
     // display help docs for 'help' and 'version' options
     stream << "\n  --" << std::setw(15) << std::left << "help" << std::setw(15)
-           << std::left << this->_help.argi().prop() << std::setw(20)
-           << this->_help.argi().defult_value() << this->_help.argi().desc()
-           << '\n';
+           << std::left << this->_help.opti().prop() << std::setw(20)
+           << this->_help.opti().argdv() << this->_help.opti().desc() << '\n';
     stream << "  --" << std::setw(15) << std::left << "version" << std::setw(15)
-           << std::left << this->_version.argi().prop() << std::setw(20)
-           << this->_version.argi().defult_value()
-           << this->_version.argi().desc() << '\n';
+           << std::left << this->_version.opti().prop() << std::setw(20)
+           << this->_version.opti().argdv() << this->_version.opti().desc()
+           << '\n';
+    // the tail of the help docs
     stream << "\nhelp docs for program \"" + program_name + "\"";
     this->_help.str() = stream.str();
     return;
   }
 
-  inline bool use_nopt_arg() { return this->_nopt_arg.str().front() == 'Y'; }
+  /**
+   * @brief judge whether the 'no-opt' is set
+   * @attention 'Y' means it's set and 'N' means it's not set
+   */
+  inline bool use_nopt() { return this->_nopt.str().front() == 'Y'; }
 
-  inline bool check_prop(bool used, OptProp prop) {
-    return (used) || (!used && prop == OptProp::OPTIONAL);
+  /**
+   * @brief if the option not used but the property is OptProp::REQUIRED,
+   * then return false
+   *
+   * @param used whether the option is used
+   * @param prop the property of this option
+   */
+  inline bool prop_error(bool used, OptProp prop) {
+    return !used && prop == OptProp::REQUIRED;
   }
+#pragma endregion
 };
+
+#pragma endregion
+
 }  // namespace ns_flags
