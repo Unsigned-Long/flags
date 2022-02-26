@@ -101,7 +101,7 @@ int main(int argc, char const* argv[]) {
 
 ### Output
 
-_if you want to over view the example command lines and outputs, please click [the log file](./output/log.log)._
+_if you want to over view the example log file for command lines and outputs, please click [the log file](./output/log.log)._
 
 if run command line:
 
