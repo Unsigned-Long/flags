@@ -444,10 +444,9 @@ namespace ns_flags {
             "[ error from 'ArgParser::set_nopt' ] the tparam 'Type' you passed "
             "for '--no-opt' is invalid, please pass tparam according to types in "
             "'ArgType'");
-      this->_nopt =
-          ExistOpt(OptInfo("no-opt", ArgType::make_any<Type>(Type()),
-                           ArgType::make_any<Type>(default_value), desc, prop),
-                   "Y");
+      this->_nopt = ExistOpt(OptInfo("no-opt", ArgType::make_any<Type>(default_value),
+                                     ArgType::make_any<Type>(default_value), desc, prop),
+                             "Y");
     }
 
     /**
@@ -603,7 +602,7 @@ namespace ns_flags {
             name +
             "' is invalid, please pass tparam according "
             "to types in 'ArgType'");
-      auto arg_info = OptInfo(name, ArgType::make_any<Type>(Type()),
+      auto arg_info = OptInfo(name, ArgType::make_any<Type>(defult_value),
                               ArgType::make_any<Type>(defult_value), desc, prop);
       if (!this->_opts.insert({name, arg_info}).second) {
         auto error_info = std::string(
