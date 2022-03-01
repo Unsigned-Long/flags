@@ -22,7 +22,9 @@ _|_|_|_|    _|_|    _|_|_|  _|_|    _|_|_|    _|    _|_|_|  _|_|_|_|    _|_|
                                     _|                                
 ```
 
-## OverView
+[TOC]
+
+## 1. OverView
 
 this is a simple 'program-command-line-parameter-parsing' library using cpp-template.
 
@@ -32,7 +34,13 @@ the main functions:
 + Parse the passed in parameters based on the set command line parameters;
 + During parsing, identify and check the command line parameters (such as wrong type, wrong option name, inconsistent selectability);
 
-## Usage
+## 2. Structure
+
+<img src="./drawer/flags.png">
+
+
+
+## 3. Usage
 
 ### Example for Source Code
 
@@ -41,58 +49,54 @@ the main functions:
 
 using namespace ns_flags;
 
-int main(int argc, char const* argv[]) {
+int main(int argc, char const *argv[]) {
   /**
    * @brief try-catch is not necessary but it is strongly recommended,
    * because you can get a lot of advice when there are errors in your code
    */
   try {
-    ns_flags::ArgParser parser;
+    OptionParser parser;
     /**
      * @brief define some kinds of arguements
      * [int, std::string, bool, double]
      * std::vector<[int, std::string, bool, double]>
      */
-    parser.add_opt<ArgType::INT>("id", 0, "the id of current thread");
-    parser.add_opt<ArgType::STRING>("usr", "null", "the name of usr");
-    parser.add_opt<ArgType::BOOL>("sex", true,
-                                  "the sex of usr [male: true, female: false]");
-    parser.add_opt<ArgType::DOUBLE>("height", 1.7, "the height of usr",
-                                    OptProp::REQUIRED);
-    parser.add_opt<ArgType::INT_VEC>("ids", {1, 2, 3}, "the ids of threads");
-    parser.add_opt<ArgType::STRING_VEC>("lans", {"cpp", "python"},
-                                        "the used langusges of usr");
-    parser.add_opt<ArgType::BOOL_VEC>("choice", {true, false},
-                                      "the choice of usr");
-    parser.add_opt<ArgType::DOUBLE_VEC>("scores", {2.3, 4.5},
-                                        "the score of usr");
+    parser.addOption<IntArg>("id", 0, "the id of current thread");
+    parser.addOption<StringArg>("usr", "null", "the name of usr");
+    parser.addOption<BoolArg>("sex", true,
+                              "the sex of usr [male: true, female: false]");
+    parser.addOption<DoubleArg>("height", 1.7, "the height of usr", OptionProp::REQUIRED);
+    parser.addOption<IntVecArg>("ids", {1, 2, 3}, "the ids of threads");
+    parser.addOption<StringVecArg>("lans", {"cpp", "python"},
+                                   "the used langusges of usr");
+    parser.addOption<BoolVecArg>("choice", {true, false}, "the choice of usr");
+    parser.addOption<DoubleVecArg>("scores", {2.3, 4.5}, "the score of usr");
     /**
      * @brief set version and help docs
      * @attention if you do not set the help docs, then the help docs
      * will generate automatically
      */
-    parser.set_version("2.0");
+    parser.setVersion("2.0.0");
     // parser.set_help("");
 
-    parser.set_nopt<ArgType::STRING_VEC>({""}, OptProp::REQUIRED);
+    parser.setDefaultOption<StringVecArg>({""}, "the default option", OptionProp::REQUIRED);
     /**
      * @brief finally, you can set up the parser and then use these arguements
      */
-    parser.setup_parser(argc, argv);
+    parser.setupParser(argc, argv);
 
     /**
      * @brief print the info of arguements
      */
-    std::cout << parser.get_nopti() << std::endl;
-    for (const auto& [key, value] : parser.get_opts())
-      std::cout << value << std::endl;
+    std::cout << parser << std::endl;
+    std::cout << parser.getDefaultOptionInfo<StringVecArg>() << std::endl;
 
     /**
      * @brief use the arguements
      */
-    auto id = parser.get_argv<ArgType::INT>("id");
+    auto id = parser.getOptionArgv<IntArg>("id");
     std::cout << "the 'id' I get is: " << id << std::endl;
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
   }
   return 0;
@@ -112,7 +116,7 @@ if run command line:
 will output:
 
 ```cpp
-[ error from 'ArgParser::setup_parser' ] the property of the option named '--height' is 'OptProp::required', but you didn't pass the arguement(s)
+[ error from 'libflags'-'setupParser' ] the option named '--height' is 'OptionProp::REQUIRED', but you didn't use it
 ```
 
 
@@ -126,15 +130,20 @@ if run command line:
 will output:
 
 ```cpp
-{'name': no-opt, 'prop': required, 'argv': [hello, I'm, flags!], 'defult': [], 'desc': pass arguement(s) without any option}
-{'name': choice, 'prop': optional, 'argv': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
-{'name': ids, 'prop': optional, 'argv': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
-{'name': scores, 'prop': optional, 'argv': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
-{'name': lans, 'prop': optional, 'argv': [cpp, java, python, html], 'defult': [cpp, python], 'desc': the used langusges of usr}
-{'name': height, 'prop': required, 'argv': 98.800000, 'defult': 1.700000, 'desc': the height of usr}
-{'name': sex, 'prop': optional, 'argv': true, 'defult': true, 'desc': the sex of usr [male: true, female: false]}
-{'name': usr, 'prop': optional, 'argv': csl, 'defult': null, 'desc': the name of usr}
-{'name': id, 'prop': optional, 'argv': 12, 'defult': 0, 'desc': the id of current thread}
+OptionParser Info: {
+  {'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required};
+  {'opt': choice, 'type': BoolVecArg, 'desc': the choice of usr, 'prop': Optional};
+  {'opt': ids, 'type': IntVecArg, 'desc': the ids of threads, 'prop': Optional};
+  {'opt': scores, 'type': DoubleVecArg, 'desc': the score of usr, 'prop': Optional};
+  {'opt': lans, 'type': StringVecArg, 'desc': the used langusges of usr, 'prop': Optional};
+  {'opt': height, 'type': DoubleArg, 'desc': the height of usr, 'prop': Required};
+  {'opt': sex, 'type': BoolArg, 'desc': the sex of usr [male: true, female: false], 'prop': Optional};
+  {'opt': usr, 'type': StringArg, 'desc': the name of usr, 'prop': Optional};
+  {'opt': version, 'type': StringArg, 'desc': display the version of this program, 'prop': Optional};
+  {'opt': id, 'type': IntArg, 'desc': the id of current thread, 'prop': Optional};
+  {'opt': help, 'type': StringArg, 'desc': display the help docs, 'prop': Optional};
+}
+{'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required, 'default': [], 'value': [hello, I'm, flags!]}
 the 'id' I get is: 12
 ```
 
@@ -147,23 +156,23 @@ if run command line:
 will output:
 
 ```cpp
-Usage: ./flags [no-opt] [--option target(s)] ...
+Usage: ./flags [def-opt target(s)] [--option target(s)] ...
 
-    Options        property       Default Value       Describes
--------------------------------------------------------------------
-  --no-opt         required       []                  pass arguement(s) without any option
+    Options        Property       Type           Describes
+--------------------------------------------------------------
+  --def-opt        Required       StringVecArg   the default option
 
-  --choice         optional       [true, false]       the choice of usr
-  --ids            optional       [1, 2, 3]           the ids of threads
-  --scores         optional       [2.3, 4.5]          the score of usr
-  --lans           optional       [cpp, python]       the used langusges of usr
-  --height         required       1.700000            the height of usr
-  --sex            optional       true                the sex of usr [male: true, female: false]
-  --usr            optional       null                the name of usr
-  --id             optional       0                   the id of current thread
+  --choice         Optional       BoolVecArg     the choice of usr
+  --ids            Optional       IntVecArg      the ids of threads
+  --scores         Optional       DoubleVecArg   the score of usr
+  --lans           Optional       StringVecArg   the used langusges of usr
+  --height         Required       DoubleArg      the height of usr
+  --sex            Optional       BoolArg        the sex of usr [male: true, female: false]
+  --usr            Optional       StringArg      the name of usr
+  --id             Optional       IntArg         the id of current thread
 
-  --help           optional       help docs           get the help docs of this program
-  --version        optional       0.0.1               get the version of this program
+  --help           Optional       StringArg      display the help docs
+  --version        Optional       StringArg      display the version of this program
 
 help docs for program "./flags"
 ```
@@ -177,7 +186,7 @@ if run command line:
 will output:
 
 ```cpp
-./flags version: 2.0
+./flags version: 2.0.0
 ```
 
 if run command line:
@@ -189,31 +198,53 @@ if run command line:
 will output:
 
 ```cpp
-some error(s) happened in the command line:
-[ error from 'ArgParser::setup_parser' ] the option named '--nema' is invalid, use '--help' option for help
+[ error from 'libflags'-'setupParser' ] the option named '--nema' is invalid
 ```
 
-## Apis
+## 4. Apis
 
 ### Arguement Types
 
 Here are the types you can use in the 'arguement-parser':
 
 ```cpp
-  using INT = int;
-  using DOUBLE = double;
-  using BOOL = bool;
-  using STRING = std::string;
-  using INT_VEC = std::vector<int>;
-  using DOUBLE_VEC = std::vector<double>;
-  using BOOL_VEC = std::vector<bool>;
-  using STRING_VEC = std::vector<std::string>;
+  class IntArg : public MetaArg {
+      ...
+  };
+
+  class DoubleArg : public MetaArg {
+      ...
+  };
+
+  class BoolArg : public MetaArg {
+      ...
+  };
+
+  class StringArg : public MetaArg {
+      ...
+  };
+
+  class IntVecArg : public MetaArg {
+      ...
+  };
+
+  class DoubleVecArg : public MetaArg {
+      ...
+  };
+
+  class BoolVecArg : public MetaArg {
+      ...
+  };
+
+  class StringVecArg : public MetaArg {
+      ...
+  };
 ```
 
 ### Option Property
 
 ```cpp
-enum class OptProp {
+enum class OptionProp {
   /**
    * @brief options
    */
@@ -222,172 +253,182 @@ enum class OptProp {
 };
 ```
 
-### Arguement Info
-
-These members are config objects in an 'arguement-info' object:
+### Option
 
 ```cpp
-  std::string _name;
 
-  OptProp _prop;
+  class Option {
+    template <typename ArgType>
+    std::string info() {
+        ...
+    }
 
-  std::any _value;
-  std::any _defult_value;
+    /**
+     * @brief create an option
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param optName the option's name
+     * @param defaultArgv the default arguement value
+     * @param desc the describe of the arguement
+     * @param prop the prop of option
+     * @return Option
+     */
+    template <typename ArgType>
+    static Option create(const std::string &optName, const typename ArgType::value_type &defaultArgv,
+                         const std::string &desc, OptionProp prop = OptionProp::OPTIONAL) {
+        ...
+    }
 
-  std::string _desc;
+  private:
+    std::string _opt;
+    std::shared_ptr<MetaArg> _arg;
+    std::string _desc;
+    OptionProp _prop;
+  };
 ```
 
-### Apis in the ArgParser
 
-#### constructor
 
-+ ___ArgParser()___
+### OptionParser
 
 ```cpp
-  /**
-   * @brief the default and only constructor for ArgParser
-   */
+  class OptionParser {
+  public:
+    OptionParser() {
+        ...
+    }
+
+  public:
+    /**
+     * @brief add an option to the option parser
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param optName the option's name
+     * @param defaultArgv the default arguement value
+     * @param desc the describe of the arguement
+     * @param prop the prop of option
+     * @return OptionParser&
+     */
+    template <typename ArgType>
+    OptionParser &addOption(const std::string &optName,
+                            const typename ArgType::value_type &defaultArgv,
+                            const std::string &desc,
+                            OptionProp prop = OptionProp::OPTIONAL) {
+        ...
+    }
+
+    /**
+     * @brief add an option to the option parser
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param defaultArgv the default arguement value
+     * @param desc the describe of the arguement
+     * @param prop the prop of option
+     * @return OptionParser&
+     */
+    template <typename ArgType>
+    OptionParser &setDefaultOption(const typename ArgType::value_type &defaultArgv,
+                                   const std::string &desc = "the default option",
+                                   OptionProp prop = OptionProp::OPTIONAL) {
+        ...
+    }
+
+    /**
+     * @brief get the default arguement value of the option
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param optName the option's name
+     * @return ArgType::value_type
+     */
+    template <typename ArgType>
+    typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) {
+        ...
+    }
+
+    /**
+     * @brief get the default arguement value of the option
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param optName the option's name
+     * @return ArgType::value_type
+     */
+    template <typename ArgType>
+    typename ArgType::value_type getOptionArgv(const std::string &optionName) {
+        ...
+    }
+
+    /**
+     * @brief get the default arguement value of the option
+     *
+     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
+     * @param optName the option's name
+     * @return ArgType::value_type
+     */
+    template <typename ArgType>
+    typename ArgType::value_type getDefaultOptionArgv() {
+        ...
+    }
+
+    /**
+     * @brief set up the parser
+     *
+     * @param argc the count of the arguement
+     * @param argv the value of the arguement
+     * @return OptionParser&
+     */
+    OptionParser &setupParser(int argc, char const *argv[]) {
+        ...
+    }
+
+    /**
+     * @brief set the version string
+     *
+     * @param version the string
+     * @return OptionParser&
+     */
+    OptionParser &setVersion(const std::string &version) {
+        ...
+    }
+
+    /**
+     * @brief set the help string
+     *
+     * @param help the string
+     * @return OptionParser&
+     */
+    OptionParser &setHelp(const std::string &help) {
+        ...
+    }
+
+    /**
+     * @brief get the option's info
+     *
+     * @tparam ArgType the type of arguement
+     * @param optionName the name of option
+     * @return std::string
+     */
+    template <typename ArgType>
+    std::string getOptionInfo(const std::string &optionName) {
+        ...
+    }
+
+    /**
+     * @brief get the default option's Info
+     *
+     * @tparam ArgType the type of arguement
+     * @return std::string
+     */
+    template <typename ArgType>
+    std::string getDefaultOptionInfo() {
+        ...
+    }
+
+  private:
+    std::unordered_map<std::string, Option> _options;
+
+    const std::string HELP_OPTION_NAME = "help";
+    const std::string VERSION_OPTION_NAME = "version";
+    const std::string DEFAULT_OPTION_NAME = "def-opt";
+  };
 ```
 
-#### main methods
-
-+ ___template <typename Type> void add_opt(const std::string &name, const Type &defult_value, const std::string &desc, OptProp prop = OptProp::OPTIONAL)___
-
-```cpp
-  /**
-   * @brief add an option to the parser
-   *
-   * @tparam Type the type of the option's arguemrnt(s)
-   * @param name the name of the option
-   * @param defult_value the default value of the option's arguement(s)
-   * @param desc the describe of the option
-   * @param prop the property of this option
-   */
-```
-
-+ ___void setup_parser(int argc, char const *argv[])___
-
-```cpp
-  /**
-   * @brief Set the up the parser
-   *
-   * @param argc the count of the arguements
-   * @param argv the values of the arguements
-   */
-```
-
-#### methods for 'no-opt'
-
-+ ___template <typename Type> inline void set_nopt___
-
-```cpp
-  /**
-   * @brief Set the 'no-opt'
-   *
-   * @tparam Type the type of 'no-opt'
-   * @param default_value the default value of the 'no-opt'
-   * @param prop the property of 'no-opt'
-   * @param desc the describe of 'no-opt'
-   */
-```
-
-+ ___template <typename Type> inline const Type &get_noptv() const___
-
-```cpp
-  /**
-   * @brief Get the value of 'no-opt' arguement(s)
-   *
-   * @tparam Type the type of 'no-opt'
-   * @return const Type&
-   */
-```
-
-#### 'get' methods for 'opts'
-
-+ ___inline std::size_t get_optc() const___
-
-```cpp
-  /**
-   * @brief get the count of the options in the parser
-   *
-   * @return std::size_t
-   */
-```
-
-+ ___inline const OptInfo &get_opti(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the option's info named 'name'
-   *
-   * @param name the name of the option
-   * @return const OptInfo&
-   */
-```
-
-+ ___inline const auto &get_opts() const___
-
-```cpp
-  /**
-   * @brief Get the all options in the parser
-   *
-   * @return const auto&
-   */
-```
-
-+ ___template <typename Type> inline const Type &get_argv(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the value of an option according to name
-   *
-   * @tparam Type the type of this option's arguement(s)
-   * @param name the name of this option
-   * @return const Type&
-   */
-```
-
-+ ___template <typename Type> inline const Type &get_argdv(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the default value of an option according to name
-   *
-   * @tparam Type the type of this option's arguement(s)
-   * @param name the name of this option
-   * @return const Type&
-   */
-```
-
-+ ___inline const std::string &get_argdc(const std::string &name) const___
-
-```cpp
-  /**
-   * @brief Get the describe of the option named 'name'
-   *
-   * @param name the name of the option
-   * @return const std::string&
-   */
-```
-
-#### 'set' methods for 'help' and 'version' options
-
-+ ___inline void set_help(const std::string &str)___
-
-```cpp
-  /**
-   * @brief Set the help docs string for the parser
-   *
-   * @param str the help str to set
-   */
-```
-
-+ ___inline void set_version(const std::string &str)___
-
-```cpp
-  /**
-   * @brief Set the version of the program
-   *
-   * @param str the version str
-   */
-```
