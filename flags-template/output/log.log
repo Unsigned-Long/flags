@@ -1,43 +1,15 @@
-./flags --help
-
-Usage: ./flags [no-opt] [--option target(s)] ...
-
-    Options        property       Default Value       Describes
--------------------------------------------------------------------
-  --no-opt         required       []                  pass arguement(s) without any option
-
-  --choice         optional       [true, false]       the choice of usr
-  --ids            optional       [1, 2, 3]           the ids of threads
-  --scores         optional       [2.3, 4.5]          the score of usr
-  --lans           optional       [cpp, python]       the used langusges of usr
-  --height         required       1.700000            the height of usr
-  --sex            optional       true                the sex of usr [male: true, female: false]
-  --usr            optional       null                the name of usr
-  --id             optional       0                   the id of current thread
-
-  --help           optional       help docs           get the help docs of this program
-  --version        optional       0.0.1               get the version of this program
-
-help docs for program "./flags"
-
-./flags hello "I'm" flags!
-
-[ error from 'ArgParser::setup_parser' ] the property of the option named '--height' is 'OptProp::required', but you didn't pass the arguement(s)
-
-./flags hello "I'm" flags!  --height 98.8 --sex true --usr csl --id 12 --choice true false true --ids 12 34 123 --scores 12.3 45.6 78.9 --lans cpp java python html
-
-{'name': no-opt, 'prop': required, 'argv': [hello, I'm, flags!], 'defult': [], 'desc': pass arguement(s) without any option}
-{'name': choice, 'prop': optional, 'argv': [true, false, true], 'defult': [true, false], 'desc': the choice of usr}
-{'name': ids, 'prop': optional, 'argv': [12, 34, 123], 'defult': [1, 2, 3], 'desc': the ids of threads}
-{'name': scores, 'prop': optional, 'argv': [12.3, 45.6, 78.9], 'defult': [2.3, 4.5], 'desc': the score of usr}
-{'name': lans, 'prop': optional, 'argv': [cpp, java, python, html], 'defult': [cpp, python], 'desc': the used langusges of usr}
-{'name': height, 'prop': required, 'argv': 98.800000, 'defult': 1.700000, 'desc': the height of usr}
-{'name': sex, 'prop': optional, 'argv': true, 'defult': true, 'desc': the sex of usr [male: true, female: false]}
-{'name': usr, 'prop': optional, 'argv': csl, 'defult': null, 'desc': the name of usr}
-{'name': id, 'prop': optional, 'argv': 12, 'defult': 0, 'desc': the id of current thread}
-the 'id' I get is: 12
-
-./flags --nema 12
-
-some error(s) happened in the command line:
-[ error from 'ArgParser::setup_parser' ] the option named '--nema' is invalid, use '--help' option for help
+OptionParser Info: {
+  {'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required};
+  {'opt': choice, 'type': BoolVecArg, 'desc': the choice of usr, 'prop': Optional};
+  {'opt': ids, 'type': IntVecArg, 'desc': the ids of threads, 'prop': Optional};
+  {'opt': scores, 'type': DoubleVecArg, 'desc': the score of usr, 'prop': Optional};
+  {'opt': lans, 'type': StringVecArg, 'desc': the used langusges of usr, 'prop': Optional};
+  {'opt': height, 'type': DoubleArg, 'desc': the height of usr, 'prop': Required};
+  {'opt': sex, 'type': BoolArg, 'desc': the sex of usr [male: true, female: false], 'prop': Optional};
+  {'opt': usr, 'type': StringArg, 'desc': the name of usr, 'prop': Optional};
+  {'opt': version, 'type': StringArg, 'desc': display the version of this program, 'prop': Optional};
+  {'opt': id, 'type': IntArg, 'desc': the id of current thread, 'prop': Optional};
+  {'opt': help, 'type': StringArg, 'desc': display the help docs, 'prop': Optional};
+}
+{'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required, 'default': [], 'value': [hello, 34, 34]}
+the 'id' I get is: 123
