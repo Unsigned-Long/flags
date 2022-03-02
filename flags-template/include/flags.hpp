@@ -86,7 +86,11 @@ namespace ns_flags {
      * @return MetaArg&
      */
     MetaArg &setArgv(const std::vector<std::string> &strVec) {
-      this->_argv = fromStringVec(strVec);
+      try {
+        this->_argv = fromStringVec(strVec);
+      } catch (...) {
+        THROW_EXCEPTION(setupParser, "the argv(s) you passed for some option(s) is(are) invalid");
+      }
       return *this;
     }
 
@@ -480,6 +484,7 @@ namespace ns_flags {
             throw std::runtime_error(argv[0] + std::string(" version: ") +
                                      this->getOptionArgv<StringArg>(this->VERSION_OPTION_NAME));
           }
+          
           optionInfo.push_back({optionName, i});
           optionsPassed.insert(optionName);
         }
@@ -505,6 +510,7 @@ namespace ns_flags {
       if (optionInfo.empty()) {
         return *this;
       }
+      
       std::vector<std::string> strVec;
       for (int i = 1; i != optionInfo.front().second; ++i) {
         strVec.push_back(argv[i]);
@@ -522,6 +528,7 @@ namespace ns_flags {
         }
         this->_options.at(curOption.first)._arg->setArgv(strVec);
       }
+      
       strVec.clear();
       for (int j = optionInfo.back().second + 1; j < argc; ++j) {
         strVec.push_back(argv[j]);
