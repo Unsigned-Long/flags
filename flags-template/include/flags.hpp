@@ -57,7 +57,7 @@ namespace ns_flags {
      * @return ArgType::value_type
      */
     template <typename ArgType>
-    typename ArgType::value_type getDefaultArgv() {
+    typename ArgType::value_type getDefaultArgv() const {
       return std::any_cast<typename ArgType::value_type>(this->_dargv);
     }
 
@@ -68,7 +68,7 @@ namespace ns_flags {
      * @return ArgType::value_type
      */
     template <typename ArgType>
-    typename ArgType::value_type getArgv() {
+    typename ArgType::value_type getArgv() const {
       return std::any_cast<typename ArgType::value_type>(this->_argv);
     }
 
@@ -77,7 +77,7 @@ namespace ns_flags {
      *
      * @return std::string
      */
-    virtual std::string type() = 0;
+    virtual std::string type() const = 0;
 
     /**
      * @brief set the arguement's value from a std::vector<std::string>
@@ -101,7 +101,7 @@ namespace ns_flags {
      * @param strVec the string vector
      * @return std::any
      */
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) = 0;
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const = 0;
 
     MetaArg() = default;
     ~MetaArg() = default;
@@ -119,11 +119,11 @@ namespace ns_flags {
     using value_type = int;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       return std::stoi(strVec.front());
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "IntArg";
     }
   };
@@ -134,11 +134,11 @@ namespace ns_flags {
     using value_type = double;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       return std::stod(strVec.front());
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "DoubleArg";
     }
   };
@@ -149,7 +149,7 @@ namespace ns_flags {
     using value_type = bool;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       if (strVec.empty()) {
         return true;
       }
@@ -163,7 +163,7 @@ namespace ns_flags {
         return false;
       }
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "BoolArg";
     }
   };
@@ -174,11 +174,11 @@ namespace ns_flags {
     using value_type = std::string;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       return strVec.front();
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "StringArg";
     }
   };
@@ -189,7 +189,7 @@ namespace ns_flags {
     using value_type = std::vector<int>;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       std::vector<int> iv;
       for (const auto &elem : strVec) {
@@ -197,7 +197,7 @@ namespace ns_flags {
       }
       return iv;
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "IntVecArg";
     }
   };
@@ -208,7 +208,7 @@ namespace ns_flags {
     using value_type = std::vector<double>;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       std::vector<int> dv;
       for (const auto &elem : strVec) {
@@ -216,7 +216,7 @@ namespace ns_flags {
       }
       return dv;
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "DoubleVecArg";
     }
   };
@@ -227,7 +227,7 @@ namespace ns_flags {
     using value_type = std::vector<bool>;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       std::vector<bool> bv;
       for (const auto &elem : strVec) {
@@ -243,7 +243,7 @@ namespace ns_flags {
       }
       return bv;
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "BoolVecArg";
     }
   };
@@ -254,11 +254,11 @@ namespace ns_flags {
     using value_type = std::vector<std::string>;
 
   protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
       EMPTY_STRVEC_HANDLER(strVec);
       return strVec;
     }
-    virtual std::string type() override {
+    virtual std::string type() const override {
       return "StringVecArg";
     }
   };
@@ -299,7 +299,7 @@ namespace ns_flags {
 
   public:
     template <typename ArgType>
-    std::string info() {
+    std::string info() const {
       std::stringstream stream;
       stream << "{'opt': " << this->_opt << ", 'type': " << this->_arg->type()
              << ", 'desc': " << this->_desc << ", 'prop': " << this->_prop
@@ -417,7 +417,7 @@ namespace ns_flags {
      * @return ArgType::value_type
      */
     template <typename ArgType>
-    typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) {
+    typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
         THROW_EXCEPTION(getOptionDefaultArgv, "there isn't option named '" + optionName + "'");
       } else {
@@ -433,7 +433,7 @@ namespace ns_flags {
      * @return ArgType::value_type
      */
     template <typename ArgType>
-    typename ArgType::value_type getOptionArgv(const std::string &optionName) {
+    typename ArgType::value_type getOptionArgv(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
         THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'");
       } else {
@@ -449,7 +449,7 @@ namespace ns_flags {
      * @return ArgType::value_type
      */
     template <typename ArgType>
-    typename ArgType::value_type getDefaultOptionArgv() {
+    typename ArgType::value_type getDefaultOptionArgv() const {
       if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
         THROW_EXCEPTION(getDefaultOptionArgv, "you haven't set the 'default-option'");
       } else {
@@ -572,7 +572,7 @@ namespace ns_flags {
      * @return std::string
      */
     template <typename ArgType>
-    std::string getOptionInfo(const std::string &optionName) {
+    std::string getOptionInfo(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
         THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'");
       } else {
@@ -587,7 +587,7 @@ namespace ns_flags {
      * @return std::string
      */
     template <typename ArgType>
-    std::string getDefaultOptionInfo() {
+    std::string getDefaultOptionInfo() const {
       if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
         THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + this->DEFAULT_OPTION_NAME + "'");
       } else {
@@ -604,7 +604,7 @@ namespace ns_flags {
      * @return false is an argv
      * @throw std::runtime_error invalid option
      */
-    bool optionOrArgv(const std::string &str) {
+    bool optionOrArgv(const std::string &str) const {
       if (str.size() < 3) {
         return false;
       } else {
