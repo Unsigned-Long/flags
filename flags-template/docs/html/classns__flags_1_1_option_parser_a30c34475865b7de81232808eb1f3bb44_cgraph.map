@@ -1,6 +1,0 @@
-<map id="ns_flags::OptionParser::setupParser" name="ns_flags::OptionParser::setupParser">
-<area shape="rect" id="node1" title="set up the parser" alt="" coords="5,104,173,145"/>
-<area shape="rect" id="node2" href="$classns__flags_1_1_option_parser.html#a76381e03556ce981430adb357388987f" title="automatically generate the help document of the program according to the set options" alt="" coords="221,5,389,47"/>
-<area shape="rect" id="node3" href="$classns__flags_1_1_option_parser.html#a9873c71f29f1d94f1f87e748ae0014d5" title="automatically generate the version of the program according to the set options" alt="" coords="221,71,389,112"/>
-<area shape="rect" id="node4" href="$classns__flags_1_1_option_parser.html#a6c5e9267365f58f3a6706004d7225098" title="handle the param" alt="" coords="221,136,389,177"/>
-</map>
