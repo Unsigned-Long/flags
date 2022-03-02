@@ -14,7 +14,7 @@ int main(int argc, char const *argv[]) {
      * [int, std::string, bool, double]
      * std::vector<[int, std::string, bool, double]>
      */
-    parser.addOption<IntArg>("id", 0, "the id of current thread");
+    parser.addOption<IntArg>("id", 10, "the id of current thread");
     parser.addOption<StringArg>("usr", "null", "the name of usr");
     parser.addOption<BoolArg>("sex", true,
                               "the sex of usr [male: true, female: false]");

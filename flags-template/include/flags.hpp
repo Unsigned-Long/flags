@@ -25,7 +25,7 @@ namespace ns_flags {
  */
 #define EMPTY_STRVEC_HANDLER(strVec) \
   if (strVec.empty()) {              \
-    return value_type();             \
+    return this->_dargv;             \
   }
 
   template <typename ElemType>
@@ -190,6 +190,7 @@ namespace ns_flags {
 
   protected:
     virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+      EMPTY_STRVEC_HANDLER(strVec);
       std::vector<int> iv;
       for (const auto &elem : strVec) {
         iv.push_back(std::stoi(elem));
@@ -208,6 +209,7 @@ namespace ns_flags {
 
   protected:
     virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+      EMPTY_STRVEC_HANDLER(strVec);
       std::vector<int> dv;
       for (const auto &elem : strVec) {
         dv.push_back(std::stod(elem));
@@ -226,6 +228,7 @@ namespace ns_flags {
 
   protected:
     virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+      EMPTY_STRVEC_HANDLER(strVec);
       std::vector<bool> bv;
       for (const auto &elem : strVec) {
         std::string lower = elem;
@@ -252,6 +255,7 @@ namespace ns_flags {
 
   protected:
     virtual std::any fromStringVec(const std::vector<std::string> &strVec) override {
+      EMPTY_STRVEC_HANDLER(strVec);
       return strVec;
     }
     virtual std::string type() override {
@@ -484,7 +488,7 @@ namespace ns_flags {
             throw std::runtime_error(argv[0] + std::string(" version: ") +
                                      this->getOptionArgv<StringArg>(this->VERSION_OPTION_NAME));
           }
-          
+
           optionInfo.push_back({optionName, i});
           optionsPassed.insert(optionName);
         }
@@ -510,7 +514,7 @@ namespace ns_flags {
       if (optionInfo.empty()) {
         return *this;
       }
-      
+
       std::vector<std::string> strVec;
       for (int i = 1; i != optionInfo.front().second; ++i) {
         strVec.push_back(argv[i]);
@@ -528,7 +532,7 @@ namespace ns_flags {
         }
         this->_options.at(curOption.first)._arg->setArgv(strVec);
       }
-      
+
       strVec.clear();
       for (int j = optionInfo.back().second + 1; j < argc; ++j) {
         strVec.push_back(argv[j]);
