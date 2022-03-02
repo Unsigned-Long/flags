@@ -1,0 +1,478 @@
+\hypertarget{classns__flags_1_1_option_parser}{}\doxysection{ns\+\_\+flags\+::Option\+Parser Class Reference}
+\label{classns__flags_1_1_option_parser}\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+
+
+the main class  
+
+
+
+
+{\ttfamily \#include $<$flags.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser_ae1426442c13d8adfbdcd76d45303f914}{Option\+Parser}} ()
+\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_ad21ede83d49dca52d377ea5c56fa0705}{add\+Option}} (const std\+::string \&opt\+Name, const typename Arg\+Type\+::value\+\_\+type \&default\+Argv, const std\+::string \&desc, \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}} prop=\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}})
+\begin{DoxyCompactList}\small\item\em add an option to the option parser \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a0812aaaa81452d5b1f0305fa58ecc86c}{set\+Default\+Option}} (const typename Arg\+Type\+::value\+\_\+type \&default\+Argv, const std\+::string \&desc=\char`\"{}the default option\char`\"{}, Option\+Prop prop=\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}})
+\begin{DoxyCompactList}\small\item\em add an option to the option parser \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\Arg\+Type\+::value\+\_\+type \mbox{\hyperlink{classns__flags_1_1_option_parser_a1262b6579fc3697e56d89cb3af491d87}{get\+Option\+Default\+Argv}} (const std\+::string \&option\+Name) const
+\begin{DoxyCompactList}\small\item\em get the default arguement value of the option \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\Arg\+Type\+::value\+\_\+type \mbox{\hyperlink{classns__flags_1_1_option_parser_a7977d9fb6fea95c0584d53b819dc67ae}{get\+Option\+Argv}} (const std\+::string \&option\+Name) const
+\begin{DoxyCompactList}\small\item\em get the default arguement value of the option \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\Arg\+Type\+::value\+\_\+type \mbox{\hyperlink{classns__flags_1_1_option_parser_a96697be86fa3c332b134e04996e9b4a5}{get\+Default\+Option\+Argv}} () const
+\begin{DoxyCompactList}\small\item\em get the default arguement value of the option \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a30c34475865b7de81232808eb1f3bb44}{setup\+Parser}} (int argc, char const $\ast$argv\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em set up the parser \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a5b3ccd2b2103bbd95f5ce519d70e9cc6}{set\+Version}} (const std\+::string \&version)
+\begin{DoxyCompactList}\small\item\em set the version string \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a2535dd840a6493f026d909918d27c31a}{set\+Help}} (const std\+::string \&help)
+\begin{DoxyCompactList}\small\item\em set the help string \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\std\+::string \mbox{\hyperlink{classns__flags_1_1_option_parser_a1eca7601b2eb69283ebae8a56970adb2}{get\+Option\+Info}} (const std\+::string \&option\+Name) const
+\begin{DoxyCompactList}\small\item\em get the option\textquotesingle{}s info \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\std\+::string \mbox{\hyperlink{classns__flags_1_1_option_parser_a8a27173cb1a05cb707e2ba7810e970af}{get\+Default\+Option\+Info}} () const
+\begin{DoxyCompactList}\small\item\em get the default option\textquotesingle{}s Info \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classns__flags_1_1_option_parser_a6c5e9267365f58f3a6706004d7225098}{option\+Or\+Argv}} (const std\+::string \&str) const
+\begin{DoxyCompactList}\small\item\em handle the param \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a76381e03556ce981430adb357388987f}{auto\+Generate\+Help}} (const std\+::string \&program\+Name)
+\begin{DoxyCompactList}\small\item\em automatically generate the help document of the program according to the set options \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a9873c71f29f1d94f1f87e748ae0014d5}{auto\+Generate\+Version}} ()
+\begin{DoxyCompactList}\small\item\em automatically generate the version of the program according to the set options \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unordered\+\_\+map$<$ std\+::string, \mbox{\hyperlink{classns__flags_1_1_option}{Option}} $>$ \mbox{\hyperlink{classns__flags_1_1_option_parser_aff128c13c196fd19caf686aa34342736}{\+\_\+options}}
+\item 
+const std\+::string \mbox{\hyperlink{classns__flags_1_1_option_parser_a300a57ca49897d8f16a7f010553dee54}{H\+E\+L\+P\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME}} = \char`\"{}help\char`\"{}
+\item 
+const std\+::string \mbox{\hyperlink{classns__flags_1_1_option_parser_ae58da17388f6f302024a3f3f310c231a}{V\+E\+R\+S\+I\+O\+N\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME}} = \char`\"{}version\char`\"{}
+\item 
+const std\+::string \mbox{\hyperlink{classns__flags_1_1_option_parser_acf3aaee562e0e6370294cc8b7543dd4b}{D\+E\+F\+A\+U\+L\+T\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME}} = \char`\"{}def-\/opt\char`\"{}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classns__flags_1_1_option_parser_a2885fbdcc52f1df73d15411723e5a789}{operator$<$$<$}} (std\+::ostream \&os, const \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \&parser)
+\begin{DoxyCompactList}\small\item\em overload the operator \textquotesingle{}$<$$<$\textquotesingle{} for \textquotesingle{}\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\textquotesingle{} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+the main class 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_ae1426442c13d8adfbdcd76d45303f914}\label{classns__flags_1_1_option_parser_ae1426442c13d8adfbdcd76d45303f914}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!OptionParser@{OptionParser}}
+\index{OptionParser@{OptionParser}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{OptionParser()}{OptionParser()}}
+{\footnotesize\ttfamily ns\+\_\+flags\+::\+Option\+Parser\+::\+Option\+Parser (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_ad21ede83d49dca52d377ea5c56fa0705}\label{classns__flags_1_1_option_parser_ad21ede83d49dca52d377ea5c56fa0705}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!addOption@{addOption}}
+\index{addOption@{addOption}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{addOption()}{addOption()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::add\+Option (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{opt\+Name,  }\item[{const typename Arg\+Type\+::value\+\_\+type \&}]{default\+Argv,  }\item[{const std\+::string \&}]{desc,  }\item[{\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}}}]{prop = {\ttfamily \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add an option to the option parser 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em opt\+Name} & the option\textquotesingle{}s name \\
+\hline
+{\em default\+Argv} & the default arguement value \\
+\hline
+{\em desc} & the describe of the arguement \\
+\hline
+{\em prop} & the prop of option \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a76381e03556ce981430adb357388987f}\label{classns__flags_1_1_option_parser_a76381e03556ce981430adb357388987f}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!autoGenerateHelp@{autoGenerateHelp}}
+\index{autoGenerateHelp@{autoGenerateHelp}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{autoGenerateHelp()}{autoGenerateHelp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::auto\+Generate\+Help (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{program\+Name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+automatically generate the help document of the program according to the set options 
+
+
+\begin{DoxyParams}{Parameters}
+{\em program\+Name} & the name of the program \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a76381e03556ce981430adb357388987f_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a9873c71f29f1d94f1f87e748ae0014d5}\label{classns__flags_1_1_option_parser_a9873c71f29f1d94f1f87e748ae0014d5}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!autoGenerateVersion@{autoGenerateVersion}}
+\index{autoGenerateVersion@{autoGenerateVersion}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{autoGenerateVersion()}{autoGenerateVersion()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::auto\+Generate\+Version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+automatically generate the version of the program according to the set options 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a9873c71f29f1d94f1f87e748ae0014d5_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a96697be86fa3c332b134e04996e9b4a5}\label{classns__flags_1_1_option_parser_a96697be86fa3c332b134e04996e9b4a5}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!getDefaultOptionArgv@{getDefaultOptionArgv}}
+\index{getDefaultOptionArgv@{getDefaultOptionArgv}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{getDefaultOptionArgv()}{getDefaultOptionArgv()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+Arg\+Type\+::value\+\_\+type ns\+\_\+flags\+::\+Option\+Parser\+::get\+Default\+Option\+Argv (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the default arguement value of the option 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em opt\+Name} & the option\textquotesingle{}s name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Arg\+Type\+::value\+\_\+type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a8a27173cb1a05cb707e2ba7810e970af}\label{classns__flags_1_1_option_parser_a8a27173cb1a05cb707e2ba7810e970af}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!getDefaultOptionInfo@{getDefaultOptionInfo}}
+\index{getDefaultOptionInfo@{getDefaultOptionInfo}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{getDefaultOptionInfo()}{getDefaultOptionInfo()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+std\+::string ns\+\_\+flags\+::\+Option\+Parser\+::get\+Default\+Option\+Info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the default option\textquotesingle{}s Info 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the type of arguement \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a8a27173cb1a05cb707e2ba7810e970af_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a7977d9fb6fea95c0584d53b819dc67ae}\label{classns__flags_1_1_option_parser_a7977d9fb6fea95c0584d53b819dc67ae}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!getOptionArgv@{getOptionArgv}}
+\index{getOptionArgv@{getOptionArgv}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{getOptionArgv()}{getOptionArgv()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+Arg\+Type\+::value\+\_\+type ns\+\_\+flags\+::\+Option\+Parser\+::get\+Option\+Argv (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{option\+Name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the default arguement value of the option 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em opt\+Name} & the option\textquotesingle{}s name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Arg\+Type\+::value\+\_\+type 
+\end{DoxyReturn}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a7977d9fb6fea95c0584d53b819dc67ae_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a1262b6579fc3697e56d89cb3af491d87}\label{classns__flags_1_1_option_parser_a1262b6579fc3697e56d89cb3af491d87}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!getOptionDefaultArgv@{getOptionDefaultArgv}}
+\index{getOptionDefaultArgv@{getOptionDefaultArgv}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{getOptionDefaultArgv()}{getOptionDefaultArgv()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+Arg\+Type\+::value\+\_\+type ns\+\_\+flags\+::\+Option\+Parser\+::get\+Option\+Default\+Argv (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{option\+Name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the default arguement value of the option 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em opt\+Name} & the option\textquotesingle{}s name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Arg\+Type\+::value\+\_\+type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a1eca7601b2eb69283ebae8a56970adb2}\label{classns__flags_1_1_option_parser_a1eca7601b2eb69283ebae8a56970adb2}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!getOptionInfo@{getOptionInfo}}
+\index{getOptionInfo@{getOptionInfo}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{getOptionInfo()}{getOptionInfo()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+std\+::string ns\+\_\+flags\+::\+Option\+Parser\+::get\+Option\+Info (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{option\+Name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the option\textquotesingle{}s info 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the type of arguement \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em option\+Name} & the name of option \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a1eca7601b2eb69283ebae8a56970adb2_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a6c5e9267365f58f3a6706004d7225098}\label{classns__flags_1_1_option_parser_a6c5e9267365f58f3a6706004d7225098}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!optionOrArgv@{optionOrArgv}}
+\index{optionOrArgv@{optionOrArgv}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{optionOrArgv()}{optionOrArgv()}}
+{\footnotesize\ttfamily bool ns\+\_\+flags\+::\+Option\+Parser\+::option\+Or\+Argv (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{str }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+handle the param 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str} & the param \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true is an option 
+
+false is an argv 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std\+::runtime\+\_\+error} & invalid option \\
+\hline
+\end{DoxyExceptions}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a6c5e9267365f58f3a6706004d7225098_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a6c5e9267365f58f3a6706004d7225098_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a0812aaaa81452d5b1f0305fa58ecc86c}\label{classns__flags_1_1_option_parser_a0812aaaa81452d5b1f0305fa58ecc86c}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!setDefaultOption@{setDefaultOption}}
+\index{setDefaultOption@{setDefaultOption}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{setDefaultOption()}{setDefaultOption()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::set\+Default\+Option (\begin{DoxyParamCaption}\item[{const typename Arg\+Type\+::value\+\_\+type \&}]{default\+Argv,  }\item[{const std\+::string \&}]{desc = {\ttfamily \char`\"{}the~default~option\char`\"{}},  }\item[{\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}}}]{prop = {\ttfamily \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+add an option to the option parser 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em default\+Argv} & the default arguement value \\
+\hline
+{\em desc} & the describe of the arguement \\
+\hline
+{\em prop} & the prop of option \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a2535dd840a6493f026d909918d27c31a}\label{classns__flags_1_1_option_parser_a2535dd840a6493f026d909918d27c31a}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!setHelp@{setHelp}}
+\index{setHelp@{setHelp}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{setHelp()}{setHelp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::set\+Help (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{help }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set the help string 
+
+
+\begin{DoxyParams}{Parameters}
+{\em help} & the string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a30c34475865b7de81232808eb1f3bb44}\label{classns__flags_1_1_option_parser_a30c34475865b7de81232808eb1f3bb44}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!setupParser@{setupParser}}
+\index{setupParser@{setupParser}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{setupParser()}{setupParser()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::setup\+Parser (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char const $\ast$}]{argv\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set up the parser 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & the count of the arguement \\
+\hline
+{\em argv} & the value of the arguement \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a30c34475865b7de81232808eb1f3bb44_cgraph}
+\end{center}
+\end{figure}
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_parser_a30c34475865b7de81232808eb1f3bb44_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a5b3ccd2b2103bbd95f5ce519d70e9cc6}\label{classns__flags_1_1_option_parser_a5b3ccd2b2103bbd95f5ce519d70e9cc6}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!setVersion@{setVersion}}
+\index{setVersion@{setVersion}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{setVersion()}{setVersion()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& ns\+\_\+flags\+::\+Option\+Parser\+::set\+Version (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{version }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set the version string 
+
+
+\begin{DoxyParams}{Parameters}
+{\em version} & the string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\& 
+\end{DoxyReturn}
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a2885fbdcc52f1df73d15411723e5a789}\label{classns__flags_1_1_option_parser_a2885fbdcc52f1df73d15411723e5a789}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}} \&}]{parser }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+overload the operator \textquotesingle{}$<$$<$\textquotesingle{} for \textquotesingle{}\mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\textquotesingle{} 
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_aff128c13c196fd19caf686aa34342736}\label{classns__flags_1_1_option_parser_aff128c13c196fd19caf686aa34342736}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!\_options@{\_options}}
+\index{\_options@{\_options}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{\_options}{\_options}}
+{\footnotesize\ttfamily std\+::unordered\+\_\+map$<$std\+::string, \mbox{\hyperlink{classns__flags_1_1_option}{Option}}$>$ ns\+\_\+flags\+::\+Option\+Parser\+::\+\_\+options\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_acf3aaee562e0e6370294cc8b7543dd4b}\label{classns__flags_1_1_option_parser_acf3aaee562e0e6370294cc8b7543dd4b}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!DEFAULT\_OPTION\_NAME@{DEFAULT\_OPTION\_NAME}}
+\index{DEFAULT\_OPTION\_NAME@{DEFAULT\_OPTION\_NAME}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{DEFAULT\_OPTION\_NAME}{DEFAULT\_OPTION\_NAME}}
+{\footnotesize\ttfamily const std\+::string ns\+\_\+flags\+::\+Option\+Parser\+::\+D\+E\+F\+A\+U\+L\+T\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME = \char`\"{}def-\/opt\char`\"{}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_a300a57ca49897d8f16a7f010553dee54}\label{classns__flags_1_1_option_parser_a300a57ca49897d8f16a7f010553dee54}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!HELP\_OPTION\_NAME@{HELP\_OPTION\_NAME}}
+\index{HELP\_OPTION\_NAME@{HELP\_OPTION\_NAME}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{HELP\_OPTION\_NAME}{HELP\_OPTION\_NAME}}
+{\footnotesize\ttfamily const std\+::string ns\+\_\+flags\+::\+Option\+Parser\+::\+H\+E\+L\+P\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME = \char`\"{}help\char`\"{}\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_parser_ae58da17388f6f302024a3f3f310c231a}\label{classns__flags_1_1_option_parser_ae58da17388f6f302024a3f3f310c231a}} 
+\index{ns\_flags::OptionParser@{ns\_flags::OptionParser}!VERSION\_OPTION\_NAME@{VERSION\_OPTION\_NAME}}
+\index{VERSION\_OPTION\_NAME@{VERSION\_OPTION\_NAME}!ns\_flags::OptionParser@{ns\_flags::OptionParser}}
+\doxysubsubsection{\texorpdfstring{VERSION\_OPTION\_NAME}{VERSION\_OPTION\_NAME}}
+{\footnotesize\ttfamily const std\+::string ns\+\_\+flags\+::\+Option\+Parser\+::\+V\+E\+R\+S\+I\+O\+N\+\_\+\+O\+P\+T\+I\+O\+N\+\_\+\+N\+A\+ME = \char`\"{}version\char`\"{}\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/flags/flags-\/template/include/\mbox{\hyperlink{flags_8hpp}{flags.\+hpp}}\end{DoxyCompactItemize}

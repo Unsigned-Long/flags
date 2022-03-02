@@ -1,0 +1,205 @@
+\hypertarget{classns__flags_1_1_meta_arg}{}\doxysection{ns\+\_\+flags\+::Meta\+Arg Class Reference}
+\label{classns__flags_1_1_meta_arg}\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+
+
+{\ttfamily \#include $<$flags.\+hpp$>$}
+
+
+
+Inheritance diagram for ns\+\_\+flags\+::Meta\+Arg\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_meta_arg__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\Arg\+Type\+::value\+\_\+type \mbox{\hyperlink{classns__flags_1_1_meta_arg_a948888e4d558f3f87c78acbd50636009}{get\+Default\+Argv}} () const
+\begin{DoxyCompactList}\small\item\em get the default argument value \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\Arg\+Type\+::value\+\_\+type \mbox{\hyperlink{classns__flags_1_1_meta_arg_a6b38c7a00fff61049224a57a16a5fb5b}{get\+Argv}} () const
+\begin{DoxyCompactList}\small\item\em get the arguement value \end{DoxyCompactList}\item 
+virtual std\+::string \mbox{\hyperlink{classns__flags_1_1_meta_arg_a19602a2b8669da42a5cce5c6f538b4da}{type}} () const =0
+\begin{DoxyCompactList}\small\item\em the type of the \mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}} \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}} \& \mbox{\hyperlink{classns__flags_1_1_meta_arg_a3a4ef2428cf540bc9ee7c3394d137f27}{set\+Argv}} (const std\+::vector$<$ std\+::string $>$ \&str\+Vec)
+\begin{DoxyCompactList}\small\item\em set the arguement\textquotesingle{}s value from a std\+::vector$<$std\+::string$>$ \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::any \mbox{\hyperlink{classns__flags_1_1_meta_arg_afbfc3239c206ad881c6b19a07488e40a}{from\+String\+Vec}} (const std\+::vector$<$ std\+::string $>$ \&str\+Vec) const =0
+\begin{DoxyCompactList}\small\item\em cast a string vector to a std\+::any object \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classns__flags_1_1_meta_arg_ad0ef226f360e00e291fed93f7c305b49}{Meta\+Arg}} ()=default
+\item 
+\mbox{\hyperlink{classns__flags_1_1_meta_arg_a5f52378b92ceae177c4a276d4fc11acd}{$\sim$\+Meta\+Arg}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::any \mbox{\hyperlink{classns__flags_1_1_meta_arg_abdffe94535cd1178b6bdc8b2c4fd6ad9}{\+\_\+argv}}
+\item 
+std\+::any \mbox{\hyperlink{classns__flags_1_1_meta_arg_a4d71d26ce96fb8749071bfdc53fd6df4}{\+\_\+dargv}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classns__flags_1_1_meta_arg_abd6e6c0003d4ecf9ff0385ab131dcc0e}{Option}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_ad0ef226f360e00e291fed93f7c305b49}\label{classns__flags_1_1_meta_arg_ad0ef226f360e00e291fed93f7c305b49}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!MetaArg@{MetaArg}}
+\index{MetaArg@{MetaArg}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{MetaArg()}{MetaArg()}}
+{\footnotesize\ttfamily ns\+\_\+flags\+::\+Meta\+Arg\+::\+Meta\+Arg (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [default]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a5f52378b92ceae177c4a276d4fc11acd}\label{classns__flags_1_1_meta_arg_a5f52378b92ceae177c4a276d4fc11acd}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!````~MetaArg@{$\sim$MetaArg}}
+\index{````~MetaArg@{$\sim$MetaArg}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{$\sim$MetaArg()}{~MetaArg()}}
+{\footnotesize\ttfamily ns\+\_\+flags\+::\+Meta\+Arg\+::$\sim$\+Meta\+Arg (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_afbfc3239c206ad881c6b19a07488e40a}\label{classns__flags_1_1_meta_arg_afbfc3239c206ad881c6b19a07488e40a}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!fromStringVec@{fromStringVec}}
+\index{fromStringVec@{fromStringVec}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{fromStringVec()}{fromStringVec()}}
+{\footnotesize\ttfamily virtual std\+::any ns\+\_\+flags\+::\+Meta\+Arg\+::from\+String\+Vec (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{str\+Vec }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}
+
+
+
+cast a string vector to a std\+::any object 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str\+Vec} & the string vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::any 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classns__flags_1_1_string_vec_arg_aad394e9f7ddae972cc7c2f583694cf67}{ns\+\_\+flags\+::\+String\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_bool_vec_arg_a7e698317f38b770ae7c8dd2883cfccac}{ns\+\_\+flags\+::\+Bool\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_vec_arg_a29baa5642499f10add36a9bd388e4274}{ns\+\_\+flags\+::\+Double\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_int_vec_arg_a622d3e2f18efd0e329bab528f3445211}{ns\+\_\+flags\+::\+Int\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_string_arg_a184f9c8f2319e2c29e996a2efc6e4d9a}{ns\+\_\+flags\+::\+String\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_bool_arg_a39e8c29c3e91ea73b05f78b9e4d7387a}{ns\+\_\+flags\+::\+Bool\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg_a77e9948a04e74e8cbc600ad9e7afda2c}{ns\+\_\+flags\+::\+Double\+Arg}}, and \mbox{\hyperlink{classns__flags_1_1_int_arg_ab76d3f49b31eae7b49029615831df20c}{ns\+\_\+flags\+::\+Int\+Arg}}.
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{classns__flags_1_1_meta_arg_afbfc3239c206ad881c6b19a07488e40a_icgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a6b38c7a00fff61049224a57a16a5fb5b}\label{classns__flags_1_1_meta_arg_a6b38c7a00fff61049224a57a16a5fb5b}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!getArgv@{getArgv}}
+\index{getArgv@{getArgv}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{getArgv()}{getArgv()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+Arg\+Type\+::value\+\_\+type ns\+\_\+flags\+::\+Meta\+Arg\+::get\+Argv (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the arguement value 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+Arg\+Type\+::value\+\_\+type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a948888e4d558f3f87c78acbd50636009}\label{classns__flags_1_1_meta_arg_a948888e4d558f3f87c78acbd50636009}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!getDefaultArgv@{getDefaultArgv}}
+\index{getDefaultArgv@{getDefaultArgv}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{getDefaultArgv()}{getDefaultArgv()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+Arg\+Type\+::value\+\_\+type ns\+\_\+flags\+::\+Meta\+Arg\+::get\+Default\+Argv (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+get the default argument value 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+\begin{DoxyReturn}{Returns}
+Arg\+Type\+::value\+\_\+type 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a3a4ef2428cf540bc9ee7c3394d137f27}\label{classns__flags_1_1_meta_arg_a3a4ef2428cf540bc9ee7c3394d137f27}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!setArgv@{setArgv}}
+\index{setArgv@{setArgv}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{setArgv()}{setArgv()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}}\& ns\+\_\+flags\+::\+Meta\+Arg\+::set\+Argv (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ std\+::string $>$ \&}]{str\+Vec }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+set the arguement\textquotesingle{}s value from a std\+::vector$<$std\+::string$>$ 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str\+Vec} & the string vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}}\& 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=336pt]{classns__flags_1_1_meta_arg_a3a4ef2428cf540bc9ee7c3394d137f27_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a19602a2b8669da42a5cce5c6f538b4da}\label{classns__flags_1_1_meta_arg_a19602a2b8669da42a5cce5c6f538b4da}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!type@{type}}
+\index{type@{type}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{type()}{type()}}
+{\footnotesize\ttfamily virtual std\+::string ns\+\_\+flags\+::\+Meta\+Arg\+::type (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+the type of the \mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}} 
+
+\begin{DoxyReturn}{Returns}
+std\+::string 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{classns__flags_1_1_string_vec_arg_a40bb6b540c0960e3e4f8fed305b558c3}{ns\+\_\+flags\+::\+String\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_bool_vec_arg_a047a1c2d349ddc1796336e3208cbb640}{ns\+\_\+flags\+::\+Bool\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_vec_arg_a591e2f196eac611326c347ed00fb8003}{ns\+\_\+flags\+::\+Double\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_int_vec_arg_a99e2d5d8a6c52de26999548e383b05bb}{ns\+\_\+flags\+::\+Int\+Vec\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_string_arg_a5171b784e4b86a185f11160afa0c3a0c}{ns\+\_\+flags\+::\+String\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_bool_arg_af3a71e57df5d389e83f79690441b7681}{ns\+\_\+flags\+::\+Bool\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg_ab4b2e481da48772dbda16f1935c499e1}{ns\+\_\+flags\+::\+Double\+Arg}}, and \mbox{\hyperlink{classns__flags_1_1_int_arg_acb37c8aae68dd44e9811731e7d4c2cdb}{ns\+\_\+flags\+::\+Int\+Arg}}.
+
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_abd6e6c0003d4ecf9ff0385ab131dcc0e}\label{classns__flags_1_1_meta_arg_abd6e6c0003d4ecf9ff0385ab131dcc0e}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!Option@{Option}}
+\index{Option@{Option}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{Option}{Option}}
+{\footnotesize\ttfamily friend class \mbox{\hyperlink{classns__flags_1_1_option}{Option}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_abdffe94535cd1178b6bdc8b2c4fd6ad9}\label{classns__flags_1_1_meta_arg_abdffe94535cd1178b6bdc8b2c4fd6ad9}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!\_argv@{\_argv}}
+\index{\_argv@{\_argv}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{\_argv}{\_argv}}
+{\footnotesize\ttfamily std\+::any ns\+\_\+flags\+::\+Meta\+Arg\+::\+\_\+argv\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_meta_arg_a4d71d26ce96fb8749071bfdc53fd6df4}\label{classns__flags_1_1_meta_arg_a4d71d26ce96fb8749071bfdc53fd6df4}} 
+\index{ns\_flags::MetaArg@{ns\_flags::MetaArg}!\_dargv@{\_dargv}}
+\index{\_dargv@{\_dargv}!ns\_flags::MetaArg@{ns\_flags::MetaArg}}
+\doxysubsubsection{\texorpdfstring{\_dargv}{\_dargv}}
+{\footnotesize\ttfamily std\+::any ns\+\_\+flags\+::\+Meta\+Arg\+::\+\_\+dargv\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/flags/flags-\/template/include/\mbox{\hyperlink{flags_8hpp}{flags.\+hpp}}\end{DoxyCompactItemize}

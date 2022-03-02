@@ -1,0 +1,155 @@
+\hypertarget{classns__flags_1_1_option}{}\doxysection{ns\+\_\+flags\+::Option Class Reference}
+\label{classns__flags_1_1_option}\index{ns\_flags::Option@{ns\_flags::Option}}
+
+
+{\ttfamily \#include $<$flags.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\std\+::string \mbox{\hyperlink{classns__flags_1_1_option_a2fecfa8f24c132ccd62fcf34a80b9da2}{info}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classns__flags_1_1_option_a851334aafa2745765132d39abc7f7254}{Option}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename Arg\+Type $>$ }\\static \mbox{\hyperlink{classns__flags_1_1_option}{Option}} \mbox{\hyperlink{classns__flags_1_1_option_a76734bf66bc5c9b42df95233d1ad7aa1}{create}} (const std\+::string \&opt\+Name, const typename Arg\+Type\+::value\+\_\+type \&default\+Argv, const std\+::string \&desc, \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}} prop=\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}})
+\begin{DoxyCompactList}\small\item\em create an option \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\+::string \mbox{\hyperlink{classns__flags_1_1_option_a8d10b8de27c75a9b723927effa9c91ba}{\+\_\+opt}}
+\item 
+std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}} $>$ \mbox{\hyperlink{classns__flags_1_1_option_a90dfa82066c011ff8be6bb97e3c1149a}{\+\_\+arg}}
+\item 
+std\+::string \mbox{\hyperlink{classns__flags_1_1_option_afd64eb132f4af0b67ef0e328faf42ef9}{\+\_\+desc}}
+\item 
+\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}} \mbox{\hyperlink{classns__flags_1_1_option_a0c72267e870fca13e35ed4e62c80a664}{\+\_\+prop}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classns__flags_1_1_option_abfd5482e3827b031cfe42cb142f8fd84}{Option\+Parser}}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classns__flags_1_1_option_a8c64d6269f069ad288a86934dcfcb3f6}{operator$<$$<$}} (std\+::ostream \&os, const \mbox{\hyperlink{classns__flags_1_1_option}{Option}} \&op)
+\begin{DoxyCompactList}\small\item\em overload the operator \textquotesingle{}$<$$<$\textquotesingle{} for \textquotesingle{}\mbox{\hyperlink{classns__flags_1_1_option}{Option}}\textquotesingle{} \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_a851334aafa2745765132d39abc7f7254}\label{classns__flags_1_1_option_a851334aafa2745765132d39abc7f7254}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!Option@{Option}}
+\index{Option@{Option}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{Option()}{Option()}}
+{\footnotesize\ttfamily ns\+\_\+flags\+::\+Option\+::\+Option (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [default]}}
+
+Here is the caller graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_a851334aafa2745765132d39abc7f7254_icgraph}
+\end{center}
+\end{figure}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_a76734bf66bc5c9b42df95233d1ad7aa1}\label{classns__flags_1_1_option_a76734bf66bc5c9b42df95233d1ad7aa1}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!create@{create}}
+\index{create@{create}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+static \mbox{\hyperlink{classns__flags_1_1_option}{Option}} ns\+\_\+flags\+::\+Option\+::create (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{opt\+Name,  }\item[{const typename Arg\+Type\+::value\+\_\+type \&}]{default\+Argv,  }\item[{const std\+::string \&}]{desc,  }\item[{\mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}}}]{prop = {\ttfamily \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5a7951811e4b085cf68ed3dc3191f36405}{Option\+Prop\+::\+O\+P\+T\+I\+O\+N\+AL}}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+create an option 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em Arg\+Type} & the arguement class type. eg\+: \mbox{\hyperlink{classns__flags_1_1_int_arg}{Int\+Arg}}, \mbox{\hyperlink{classns__flags_1_1_double_arg}{Double\+Arg}} \\
+\hline
+\end{DoxyTemplParams}
+
+\begin{DoxyParams}{Parameters}
+{\em opt\+Name} & the option\textquotesingle{}s name \\
+\hline
+{\em default\+Argv} & the default arguement value \\
+\hline
+{\em desc} & the describe of the arguement \\
+\hline
+{\em prop} & the prop of option \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{classns__flags_1_1_option}{Option}} 
+\end{DoxyReturn}
+Here is the call graph for this function\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classns__flags_1_1_option_a76734bf66bc5c9b42df95233d1ad7aa1_cgraph}
+\end{center}
+\end{figure}
+\mbox{\Hypertarget{classns__flags_1_1_option_a2fecfa8f24c132ccd62fcf34a80b9da2}\label{classns__flags_1_1_option_a2fecfa8f24c132ccd62fcf34a80b9da2}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!info@{info}}
+\index{info@{info}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{info()}{info()}}
+{\footnotesize\ttfamily template$<$typename Arg\+Type $>$ \\
+std\+::string ns\+\_\+flags\+::\+Option\+::info (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_a8c64d6269f069ad288a86934dcfcb3f6}\label{classns__flags_1_1_option_a8c64d6269f069ad288a86934dcfcb3f6}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{const \mbox{\hyperlink{classns__flags_1_1_option}{Option}} \&}]{op }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+overload the operator \textquotesingle{}$<$$<$\textquotesingle{} for \textquotesingle{}\mbox{\hyperlink{classns__flags_1_1_option}{Option}}\textquotesingle{} 
+
+\mbox{\Hypertarget{classns__flags_1_1_option_abfd5482e3827b031cfe42cb142f8fd84}\label{classns__flags_1_1_option_abfd5482e3827b031cfe42cb142f8fd84}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!OptionParser@{OptionParser}}
+\index{OptionParser@{OptionParser}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{OptionParser}{OptionParser}}
+{\footnotesize\ttfamily friend class \mbox{\hyperlink{classns__flags_1_1_option_parser}{Option\+Parser}}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classns__flags_1_1_option_a90dfa82066c011ff8be6bb97e3c1149a}\label{classns__flags_1_1_option_a90dfa82066c011ff8be6bb97e3c1149a}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!\_arg@{\_arg}}
+\index{\_arg@{\_arg}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{\_arg}{\_arg}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$\mbox{\hyperlink{classns__flags_1_1_meta_arg}{Meta\+Arg}}$>$ ns\+\_\+flags\+::\+Option\+::\+\_\+arg\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_afd64eb132f4af0b67ef0e328faf42ef9}\label{classns__flags_1_1_option_afd64eb132f4af0b67ef0e328faf42ef9}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!\_desc@{\_desc}}
+\index{\_desc@{\_desc}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{\_desc}{\_desc}}
+{\footnotesize\ttfamily std\+::string ns\+\_\+flags\+::\+Option\+::\+\_\+desc\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_a8d10b8de27c75a9b723927effa9c91ba}\label{classns__flags_1_1_option_a8d10b8de27c75a9b723927effa9c91ba}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!\_opt@{\_opt}}
+\index{\_opt@{\_opt}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{\_opt}{\_opt}}
+{\footnotesize\ttfamily std\+::string ns\+\_\+flags\+::\+Option\+::\+\_\+opt\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classns__flags_1_1_option_a0c72267e870fca13e35ed4e62c80a664}\label{classns__flags_1_1_option_a0c72267e870fca13e35ed4e62c80a664}} 
+\index{ns\_flags::Option@{ns\_flags::Option}!\_prop@{\_prop}}
+\index{\_prop@{\_prop}!ns\_flags::Option@{ns\_flags::Option}}
+\doxysubsubsection{\texorpdfstring{\_prop}{\_prop}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacens__flags_acad2d5c30d94c42563fb2f1669b76ef5}{Option\+Prop}} ns\+\_\+flags\+::\+Option\+::\+\_\+prop\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/home/csl/\+Study\+C\+P\+P/artwork/flags/flags-\/template/include/\mbox{\hyperlink{flags_8hpp}{flags.\+hpp}}\end{DoxyCompactItemize}
