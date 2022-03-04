@@ -1,0 +1,15 @@
+OptionParser Info: {
+  {'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required};
+  {'opt': choice, 'type': BoolVecArg, 'desc': the choice of usr, 'prop': Optional};
+  {'opt': ids, 'type': IntVecArg, 'desc': the ids of threads, 'prop': Optional};
+  {'opt': scores, 'type': DoubleVecArg, 'desc': the score of usr, 'prop': Optional};
+  {'opt': lans, 'type': StringVecArg, 'desc': the used langusges of usr, 'prop': Optional};
+  {'opt': height, 'type': DoubleArg, 'desc': the height of usr, 'prop': Required};
+  {'opt': sex, 'type': BoolArg, 'desc': the sex of usr [male: true, female: false], 'prop': Optional};
+  {'opt': usr, 'type': StringArg, 'desc': the name of usr, 'prop': Optional};
+  {'opt': version, 'type': StringArg, 'desc': display the version of this program, 'prop': Optional};
+  {'opt': id, 'type': IntArg, 'desc': the id of current thread, 'prop': Optional};
+  {'opt': help, 'type': StringArg, 'desc': display the help docs, 'prop': Optional};
+}
+{'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required, 'default': [], 'value': [hello, 34, 34]}
+the 'id' I get is: 123

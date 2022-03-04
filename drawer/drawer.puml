@@ -1,0 +1,62 @@
+@startuml flags
+skinparam DefaultFontName "Ubuntu Mono"
+scale 20
+
+IntArg -up-|> MetaArg
+DoubleArg -right-|> MetaArg
+BoolArg --|> MetaArg
+StringArg --|> MetaArg
+IntVecArg --|> MetaArg
+DoubleVecArg --|> MetaArg
+BoolVecArg -up-|> MetaArg
+StringVecArg -up-|> MetaArg
+
+class MetaArg{
+    + getDefaultArgv()
+    + getArgv()
+    + type()
+    + setArgv()
+    # _argv
+    # _dargv
+    # fromStringVec()
+}
+
+enum OptionProp{
+    + OPTIONAL
+    + REQUIRED
+}
+
+Option -down-* OptionProp
+Option -left-* MetaArg
+
+class Option{
+    + info()
+    # create()
+    - _opt
+    - _arg
+    - _desc
+    - _prop
+}
+
+OptionParser -left-* Option
+
+class OptionParser{
+    + addOption()
+    + getOptionArgv()
+    + setDefaultOption()
+    + getOptionDefaultArgv()
+    + setupParser()
+    + setVersion()
+    + setHelp()
+    + getOptionInfo()
+    + getDefaultOptionInfo()
+    # optionOrArgv()
+    # autoGenerateHelp()
+    # autoGenerateVersion()
+    - _options
+    - HELP_OPTION_NAME
+    - VERSION_OPTION_NAME
+    - DEFAULT_OPTION_NAME
+}
+
+@enduml

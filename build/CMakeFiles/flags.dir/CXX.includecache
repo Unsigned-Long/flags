@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/flags.hpp
+algorithm
+-
+any
+-
+exception
+-
+iomanip
+-
+iostream
+-
+memory
+-
+sstream
+-
+unordered_map
+-
+unordered_set
+-
+vector
+-
+
+/home/csl/StudyCPP/artwork/flags/flags-template/main.cpp
+flags.hpp
+/home/csl/StudyCPP/artwork/flags/flags-template/flags.hpp
+
