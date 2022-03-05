@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/csl/StudyCPP/artwork/flags/flags-template/main.cpp" "/home/csl/StudyCPP/artwork/flags/flags-template/build/CMakeFiles/flags.dir/main.cpp.o"
+  "/home/csl/StudyCPP/artwork/flags/main.cpp" "/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/flags.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -6,5 +6,5 @@ CXX_FLAGS = -g   -std=gnu++17
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/csl/StudyCPP/artwork/flags/flags-template/include 
+CXX_INCLUDES = -I/home/csl/StudyCPP/artwork/flags/include 
 

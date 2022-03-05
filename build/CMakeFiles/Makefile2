@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/csl/StudyCPP/artwork/flags/flags-template
+CMAKE_SOURCE_DIR = /home/csl/StudyCPP/artwork/flags
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/csl/StudyCPP/artwork/flags/flags-template/build
+CMAKE_BINARY_DIR = /home/csl/StudyCPP/artwork/flags/build
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ clean: CMakeFiles/flags.dir/clean
 CMakeFiles/flags.dir/all:
 	$(MAKE) -f CMakeFiles/flags.dir/build.make CMakeFiles/flags.dir/depend
 	$(MAKE) -f CMakeFiles/flags.dir/build.make CMakeFiles/flags.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/csl/StudyCPP/artwork/flags/flags-template/build/CMakeFiles --progress-num=1,2 "Built target flags"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/csl/StudyCPP/artwork/flags/build/CMakeFiles --progress-num=1,2 "Built target flags"
 .PHONY : CMakeFiles/flags.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/flags.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/csl/StudyCPP/artwork/flags/flags-template/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/csl/StudyCPP/artwork/flags/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/flags.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/csl/StudyCPP/artwork/flags/flags-template/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/csl/StudyCPP/artwork/flags/build/CMakeFiles 0
 .PHONY : CMakeFiles/flags.dir/rule
 
 # Convenience name for target.
