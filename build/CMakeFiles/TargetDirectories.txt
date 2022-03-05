@@ -1,7 +1,0 @@
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/install/strip.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/install/local.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/install.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/list_install_components.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/rebuild_cache.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/edit_cache.dir
-/home/csl/StudyCPP/artwork/flags/build/CMakeFiles/flags.dir
