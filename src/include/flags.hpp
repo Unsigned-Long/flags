@@ -706,6 +706,8 @@ namespace ns_flags {
     os << "}";
     return os;
   }
+#undef THROW_EXCEPTION
+#undef EMPTY_STRVEC_HANDLER
 
 #pragma endregion
 } // namespace ns_flags
