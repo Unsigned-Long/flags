@@ -358,7 +358,11 @@ namespace ns_flags_v2 {
             continue;
           }
           if (inputArgs.find(optName) == inputArgs.cend()) {
-            THROW_EXCEPTION(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
+            if (optName == "__NOPT__") {
+              THROW_EXCEPTION(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it");
+            } else {
+              THROW_EXCEPTION(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
+            }
           }
         }
 
