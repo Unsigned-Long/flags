@@ -11,6 +11,9 @@
 #include <vector>
 
 namespace ns_flags_v2 {
+  /**
+   * @brief throw exceptions for this lib
+   */
 #define THROW_EXCEPTION(where, msg) \
   throw std::runtime_error(std::string("[ error from 'libflags'-'") + #where + "' ] " + msg)
 
@@ -18,10 +21,9 @@ namespace ns_flags_v2 {
    * @brief Properties of options
    */
   enum class OptionProp {
-    /**
-     * @brief options
-     */
+    // the option is optional
     OPTIONAL,
+    // the option is required, and it's necessary
     REQUIRED
   };
 
@@ -41,6 +43,7 @@ namespace ns_flags_v2 {
   };
 
   namespace ns_priv {
+    // the type of arguement
     enum class ArgType {
       /**
        * @brief options
@@ -55,9 +58,11 @@ namespace ns_flags_v2 {
       FLOAT_VEC,
       BOOL_VEC,
       STRING_VEC,
+      // special types
       HELP,
       VERSION
     };
+
     /**
      * @brief override operator '<<' for type 'ArgType'
      */
@@ -129,6 +134,9 @@ namespace ns_flags_v2 {
             _desc(desc), _prop(prop), _argType(argType) {}
 
       ~Option() {
+        // delete the variable's default value pointer
+        // before that, cast the (void *) type to target type
+        // it's unnecessary for 'HELP' and 'VERSION' options
         switch (this->_argType) {
         case ArgType::INT:
           delete ((int *)(this->_varDefault));
@@ -268,18 +276,22 @@ namespace ns_flags_v2 {
       return os;
     };
 
+    // Inherited from std::unordered_map, it stores the option information set by the user in advance
     class OptionParser : public std::unordered_map<std::string, std::shared_ptr<ns_priv::Option>> {
     public:
       using parent_type = std::unordered_map<std::string, std::shared_ptr<ns_priv::Option>>;
       using parent_type::parent_type;
 
     private:
+      // Determine whether to automatically generate corresponding content
+      // If the user explicitly sets the corresponding content, we refuse to generate it automatically
       bool _autoGenHelpDocs;
       bool _autoGenVersion;
 
     public:
       OptionParser() : _autoGenHelpDocs(true), _autoGenVersion(true) {
         // add help and version options
+        // Note that the address corresponding to the variable is nullptr
         this->insert({"help", std::make_shared<Option>("help", "null", (void *)(new std::string("")), nullptr,
                                                        "display the help docs", OptionProp::OPTIONAL, ArgType::HELP)});
         this->insert({"version", std::make_shared<Option>("version", "null", (void *)(new std::string("")), nullptr,
@@ -339,6 +351,8 @@ namespace ns_flags_v2 {
           }
         }
 
+        // the 'no-option' option is not set in the current program but user pass the 'no-option' argv(s)
+        // so we need to remove it.
         if (this->find("__NOPT__") == this->cend()) {
           if (inputArgs.find("__NOPT__") != inputArgs.cend()) {
             inputArgs.erase("__NOPT__");
