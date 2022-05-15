@@ -595,7 +595,7 @@ namespace ns_flags_v2 {
 
 #define FLAGS_INSERT_OPTION(optName, varName, varDefault, var, desc, prop, argType) \
   ns_flags_v2::ns_priv::parser                                                      \
-      .insert({optName, std::make_shared<Option>(optName, #varName, varDefault, var, desc, prop, argType)});
+      .insert({optName, std::make_shared<ns_flags_v2::ns_priv::Option>(optName, #varName, varDefault, var, desc, prop, argType)});
 
 #define FLAGS_DEF(buildInType, argType, varName, optName, desc, prop, ...)                   \
   buildInType flags_##varName = buildInType{__VA_ARGS__};                                    \
