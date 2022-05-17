@@ -24,6 +24,8 @@ int main(int argc, char const *argv[]) {
 
     FLAGS_DEF_NO_OPTION(STRING, note, "a note", ns_flags_v2::OptionProp::OPTIONAL, "hello, world");
 
+    // std::cout << ns_flags_v2::ns_priv::parser << std::endl;
+
     ns_flags_v2::setupFlags(argc, argv);
 
     std::cout << ns_flags_v2::ns_priv::parser << std::endl;

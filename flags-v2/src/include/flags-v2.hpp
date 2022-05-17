@@ -1,3 +1,13 @@
+/**
+ * @file flags-v2.hpp
+ * @author shlchen (3079625093@qq.com)
+ * @brief the second version for lib-flags
+ * @version 0.1
+ * @date 2022-05-17
+ * 
+ * @copyright Copyright (c) 2022
+ */
+
 #ifndef FLAGS_V2_H
 #define FLAGS_V2_H
 
@@ -8,6 +18,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace ns_flags_v2 {
@@ -15,7 +26,7 @@ namespace ns_flags_v2 {
    * @brief throw exceptions for this lib
    */
 #define THROW_EXCEPTION(where, msg) \
-  throw std::runtime_error(std::string("[ error from 'libflags'-'") + #where + "' ] " + msg)
+  throw std::runtime_error(std::string("[ error from 'lib-flags'-'") + #where + "' ] " + msg)
 
   /**
    * @brief Properties of options
@@ -43,7 +54,7 @@ namespace ns_flags_v2 {
   };
 
   namespace ns_priv {
-    // the type of arguement
+    // the type of argument
     enum class ArgType {
       /**
        * @brief options
@@ -118,7 +129,7 @@ namespace ns_flags_v2 {
       void *_varDefault;
       // the variable
       void *_var;
-      // the describe for this option
+      // to describe this option
       const std::string _desc;
       // the properties of this option
       const OptionProp _prop;
@@ -128,10 +139,10 @@ namespace ns_flags_v2 {
       /**
        * @brief Construct a new Option object
        */
-      Option(const std::string &optName, const std::string &varName, void *varDefault, void *var,
-             const std::string &desc, const OptionProp &prop, const ArgType argType)
-          : _optName(optName), _varName(varName), _varDefault(varDefault), _var(var),
-            _desc(desc), _prop(prop), _argType(argType) {}
+      Option(std::string optName, std::string varName, void *varDefault, void *var,
+             std::string desc, const OptionProp &prop, const ArgType argType)
+          : _optName(std::move(optName)), _varName(std::move(varName)), _varDefault(varDefault), _var(var),
+            _desc(std::move(desc)), _prop(prop), _argType(argType) {}
 
       ~Option() {
         // delete the variable's default value pointer
@@ -317,8 +328,8 @@ namespace ns_flags_v2 {
       /**
        * @brief set up the option parser
        *
-       * @param argc the count of the arguement
-       * @param argv the value of the arguement
+       * @param argc the count of the argument
+       * @param argv the value of the argument
        */
       void setupFlags(int argc, char const *argv[]) {
         if (this->_autoGenVersion) {
@@ -335,7 +346,7 @@ namespace ns_flags_v2 {
 
         for (int i = 1; i != argc; ++i) {
           std::string str = argv[i];
-          if (this->isAnOption(str)) {
+          if (ns_flags_v2::ns_priv::OptionParser::isAnOption(str)) {
             curOption = str.substr(2);
             inputArgs[curOption] = std::vector<std::string>();
             optNames.push_back(curOption);
@@ -362,7 +373,7 @@ namespace ns_flags_v2 {
         // check invalid options
         for (const auto &optName : optNames) {
           if (!this->isAValidOption(optName)) {
-            THROW_EXCEPTION(setupFlags, "there isn't option named '--" + optName + "'");
+            THROW_EXCEPTION(setupFlags, "there isn't option named '--" + optName + "'.");
           }
         }
 
@@ -373,9 +384,9 @@ namespace ns_flags_v2 {
           }
           if (inputArgs.find(optName) == inputArgs.cend()) {
             if (optName == "__NOPT__") {
-              THROW_EXCEPTION(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it");
+              THROW_EXCEPTION(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it.");
             } else {
-              THROW_EXCEPTION(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
+              THROW_EXCEPTION(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it.");
             }
           }
         }
@@ -442,7 +453,7 @@ namespace ns_flags_v2 {
             if (inputOpt.empty()) {
               (*(bool *)(opt._var)) = true;
             } else {
-              (*(bool *)(opt._var)) = this->toBool(inputOpt.front());
+              (*(bool *)(opt._var)) = ns_flags_v2::ns_priv::OptionParser::toBool(inputOpt.front());
             }
             break;
           case ArgType::BOOL_VEC:
@@ -452,7 +463,7 @@ namespace ns_flags_v2 {
               auto &vec = (*(std::vector<bool> *)(opt._var));
               vec.clear();
               for (const auto &elem : inputOpt) {
-                vec.push_back(this->toBool(elem));
+                vec.push_back(ns_flags_v2::ns_priv::OptionParser::toBool(elem));
               }
             }
             break;
@@ -480,7 +491,6 @@ namespace ns_flags_v2 {
             break;
           }
         }
-        return;
       }
 
     protected:
@@ -531,13 +541,12 @@ namespace ns_flags_v2 {
                << std::setw(15) << std::left << version->_argType
                << version->_desc;
 
-        // subfix
+        // suffix
         stream << "\n\nhelp docs for program \"" + programName + "\"";
 
         // assign
         (*(std::string *)(this->at("help")->_varDefault)) = stream.str();
-        return;
-      }
+     }
 
       void autoGenVersion() {
         (*(std::string *)(this->at("version")->_varDefault)) = "1.0.0";
@@ -550,7 +559,7 @@ namespace ns_flags_v2 {
        * @return true
        * @return false
        */
-      bool isAnOption(const std::string &str) {
+      static bool isAnOption(const std::string &str) {
         return str.size() > 3 && str.substr(0, 2) == "--";
       }
 
@@ -571,12 +580,12 @@ namespace ns_flags_v2 {
        * @param str the string
        * @return std::string
        */
-      std::string tolower(const std::string &str) {
-        std::string lstr;
-        for (int i = 0; i != str.size(); ++i) {
-          lstr.push_back(std::tolower(str.at(i)));
+      static std::string tolower(const std::string &str) {
+        std::string lowerStr;
+        for (char i : str) {
+          lowerStr.push_back(std::tolower(i));
         }
-        return lstr;
+        return lowerStr;
       }
 
       /**
@@ -584,8 +593,8 @@ namespace ns_flags_v2 {
        *
        * @param str the string
        */
-      bool toBool(const std::string &str) {
-        std::string val = this->tolower(str);
+      static bool toBool(const std::string &str) {
+        std::string val = ns_flags_v2::ns_priv::OptionParser::tolower(str);
         bool b;
         if (val == "on" || val == "1" || val == "true") {
           b = true;
