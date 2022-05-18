@@ -4,13 +4,14 @@
  * @brief the second version for lib-flags
  * @version 0.1
  * @date 2022-05-17
- * 
+ *
  * @copyright Copyright (c) 2022
  */
 
 #ifndef FLAGS_V2_H
 #define FLAGS_V2_H
 
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -25,8 +26,13 @@ namespace ns_flags_v2 {
   /**
    * @brief throw exceptions for this lib
    */
-#define THROW_EXCEPTION(where, msg) \
-  throw std::runtime_error(std::string("[ error from 'lib-flags'-'") + #where + "' ] " + msg)
+#define _FLAG_THROW_EXCEPTION_(where, msg)                                               \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' ] " + \
+                           msg + ". (use option '--help' to get more info)")
+
+#define _FLAG_THROW_EXCEPTION_DEV_(where, msg)                                                        \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' to developer ] " + \
+                           msg + ".")
 
   /**
    * @brief Properties of options
@@ -135,6 +141,8 @@ namespace ns_flags_v2 {
       const OptionProp _prop;
       // the type of this variable
       const ArgType _argType;
+      // assert function
+      std::function<void(void *)> _assert;
 
       /**
        * @brief Construct a new Option object
@@ -188,6 +196,23 @@ namespace ns_flags_v2 {
         default:
           break;
         }
+      }
+
+      /**
+       * @brief assert for the variable's value
+       */
+      void assertVar() {
+        if (this->_assert != nullptr) {
+          this->_assert(this->_var);
+        }
+      }
+
+      /**
+       * @brief assign the variable using value
+       */
+      template <typename Type>
+      void assignVar(const Type &val) {
+        *((Type *)(this->_var)) = val;
       }
 
       /**
@@ -373,7 +398,7 @@ namespace ns_flags_v2 {
         // check invalid options
         for (const auto &optName : optNames) {
           if (!this->isAValidOption(optName)) {
-            THROW_EXCEPTION(setupFlags, "there isn't option named '--" + optName + "'.");
+            _FLAG_THROW_EXCEPTION_(setupFlags, "there isn't option named '--" + optName + "'");
           }
         }
 
@@ -384,112 +409,95 @@ namespace ns_flags_v2 {
           }
           if (inputArgs.find(optName) == inputArgs.cend()) {
             if (optName == "__NOPT__") {
-              THROW_EXCEPTION(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it.");
+              _FLAG_THROW_EXCEPTION_(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it");
             } else {
-              THROW_EXCEPTION(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it.");
+              _FLAG_THROW_EXCEPTION_(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
             }
           }
         }
 
-        // assign
+        // assert and assign
         for (const auto &[optName, inputOpt] : inputArgs) {
           auto &opt = *this->find(optName)->second;
+
           switch (opt._argType) {
           case ArgType::INT:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              (*(int *)(opt._var)) = std::stoi(inputOpt.front());
+            if (!inputOpt.empty()) {
+              opt.assignVar<int>(std::stoi(inputOpt.front()));
             }
             break;
           case ArgType::INT_VEC:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              auto &vec = (*(std::vector<int> *)(opt._var));
-              vec.clear();
+            if (!inputOpt.empty()) {
+              std::vector<int> vec;
               for (const auto &elem : inputOpt) {
                 vec.push_back(std::stoi(elem));
               }
+              opt.assignVar<std::vector<int>>(vec);
             }
             break;
           case ArgType::DOUBLE:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              (*(double *)(opt._var)) = std::stod(inputOpt.front());
+            if (!inputOpt.empty()) {
+              opt.assignVar<double>(std::stod(inputOpt.front()));
             }
             break;
           case ArgType::DOUBLE_VEC:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              auto &vec = (*(std::vector<double> *)(opt._var));
-              vec.clear();
+            if (!inputOpt.empty()) {
+              std::vector<double> vec;
               for (const auto &elem : inputOpt) {
                 vec.push_back(std::stod(elem));
               }
+              opt.assignVar<std::vector<double>>(vec);
             }
             break;
           case ArgType::FLOAT:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              (*(float *)(opt._var)) = std::stof(inputOpt.front());
+            if (!inputOpt.empty()) {
+              opt.assignVar<float>(std::stof(inputOpt.front()));
             }
             break;
           case ArgType::FLOAT_VEC:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              auto &vec = (*(std::vector<float> *)(opt._var));
-              vec.clear();
+            if (!inputOpt.empty()) {
+              std::vector<float> vec;
               for (const auto &elem : inputOpt) {
                 vec.push_back(std::stof(elem));
               }
+              opt.assignVar<std::vector<float>>(vec);
             }
             break;
           case ArgType::BOOL:
             if (inputOpt.empty()) {
-              (*(bool *)(opt._var)) = true;
+              opt.assignVar<bool>(true);
             } else {
-              (*(bool *)(opt._var)) = ns_flags_v2::ns_priv::OptionParser::toBool(inputOpt.front());
+              opt.assignVar<bool>(ns_flags_v2::ns_priv::OptionParser::toBool(inputOpt.front()));
             }
             break;
           case ArgType::BOOL_VEC:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              auto &vec = (*(std::vector<bool> *)(opt._var));
-              vec.clear();
+            if (!inputOpt.empty()) {
+              std::vector<bool> vec;
               for (const auto &elem : inputOpt) {
                 vec.push_back(ns_flags_v2::ns_priv::OptionParser::toBool(elem));
               }
+              opt.assignVar<std::vector<bool>>(vec);
             }
             break;
           case ArgType::STRING:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              (*(std::string *)(opt._var)) = inputOpt.front();
+            if (!inputOpt.empty()) {
+              opt.assignVar<std::string>(inputOpt.front());
             }
             break;
           case ArgType::STRING_VEC:
-            if (inputOpt.empty()) {
-              continue;
-            } else {
-              (*(std::vector<std::string> *)(opt._var)) = inputOpt;
+            if (!inputOpt.empty()) {
+              opt.assignVar<std::vector<std::string>>(inputOpt);
             }
             break;
           case ArgType::HELP:
-            continue;
             break;
           case ArgType::VERSION:
-            continue;
             break;
           default:
             break;
           }
+
+          opt.assertVar();
         }
       }
 
@@ -546,7 +554,7 @@ namespace ns_flags_v2 {
 
         // assign
         (*(std::string *)(this->at("help")->_varDefault)) = stream.str();
-     }
+      }
 
       void autoGenVersion() {
         (*(std::string *)(this->at("version")->_varDefault)) = "1.0.0";
@@ -624,9 +632,9 @@ namespace ns_flags_v2 {
   ns_flags_v2::ns_priv::parser                                                      \
       .insert({optName, std::make_shared<ns_flags_v2::ns_priv::Option>(optName, #varName, varDefault, var, desc, prop, argType)});
 
-#define FLAGS_DEF(buildInType, argType, varName, optName, desc, prop, ...)                   \
-  buildInType flags_##varName = buildInType{__VA_ARGS__};                                    \
-  FLAGS_INSERT_OPTION(#optName, flags_##varName, (void *)(new buildInType(flags_##varName)), \
+#define FLAGS_DEF(builtInType, argType, varName, optName, desc, prop, ...)                   \
+  builtInType flags_##varName = builtInType{__VA_ARGS__};                                    \
+  FLAGS_INSERT_OPTION(#optName, flags_##varName, (void *)(new builtInType(flags_##varName)), \
                       (void *)(&flags_##varName), desc, prop,                                \
                       argType);
 
@@ -646,6 +654,9 @@ namespace ns_flags_v2 {
     return ns_priv::parser.setupFlags(argc, argv);
   }
 
+/**
+ * Macros for adding options for different parameter types
+ */
 #define FLAGS_DEF_INT(varName, optName, desc, prop, ...) \
   FLAGS_DEF(int, ns_flags_v2::ns_priv::ArgType::INT, varName, optName, desc, prop, __VA_ARGS__)
 
@@ -675,11 +686,62 @@ namespace ns_flags_v2 {
 
 #define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...) \
   FLAGS_DEF(std::vector<std::string>, ns_flags_v2::ns_priv::ArgType::STRING_VEC, varName, optName, desc, prop, __VA_ARGS__)
-
+/**
+ * Define macros that do not require option parameters
+ */
 #define FLAGS_DEF_NO_OPTION(type, varName, desc, prop, ...) \
   FLAGS_DEF_##type(varName, __NOPT__, desc, prop, __VA_ARGS__)
 
-#undef THROW_EXCEPTION
+/**
+ * Developers can judge the input value by adding assertion function to the option to see whether it is valid
+ * If the option to add an assertion function is not set in advance, an exception will be thrown to the developer
+ */
+#define FLAGS_ASSERT(builtInType, optName, invaildMsg, fun)                                                                \
+  if (ns_flags_v2::ns_priv::parser.find(#optName) == ns_flags_v2::ns_priv::parser.cend()) {                                \
+    _FLAG_THROW_EXCEPTION_DEV_(FLAGS_SET_ASSERT,                                                                           \
+                               "you cannot add an assertion function for an undefined option named '--" + #optName + "'"); \
+  } else {                                                                                                                 \
+    ns_flags_v2::ns_priv::parser.find(#optName)->second->_assert = [](void *val) -> void {                                 \
+      if (!(fun(*(builtInType *)(val)))) {                                                                                 \
+        _FLAG_THROW_EXCEPTION_(FLAGS_SET_ASSERT,                                                                           \
+                               "the value for option '--" + #optName + "' is invalid: \"" + invaildMsg + "\"");            \
+      }                                                                                                                    \
+    };                                                                                                                     \
+  }
+
+/**
+ * Define assertion function macros for different type
+ */
+#define FLAGS_ASSERT_INT(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(int, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_INT_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<int>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_FLOAT(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(float, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_FLOAT_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<float>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_DOUBLE(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(double, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_DOUBLE_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<double>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_BOOL(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(bool, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_BOOL_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<bool>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_STRING(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::string, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<std::string>, optName, invaildMsg, fun)
+
 } // namespace ns_flags_v2
 
 #endif
