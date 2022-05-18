@@ -18,7 +18,7 @@ namespace ns_flags {
  * @brief throw 'std::runtime_error' exception from 'where', and message is 'msg'
  */
 #define THROW_EXCEPTION(where, msg) \
-  throw std::runtime_error(std::string("[ error from 'libflags'-'") + #where + "' ] " + msg)
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' ] " + msg)
 
 /**
  * @brief when pass a empty 'std::vector<std::string>' to the 'fromStringVec'
@@ -89,7 +89,7 @@ namespace ns_flags {
       try {
         this->_argv = fromStringVec(strVec);
       } catch (...) {
-        THROW_EXCEPTION(setupParser, "the argv(s) you passed for some option(s) is(are) invalid");
+        THROW_EXCEPTION(setupParser, "the argv(s) you passed for some option(s) is(are) invalid.");
       }
       return *this;
     }
@@ -385,7 +385,7 @@ namespace ns_flags {
                             const std::string &desc,
                             OptionProp prop = OptionProp::OPTIONAL) {
       if (this->_options.find(optName) != this->_options.end()) {
-        THROW_EXCEPTION(addOption, "the option named '" + optName + "'has been registered");
+        THROW_EXCEPTION(addOption, "the option named '" + optName + "'has been registered.");
       }
       this->_options.insert({optName, Option::create<ArgType>(optName, defaultArgv, desc, prop)});
       return *this;
@@ -419,7 +419,7 @@ namespace ns_flags {
     template <typename ArgType>
     typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionDefaultArgv, "there isn't option named '" + optionName + "'");
+        THROW_EXCEPTION(getOptionDefaultArgv, "there isn't option named '" + optionName + "'.");
       } else {
         return iter->second._arg->getDefaultArgv<ArgType>();
       }
@@ -435,7 +435,7 @@ namespace ns_flags {
     template <typename ArgType>
     typename ArgType::value_type getOptionArgv(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'");
+        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'.");
       } else {
         return iter->second._arg->getArgv<ArgType>();
       }
@@ -451,7 +451,7 @@ namespace ns_flags {
     template <typename ArgType>
     typename ArgType::value_type getDefaultOptionArgv() const {
       if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
-        THROW_EXCEPTION(getDefaultOptionArgv, "you haven't set the 'default-option'");
+        THROW_EXCEPTION(getDefaultOptionArgv, "you haven't set the 'default-option'.");
       } else {
         return iter->second._arg->getArgv<ArgType>();
       }
@@ -504,7 +504,7 @@ namespace ns_flags {
         if (option._prop == OptionProp::REQUIRED) {
           auto iter = optionsPassed.find(name);
           if (iter == optionsPassed.cend()) {
-            THROW_EXCEPTION(setupParser, "the option named '--" + name + "' is 'OptionProp::REQUIRED', but you didn't use it");
+            THROW_EXCEPTION(setupParser, "the option named '--" + name + "' is 'OptionProp::REQUIRED', but you didn't use it.");
           }
         }
       }
@@ -574,7 +574,7 @@ namespace ns_flags {
     template <typename ArgType>
     std::string getOptionInfo(const std::string &optionName) const {
       if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'");
+        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'.");
       } else {
         return iter->second.info<ArgType>();
       }
@@ -589,7 +589,7 @@ namespace ns_flags {
     template <typename ArgType>
     std::string getDefaultOptionInfo() const {
       if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + this->DEFAULT_OPTION_NAME + "'");
+        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + this->DEFAULT_OPTION_NAME + "'.");
       } else {
         return iter->second.info<ArgType>();
       }
@@ -612,7 +612,7 @@ namespace ns_flags {
           auto optionName = str.substr(2);
           // is not an valid option
           if (auto iter = this->_options.find(optionName) == this->_options.end()) {
-            THROW_EXCEPTION(setupParser, "the option named '--" + optionName + "' is invalid");
+            THROW_EXCEPTION(setupParser, "the option named '--" + optionName + "' is invalid.");
           } else {
             return true;
           }
