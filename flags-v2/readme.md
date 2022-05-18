@@ -1,13 +1,13 @@
 # Flags-[V2]
 
 >
->___name: csl___
+>___name: shlChen___
 
 >___E-Mail: 3079625093@qq.com___
 
 [TOC]
 
-## 1. OverView
+## 1. Overview
 
 this is a simple 'program-command-line-parameter-parsing' library with cpp-17.
 
@@ -16,35 +16,46 @@ this is a simple 'program-command-line-parameter-parsing' library with cpp-17.
 test code
 
 ```cpp
+#include "flags-v2.hpp"
+
 int main(int argc, char const *argv[]) {
   try {
-    FLAGS_DEF_INT(age, age, "the age of the student", OptionProp::OPTIONAL, 18);
+    FLAGS_DEF_INT(age, age, "the age of the student", ns_flags_v2::OptionProp::OPTIONAL, 18);
+    FLAGS_ASSERT_INT(age, "age must be greater than 0", [](int age) {
+      return age > 0;
+    });
 
-    FLAGS_DEF_INT_VEC(odds, odds, "the odd number(s)", OptionProp::OPTIONAL, 1, 3);
+    FLAGS_DEF_INT_VEC(odds, odds, "the odd number(s)", ns_flags_v2::OptionProp::OPTIONAL, 1, 3);
+    FLAGS_ASSERT_INT_VEC(odds, "not all numbers entered are odd", [](const std::vector<int> &vec) {
+      for (const auto &elem : vec) {
+        if (elem % 2 == 0) {
+          return false;
+        }
+      }
+      return true;
+    });
 
-    FLAGS_DEF_FLOAT(height, height, "the height", OptionProp::OPTIONAL, 174.5f);
+    FLAGS_DEF_FLOAT(height, height, "the height", ns_flags_v2::OptionProp::OPTIONAL, 174.5f);
+    FLAGS_ASSERT_FLOAT(height, "the value of height must be positive", [](float val) {
+      return val > 0.0f;
+    });
+      
+    // ...
 
-    FLAGS_DEF_FLOAT_VEC(floatVals, fvs, "the float-type parameter(s)", OptionProp::OPTIONAL, 3.14f, 2.71f, 1.414f);
+    FLAGS_DEF_STRING(name, name, "the name", ns_flags_v2::OptionProp::REQUIRED);
+    FLAGS_ASSERT_STRING(name, "the name string cannot be an empty string", [](const std::string &str) {
+      return !str.empty();
+    });
 
-    FLAGS_DEF_DOUBLE(weight, weight, "the weight", OptionProp::OPTIONAL, 60.0);
+    // ...
 
-    FLAGS_DEF_DOUBLE_VEC(doubleVals, dvs, "the double-type parameter(s)", OptionProp::OPTIONAL, 1.1, 2.2);
+    FLAGS_DEF_NO_OPTION(STRING, note, "a note", ns_flags_v2::OptionProp::OPTIONAL, "hello, world");
 
-    FLAGS_DEF_BOOL(sex, sex, "the sex(male[1], female[0])", OptionProp::REQUIRED, true);
-
-    FLAGS_DEF_BOOL_VEC(boolVals, bvs, "the bool-type parameter(s)", OptionProp::REQUIRED, true, false);
-
-    FLAGS_DEF_STRING(name, name, "the name", OptionProp::REQUIRED);
-
-    FLAGS_DEF_STRING_VEC(likes, likes, "the likes", OptionProp::OPTIONAL, "eat", "sleep");
-
-    FLAGS_DEF_NO_OPTION(STRING, note, "a note", OptionProp::OPTIONAL, "hello, world");
-
-    std::cout << parser << std::endl;
+    // std::cout << ns_flags_v2::ns_priv::parser << std::endl;
 
     ns_flags_v2::setupFlags(argc, argv);
 
-    std::cout << parser << std::endl;
+    // std::cout << ns_flags_v2::ns_priv::parser << std::endl;
 
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
@@ -103,7 +114,7 @@ help option:
 ```
 
 ```cpp
-Usage: ./flags-v2 [--optName argv(s)] ...
+Usage: ./flags-v2 [no-opt argv(s)] [--optName argv(s)] ...
 
     Options        Property       Type           Describes
 --------------------------------------------------------------
@@ -134,6 +145,18 @@ version option:
 ./flags-v2: ['version': '1.0.0']
 ```
 
+run the command:
+
+```sh
+./flags-v2 "That's all!" --likes running swimming --name shlChen --bvs 0 1 ON off OfF oN --sex 1 --weight 59.9 --fvs 1.0 2.0 3.0 --height 173.3 --odds 5 7 9 --dvs 2.12 2.13 --age 14
+```
+
+will output:
+
+```c++
+[ error from 'lib-flags':'FLAGS_SET_ASSERT' ] the value for option '--age' is invalid: "age must be greater than 0". (use option '--help' to get more info)
+```
+
 ## 3. Details
 
 ```cpp
@@ -147,6 +170,10 @@ static void setHelpDocs(const std::string &help);
 ```cpp
 static void setupFlags(int argc, char const *argv[]);
 ```
+
+
+
+**Macros for adding options for different parameter types:**
 
 ```cpp
 #define FLAGS_DEF_INT(varName, optName, desc, prop, ...)
@@ -188,7 +215,55 @@ static void setupFlags(int argc, char const *argv[]);
 #define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...)
 ```
 
+
+
+**Define macros that do not require option**:
+
 ```cpp
 #define FLAGS_DEF_NO_OPTION(type, varName, desc, prop, ...)
+```
+
+
+
+**Define assertion function macros for different type:**
+
+```cpp
+#define FLAGS_ASSERT_INT(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_INT_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_FLOAT(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_FLOAT_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_DOUBLE(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_DOUBLE_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_BOOL(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_BOOL_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_STRING(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun)
 ```
 
