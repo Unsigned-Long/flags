@@ -323,6 +323,7 @@ namespace ns_flags_v2 {
       // If the user explicitly sets the corresponding content, we refuse to generate it automatically
       bool _autoGenHelpDocs;
       bool _autoGenVersion;
+      const std::string __NOPT__ = "__NOPT__";
 
     public:
       OptionParser() : _autoGenHelpDocs(true), _autoGenVersion(true) {
@@ -367,7 +368,7 @@ namespace ns_flags_v2 {
 
         std::map<std::string, std::vector<std::string>> inputArgs;
         std::vector<std::string> optNames;
-        std::string curOption = "__NOPT__";
+        std::string curOption = __NOPT__;
 
         for (int i = 1; i != argc; ++i) {
           std::string str = argv[i];
@@ -389,9 +390,9 @@ namespace ns_flags_v2 {
 
         // the 'no-option' option is not set in the current program but user pass the 'no-option' argv(s)
         // so we need to remove it.
-        if (this->find("__NOPT__") == this->cend()) {
-          if (inputArgs.find("__NOPT__") != inputArgs.cend()) {
-            inputArgs.erase("__NOPT__");
+        if (this->find(__NOPT__) == this->cend()) {
+          if (inputArgs.find(__NOPT__) != inputArgs.cend()) {
+            inputArgs.erase(__NOPT__);
           }
         }
 
@@ -408,7 +409,7 @@ namespace ns_flags_v2 {
             continue;
           }
           if (inputArgs.find(optName) == inputArgs.cend()) {
-            if (optName == "__NOPT__") {
+            if (optName == __NOPT__) {
               _FLAG_THROW_EXCEPTION_(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it");
             } else {
               _FLAG_THROW_EXCEPTION_(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
@@ -507,7 +508,7 @@ namespace ns_flags_v2 {
 
         // the main usage of this program
         stream << "Usage: " << programName;
-        if (this->find("__NOPT__") != this->cend()) {
+        if (this->find(__NOPT__) != this->cend()) {
           stream << " [no-opt argv(s)]";
         }
         stream << " [--optName argv(s)] ...\n\n";
@@ -519,8 +520,8 @@ namespace ns_flags_v2 {
                << "Describes\n";
         stream << std::string(62, '-') << '\n';
 
-        if (this->find("__NOPT__") != this->cend()) {
-          auto &nopt = this->at("__NOPT__");
+        if (this->find(__NOPT__) != this->cend()) {
+          auto &nopt = this->at(__NOPT__);
           stream << "  --" << std::setw(15) << std::left << "no-opt"
                  << std::setw(15) << std::left << nopt->_prop
                  << std::setw(15) << std::left << nopt->_argType
@@ -528,7 +529,7 @@ namespace ns_flags_v2 {
         }
 
         for (const auto &elem : *this) {
-          if (elem.first == "help" || elem.first == "version" || elem.first == "__NOPT__") {
+          if (elem.first == "help" || elem.first == "version" || elem.first == __NOPT__) {
             continue;
           }
           stream << "  --" << std::setw(15) << std::left << elem.second->_optName
