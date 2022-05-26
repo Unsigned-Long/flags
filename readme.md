@@ -40,12 +40,6 @@ the main functions:
 
 
 
-the steps
-
-<img src="./drawer/parser.png">
-
-
-
 ## 3. Usage
 
 ### Example for Source Code
