@@ -1,377 +1,269 @@
-># Flags-Template
+# Flags-[V2]
+
 >
->___name: csl___
+>___name: shlChen___
 
 >___E-Mail: 3079625093@qq.com___
 
-```cpp
-    _|_|  _|                                    
-  _|      _|    _|_|_|    _|_|_|    _|_|_|      
-_|_|_|_|  _|  _|    _|  _|    _|  _|_|          
-  _|      _|  _|    _|  _|    _|      _|_|      
-  _|      _|    _|_|_|    _|_|_|  _|_|_|    _|  
-                              _|                
-                          _|_|                  
-                                                                      
-  _|                                          _|              _|      
-_|_|_|_|    _|_|    _|_|_|  _|_|    _|_|_|    _|    _|_|_|  _|_|_|_|    _|_|    
-  _|      _|_|_|_|  _|    _|    _|  _|    _|  _|  _|    _|    _|      _|_|_|_|  
-  _|      _|        _|    _|    _|  _|    _|  _|  _|    _|    _|      _|        
-    _|_|    _|_|_|  _|    _|    _|  _|_|_|    _|    _|_|_|      _|_|    _|_|_| 
-                                    _|                                
-                                    _|                                
-```
-
 [TOC]
 
-## 1. OverView
+## 1. Overview
 
-this is a simple 'program-command-line-parameter-parsing' library using cpp-template.
+this is a simple 'program-command-line-parameter-parsing' library with cpp-17.
 
-the main functions:
+## 2. Usage
 
-+ Add command line parameters to the specified program and set the relevant properties of the command line parameters;
-+ Parse the passed in parameters based on the set command line parameters;
-+ During parsing, identify and check the command line parameters (such as wrong type, wrong option name, inconsistent selectability);
-
-## 2. Structure
-
-<img src="./drawer/flags.png">
-
-
-
-## 3. Usage
-
-### Example for Source Code
-
-<img src="./drawer/code.png">
-
-### Output
-
-_if you want to over view the example log file for command lines and outputs, please click [the log file](./output/log.log)._
-
-if run command line:
-
-```shell
-./flags hello "I'm" flags!
-```
-
-will output:
+test code
 
 ```cpp
-[ error from 'libflags'-'setupParser' ] the option named '--height' is 'OptionProp::REQUIRED', but you didn't use it
-```
+#include "flags-v2.hpp"
 
+int main(int argc, char const *argv[]) {
+  try {
+    FLAGS_DEF_INT(age, age, "the age of the student", ns_flags_v2::OptionProp::OPTIONAL, 18);
+    FLAGS_ASSERT_INT(age, "age must be greater than 0", [](int age) {
+      return age > 0;
+    });
 
+    FLAGS_DEF_INT_VEC(odds, odds, "the odd number(s)", ns_flags_v2::OptionProp::OPTIONAL, 1, 3);
+    FLAGS_ASSERT_INT_VEC(odds, "not all numbers entered are odd", [](const std::vector<int> &vec) {
+      for (const auto &elem : vec) {
+        if (elem % 2 == 0) {
+          return false;
+        }
+      }
+      return true;
+    });
 
-if run command line:
+    FLAGS_DEF_FLOAT(height, height, "the height", ns_flags_v2::OptionProp::OPTIONAL, 174.5f);
+    FLAGS_ASSERT_FLOAT(height, "the value of height must be positive", [](float val) {
+      return val > 0.0f;
+    });
+      
+    // ...
 
-```shell
-/flags hello "I'm" flags!  --height 98.8 --sex true --usr csl --id 12 --choice true false true --ids 12 34 123 --scores 12.3 45.6 78.9 --lans cpp java python html
-```
+    FLAGS_DEF_STRING(name, name, "the name", ns_flags_v2::OptionProp::REQUIRED);
+    FLAGS_ASSERT_STRING(name, "the name string cannot be an empty string", [](const std::string &str) {
+      return !str.empty();
+    });
 
-will output:
+    // ...
 
-```cpp
-OptionParser Info: {
-  {'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required};
-  {'opt': choice, 'type': BoolVecArg, 'desc': the choice of usr, 'prop': Optional};
-  {'opt': ids, 'type': IntVecArg, 'desc': the ids of threads, 'prop': Optional};
-  {'opt': scores, 'type': DoubleVecArg, 'desc': the score of usr, 'prop': Optional};
-  {'opt': lans, 'type': StringVecArg, 'desc': the used langusges of usr, 'prop': Optional};
-  {'opt': height, 'type': DoubleArg, 'desc': the height of usr, 'prop': Required};
-  {'opt': sex, 'type': BoolArg, 'desc': the sex of usr [male: true, female: false], 'prop': Optional};
-  {'opt': usr, 'type': StringArg, 'desc': the name of usr, 'prop': Optional};
-  {'opt': version, 'type': StringArg, 'desc': display the version of this program, 'prop': Optional};
-  {'opt': id, 'type': IntArg, 'desc': the id of current thread, 'prop': Optional};
-  {'opt': help, 'type': StringArg, 'desc': display the help docs, 'prop': Optional};
+    FLAGS_DEF_NO_OPTION(STRING, note, "a note", ns_flags_v2::OptionProp::OPTIONAL, "hello, world");
+
+    // std::cout << ns_flags_v2::ns_priv::parser << std::endl;
+
+    ns_flags_v2::setupFlags(argc, argv);
+
+    // std::cout << ns_flags_v2::ns_priv::parser << std::endl;
+
+  } catch (const std::exception &e) {
+    std::cerr << e.what() << '\n';
+  }
+
+  return 0;
 }
-{'opt': def-opt, 'type': StringVecArg, 'desc': the default option, 'prop': Required, 'default': [], 'value': [hello, I'm, flags!]}
-the 'id' I get is: 12
 ```
 
-if run command line:
+before setup:
 
-```shell
-./flags --help
+```cpp
+{'optName': "likes", 'varName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [eat, sleep], 'desc': "the likes", 'prop': Optional, 'argType': STRING_VEC}
+{'optName': "name", 'varName': "flags_name", 'varDefVal': "", 'varVal': "", 'desc': "the name", 'prop': Required, 'argType': STRING}
+{'optName': "bvs", 'varName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [1, 0], 'desc': "the bool-type parameter(s)", 'prop': Required, 'argType': BOOL_VEC}
+{'optName': "sex", 'varName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'desc': "the sex(male[1], female[0])", 'prop': Required, 'argType': BOOL}
+{'optName': "weight", 'varName': "flags_weight", 'varDefVal': 60, 'varVal': 60, 'desc': "the weight", 'prop': Optional, 'argType': DOUBLE}
+{'optName': "fvs", 'varName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [3.14, 2.71, 1.414], 'desc': "the float-type parameter(s)", 'prop': Optional, 'argType': FLOAT_VEC}
+{'optName': "height", 'varName': "flags_height", 'varDefVal': 174.5, 'varVal': 174.5, 'desc': "the height", 'prop': Optional, 'argType': FLOAT}
+{'optName': "odds", 'varName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [1, 3], 'desc': "the odd number(s)", 'prop': Optional, 'argType': INT_VEC}
+{'optName': "version", 'varName': "null", 'value': "", 'desc': "display the version of this program", 'prop': Optional, 'argType': VERSION}
+{'optName': "__NOPT__", 'varName': "flags_note", 'varDefVal': "hello, world", 'varVal': "hello, world", 'desc': "a note", 'prop': Optional, 'argType': STRING}
+{'optName': "dvs", 'varName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [1.1, 2.2], 'desc': "the double-type parameter(s)", 'prop': Optional, 'argType': DOUBLE_VEC}
+{'optName': "age", 'varName': "flags_age", 'varDefVal': 18, 'varVal': 18, 'desc': "the age of the student", 'prop': Optional, 'argType': INT}
+{'optName': "help", 'varName': "null", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': HELP}
+```
+
+run this command below to set up parser:
+
+```sh
+./flags-v2 "That's all!" --likes running swimming --name shlChen --bvs 0 1 ON off OfF oN --sex 1 --weight 59.9 --fvs 1.0 2.0 3.0 --height 173.3 --odds 5 7 9 --dvs 2.12 2.13 --age 14
 ```
 
 will output:
 
 ```cpp
-Usage: ./flags [def-opt target(s)] [--option target(s)] ...
+{'optName': "likes", 'varName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [running, swimming], 'desc': "the likes", 'prop': Optional, 'argType': STRING_VEC}
+{'optName': "name", 'varName': "flags_name", 'varDefVal': "", 'varVal': "shlChen", 'desc': "the name", 'prop': Required, 'argType': STRING}
+{'optName': "bvs", 'varName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [0, 1, 1, 0, 0, 1], 'desc': "the bool-type parameter(s)", 'prop': Required, 'argType': BOOL_VEC}
+{'optName': "sex", 'varName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'desc': "the sex(male[1], female[0])", 'prop': Required, 'argType': BOOL}
+{'optName': "weight", 'varName': "flags_weight", 'varDefVal': 60, 'varVal': 59.9, 'desc': "the weight", 'prop': Optional, 'argType': DOUBLE}
+{'optName': "fvs", 'varName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [1, 2, 3], 'desc': "the float-type parameter(s)", 'prop': Optional, 'argType': FLOAT_VEC}
+{'optName': "height", 'varName': "flags_height", 'varDefVal': 174.5, 'varVal': 173.3, 'desc': "the height", 'prop': Optional, 'argType': FLOAT}
+{'optName': "odds", 'varName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [5, 7, 9], 'desc': "the odd number(s)", 'prop': Optional, 'argType': INT_VEC}
+{'optName': "version", 'varName': "null", 'value': "1.0.0", 'desc': "display the version of this program", 'prop': Optional, 'argType': VERSION}
+{'optName': "__NOPT__", 'varName': "flags_note", 'varDefVal': "hello, world", 'varVal': "That's all!", 'desc': "a note", 'prop': Optional, 'argType': STRING}
+{'optName': "dvs", 'varName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [2.12, 2.13], 'desc': "the double-type parameter(s)", 'prop': Optional, 'argType': DOUBLE_VEC}
+{'optName': "age", 'varName': "flags_age", 'varDefVal': 18, 'varVal': 14, 'desc': "the age of the student", 'prop': Optional, 'argType': INT}
+{'optName': "help", 'varName': "null", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': HELP}
+```
+
+help option:
+
+```sh
+./flags-v2 --help
+```
+
+```cpp
+Usage: ./flags-v2 [no-opt argv(s)] [--optName argv(s)] ...
 
     Options        Property       Type           Describes
 --------------------------------------------------------------
-  --def-opt        Required       StringVecArg   the default option
+  --likes          Optional       STRING_VEC     the likes
+  --name           Required       STRING         the name
+  --bvs            Required       BOOL_VEC       the bool-type parameter(s)
+  --sex            Required       BOOL           the sex(male[1], female[0])
+  --weight         Optional       DOUBLE         the weight
+  --fvs            Optional       FLOAT_VEC      the float-type parameter(s)
+  --height         Optional       FLOAT          the height
+  --odds           Optional       INT_VEC        the odd number(s)
+  --dvs            Optional       DOUBLE_VEC     the double-type parameter(s)
+  --age            Optional       INT            the age of the student
 
-  --choice         Optional       BoolVecArg     the choice of usr
-  --ids            Optional       IntVecArg      the ids of threads
-  --scores         Optional       DoubleVecArg   the score of usr
-  --lans           Optional       StringVecArg   the used langusges of usr
-  --height         Required       DoubleArg      the height of usr
-  --sex            Optional       BoolArg        the sex of usr [male: true, female: false]
-  --usr            Optional       StringArg      the name of usr
-  --id             Optional       IntArg         the id of current thread
+  --help           Optional       HELP           display the help docs
+  --version        Optional       VERSION        display the version of this program
 
-  --help           Optional       StringArg      display the help docs
-  --version        Optional       StringArg      display the version of this program
-
-help docs for program "./flags"
+help docs for program "./flags-v2"
 ```
 
-if run command line:
+version option:
 
-```shell
-./flags --version
+```sh
+./flags-v2 --version
+```
+
+```cpp
+./flags-v2: ['version': '1.0.0']
+```
+
+run the command:
+
+```sh
+./flags-v2 "That's all!" --likes running swimming --name shlChen --bvs 0 1 ON off OfF oN --sex 1 --weight 59.9 --fvs 1.0 2.0 3.0 --height 173.3 --odds 5 7 9 --dvs 2.12 2.13 --age 14
 ```
 
 will output:
 
-```cpp
-./flags version: 2.0.0
+```c++
+[ error from 'lib-flags':'FLAGS_SET_ASSERT' ] the value for option '--age' is invalid: "age must be greater than 0". (use option '--help' to get more info)
 ```
 
-if run command line:
-
-```shell
-./flags --nema 12
-```
-
-will output:
+## 3. Details
 
 ```cpp
-[ error from 'libflags'-'setupParser' ] the option named '--nema' is invalid
+static void setVersion(const std::string &version);
 ```
 
-## 4. Apis
-
-### Arguement Types
-
-Here are the types you can use in the 'arguement-parser':
-
 ```cpp
-  class IntArg : public MetaArg {
-      ...
-  };
-
-  class DoubleArg : public MetaArg {
-      ...
-  };
-
-  class BoolArg : public MetaArg {
-      ...
-  };
-
-  class StringArg : public MetaArg {
-      ...
-  };
-
-  class IntVecArg : public MetaArg {
-      ...
-  };
-
-  class DoubleVecArg : public MetaArg {
-      ...
-  };
-
-  class BoolVecArg : public MetaArg {
-      ...
-  };
-
-  class StringVecArg : public MetaArg {
-      ...
-  };
+static void setHelpDocs(const std::string &help);
 ```
 
-### Option Property
-
 ```cpp
-enum class OptionProp {
-  /**
-   * @brief options
-   */
-  OPTIONAL,
-  REQUIRED
-};
-```
-
-### Option
-
-```cpp
-
-  class Option {
-    template <typename ArgType>
-    std::string info() {
-        ...
-    }
-
-    /**
-     * @brief create an option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return Option
-     */
-    template <typename ArgType>
-    static Option create(const std::string &optName, const typename ArgType::value_type &defaultArgv,
-                         const std::string &desc, OptionProp prop = OptionProp::OPTIONAL) {
-        ...
-    }
-
-  private:
-    std::string _opt;
-    std::shared_ptr<MetaArg> _arg;
-    std::string _desc;
-    OptionProp _prop;
-  };
+static void setupFlags(int argc, char const *argv[]);
 ```
 
 
 
-### OptionParser
+**Macros for adding options for different parameter types:**
 
 ```cpp
-  class OptionParser {
-  public:
-    OptionParser() {
-        ...
-    }
+#define FLAGS_DEF_INT(varName, optName, desc, prop, ...)
+```
 
-  public:
-    /**
-     * @brief add an option to the option parser
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return OptionParser&
-     */
-    template <typename ArgType>
-    OptionParser &addOption(const std::string &optName,
-                            const typename ArgType::value_type &defaultArgv,
-                            const std::string &desc,
-                            OptionProp prop = OptionProp::OPTIONAL) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_INT_VEC(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief add an option to the option parser
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return OptionParser&
-     */
-    template <typename ArgType>
-    OptionParser &setDefaultOption(const typename ArgType::value_type &defaultArgv,
-                                   const std::string &desc = "the default option",
-                                   OptionProp prop = OptionProp::OPTIONAL) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_FLOAT(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_FLOAT_VEC(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getOptionArgv(const std::string &optionName) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_DOUBLE(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getDefaultOptionArgv() {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_DOUBLE_VEC(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief set up the parser
-     *
-     * @param argc the count of the arguement
-     * @param argv the value of the arguement
-     * @return OptionParser&
-     */
-    OptionParser &setupParser(int argc, char const *argv[]) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_BOOL(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief set the version string
-     *
-     * @param version the string
-     * @return OptionParser&
-     */
-    OptionParser &setVersion(const std::string &version) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_BOOL_VEC(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief set the help string
-     *
-     * @param help the string
-     * @return OptionParser&
-     */
-    OptionParser &setHelp(const std::string &help) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_STRING(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief get the option's info
-     *
-     * @tparam ArgType the type of arguement
-     * @param optionName the name of option
-     * @return std::string
-     */
-    template <typename ArgType>
-    std::string getOptionInfo(const std::string &optionName) {
-        ...
-    }
+```cpp
+#define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...)
+```
 
-    /**
-     * @brief get the default option's Info
-     *
-     * @tparam ArgType the type of arguement
-     * @return std::string
-     */
-    template <typename ArgType>
-    std::string getDefaultOptionInfo() {
-        ...
-    }
 
-  private:
-    std::unordered_map<std::string, Option> _options;
 
-    const std::string HELP_OPTION_NAME = "help";
-    const std::string VERSION_OPTION_NAME = "version";
-    const std::string DEFAULT_OPTION_NAME = "def-opt";
-  };
+**Define macros that do not require option**:
+
+```cpp
+#define FLAGS_DEF_NO_OPTION(type, varName, desc, prop, ...)
+```
+
+
+
+**Define assertion function macros for different type:**
+
+```cpp
+#define FLAGS_ASSERT_INT(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_INT_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_FLOAT(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_FLOAT_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_DOUBLE(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_DOUBLE_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_BOOL(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_BOOL_VEC(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_STRING(optName, invaildMsg, fun)
+```
+
+```cpp
+#define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun)
 ```
 

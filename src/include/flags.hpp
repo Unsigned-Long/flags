@@ -1,277 +1,46 @@
-#pragma once
+/**
+ * @file flags-v2.hpp
+ * @author shlchen (3079625093@qq.com)
+ * @brief the second version for lib-flags
+ * @version 0.1
+ * @date 2022-05-17
+ *
+ * @copyright Copyright (c) 2022
+ */
 
-#include <algorithm>
-#include <any>
-#include <exception>
+#ifndef FLAGS_V2_H
+#define FLAGS_V2_H
+
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <sstream>
+#include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <utility>
 #include <vector>
 
-namespace ns_flags {
-#pragma region helpers
+namespace ns_flags_v2 {
+  /**
+   * @brief throw exceptions for this lib
+   */
+#define _FLAG_THROW_EXCEPTION_(where, msg)                                               \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' ] " + \
+                           msg + ". (use option '--help' to get more info)")
 
-/**
- * @brief throw 'std::runtime_error' exception from 'where', and message is 'msg'
- */
-#define THROW_EXCEPTION(where, msg) \
-  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' ] " + msg)
+#define _FLAG_THROW_EXCEPTION_DEV_(where, msg)                                                        \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' to developer ] " + \
+                           msg + ".")
 
-/**
- * @brief when pass a empty 'std::vector<std::string>' to the 'fromStringVec'
- */
-#define EMPTY_STRVEC_HANDLER(strVec) \
-  if (strVec.empty()) {              \
-    return this->_dargv;             \
-  }
-
-  template <typename ElemType>
-  std::ostream &operator<<(std::ostream &os, const std::vector<ElemType> &vec) {
-    os << '[';
-    for (int i = 0; i < vec.size() - 1; ++i) {
-      os << vec.at(i) << ", ";
-    }
-    if (!vec.empty()) {
-      os << vec.back();
-    }
-    os << ']';
-    return os;
-  }
-#pragma endregion
-
-#pragma region arg types
-  class Option;
-
-  class MetaArg {
-  public:
-    friend class Option;
-
-  public:
-    /**
-     * @brief get the default argument value
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getDefaultArgv() const {
-      return std::any_cast<typename ArgType::value_type>(this->_dargv);
-    }
-
-    /**
-     * @brief get the arguement value
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getArgv() const {
-      return std::any_cast<typename ArgType::value_type>(this->_argv);
-    }
-
-    /**
-     * @brief the type of the MetaArg
-     *
-     * @return std::string
-     */
-    virtual std::string type() const = 0;
-
-    /**
-     * @brief set the arguement's value from a std::vector<std::string>
-     *
-     * @param strVec the string vector
-     * @return MetaArg&
-     */
-    MetaArg &setArgv(const std::vector<std::string> &strVec) {
-      try {
-        this->_argv = fromStringVec(strVec);
-      } catch (...) {
-        THROW_EXCEPTION(setupParser, "the argv(s) you passed for some option(s) is(are) invalid.");
-      }
-      return *this;
-    }
-
-  protected:
-    /**
-     * @brief cast a string vector to a std::any object
-     *
-     * @param strVec the string vector
-     * @return std::any
-     */
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const = 0;
-
-    MetaArg() = default;
-    ~MetaArg() = default;
-
-  protected:
-    // arguement value
-    std::any _argv;
-    // default arguement value
-    std::any _dargv;
-  };
-
-  class IntArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = int;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      return std::stoi(strVec.front());
-    }
-    virtual std::string type() const override {
-      return "IntArg";
-    }
-  };
-
-  class DoubleArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = double;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      return std::stod(strVec.front());
-    }
-    virtual std::string type() const override {
-      return "DoubleArg";
-    }
-  };
-
-  class BoolArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = bool;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      if (strVec.empty()) {
-        return true;
-      }
-      std::string lower = strVec.front();
-      for (int i = 0; i != lower.size(); ++i) {
-        lower.at(i) = std::tolower(lower.at(i));
-      }
-      if (lower == "true" || lower == "on" || lower == "1" || lower == "yes" || lower == "y") {
-        return true;
-      } else {
-        return false;
-      }
-    }
-    virtual std::string type() const override {
-      return "BoolArg";
-    }
-  };
-
-  class StringArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = std::string;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      return strVec.front();
-    }
-    virtual std::string type() const override {
-      return "StringArg";
-    }
-  };
-
-  class IntVecArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = std::vector<int>;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      std::vector<int> iv;
-      for (const auto &elem : strVec) {
-        iv.push_back(std::stoi(elem));
-      }
-      return iv;
-    }
-    virtual std::string type() const override {
-      return "IntVecArg";
-    }
-  };
-
-  class DoubleVecArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = std::vector<double>;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      std::vector<int> dv;
-      for (const auto &elem : strVec) {
-        dv.push_back(std::stod(elem));
-      }
-      return dv;
-    }
-    virtual std::string type() const override {
-      return "DoubleVecArg";
-    }
-  };
-
-  class BoolVecArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = std::vector<bool>;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      std::vector<bool> bv;
-      for (const auto &elem : strVec) {
-        std::string lower = elem;
-        for (int i = 0; i != lower.size(); ++i) {
-          lower.at(i) = std::tolower(lower.at(i));
-        }
-        if (lower == "true" || lower == "on" || lower == "1" || lower == "yes" || lower == "y") {
-          bv.push_back(true);
-        } else {
-          bv.push_back(false);
-        }
-      }
-      return bv;
-    }
-    virtual std::string type() const override {
-      return "BoolVecArg";
-    }
-  };
-
-  class StringVecArg : public MetaArg {
-  public:
-    friend class Option;
-    using value_type = std::vector<std::string>;
-
-  protected:
-    virtual std::any fromStringVec(const std::vector<std::string> &strVec) const override {
-      EMPTY_STRVEC_HANDLER(strVec);
-      return strVec;
-    }
-    virtual std::string type() const override {
-      return "StringVecArg";
-    }
-  };
-
-#pragma endregion
-
-#pragma region options
-
+  /**
+   * @brief Properties of options
+   */
   enum class OptionProp {
-    /**
-     * @brief options
-     */
+    // the option is optional
     OPTIONAL,
+    // the option is required, and it's necessary
     REQUIRED
   };
 
@@ -290,424 +59,690 @@ namespace ns_flags {
     return os;
   };
 
-  class OptionParser;
-
-  class Option {
-  public:
-    friend std::ostream &operator<<(std::ostream &os, const Option &op);
-    friend class OptionParser;
-
-  public:
-    template <typename ArgType>
-    std::string info() const {
-      std::stringstream stream;
-      stream << "{'opt': " << this->_opt << ", 'type': " << this->_arg->type()
-             << ", 'desc': " << this->_desc << ", 'prop': " << this->_prop
-             << ", 'default': " << this->_arg->getDefaultArgv<ArgType>()
-             << ", 'value': " << this->_arg->getArgv<ArgType>() << "}";
-      return stream.str();
-    }
-
-  protected:
-    Option() = default;
+  namespace ns_priv {
+    // the type of argument
+    enum class ArgType {
+      /**
+       * @brief options
+       */
+      INT,
+      DOUBLE,
+      FLOAT,
+      BOOL,
+      STRING,
+      INT_VEC,
+      DOUBLE_VEC,
+      FLOAT_VEC,
+      BOOL_VEC,
+      STRING_VEC,
+      // special types
+      HELP,
+      VERSION
+    };
 
     /**
-     * @brief create an option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return Option
+     * @brief override operator '<<' for type 'ArgType'
      */
-    template <typename ArgType>
-    static Option create(const std::string &optName, const typename ArgType::value_type &defaultArgv,
-                         const std::string &desc, OptionProp prop = OptionProp::OPTIONAL) {
-      Option op = Option();
-      op._opt = optName;
-      op._desc = desc;
-      op._prop = prop;
-      op._arg = std::make_shared<ArgType>();
-      op._arg->_dargv = op._arg->_argv = defaultArgv;
-      return op;
-    }
-
-  private:
-    std::string _opt;
-    std::shared_ptr<MetaArg> _arg;
-    std::string _desc;
-    OptionProp _prop;
-  };
-
-  /**
-   * @brief overload the operator '<<' for 'Option'
-   */
-  std::ostream &operator<<(std::ostream &os, const Option &op) {
-    os << "{'opt': " << op._opt << ", 'type': " << op._arg->type()
-       << ", 'desc': " << op._desc << ", 'prop': " << op._prop << "}";
-    return os;
-  }
-
-#pragma endregion
-
-#pragma region parser
-
-  /**
-   * @brief the main class
-   */
-  class OptionParser {
-  public:
-    friend std::ostream &operator<<(std::ostream &os, const OptionParser &parser);
-
-  public:
-    OptionParser() {
-      Option help = Option::create<StringArg>(this->HELP_OPTION_NAME, "", "display the help docs", OptionProp::OPTIONAL);
-      Option version = Option::create<StringArg>(this->VERSION_OPTION_NAME, "", "display the version of this program", OptionProp::OPTIONAL);
-      this->_options.insert({this->HELP_OPTION_NAME, help});
-      this->_options.insert({this->VERSION_OPTION_NAME, version});
-    }
-
-  public:
-    /**
-     * @brief add an option to the option parser
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return OptionParser&
-     */
-    template <typename ArgType>
-    OptionParser &addOption(const std::string &optName,
-                            const typename ArgType::value_type &defaultArgv,
-                            const std::string &desc,
-                            OptionProp prop = OptionProp::OPTIONAL) {
-      if (this->_options.find(optName) != this->_options.end()) {
-        THROW_EXCEPTION(addOption, "the option named '" + optName + "'has been registered.");
+    static std::ostream &operator<<(std::ostream &os, const ArgType &obj) {
+      switch (obj) {
+      case ArgType::INT:
+        os << "INT";
+        break;
+      case ArgType::DOUBLE:
+        os << "DOUBLE";
+        break;
+      case ArgType::FLOAT:
+        os << "FLOAT";
+        break;
+      case ArgType::BOOL:
+        os << "BOOL";
+        break;
+      case ArgType::STRING:
+        os << "STRING";
+        break;
+      case ArgType::INT_VEC:
+        os << "INT_VEC";
+        break;
+      case ArgType::DOUBLE_VEC:
+        os << "DOUBLE_VEC";
+        break;
+      case ArgType::FLOAT_VEC:
+        os << "FLOAT_VEC";
+        break;
+      case ArgType::BOOL_VEC:
+        os << "BOOL_VEC";
+        break;
+      case ArgType::STRING_VEC:
+        os << "STRING_VEC";
+        break;
+      case ArgType::HELP:
+        os << "HELP";
+        break;
+      case ArgType::VERSION:
+        os << "VERSION";
+        break;
       }
-      this->_options.insert({optName, Option::create<ArgType>(optName, defaultArgv, desc, prop)});
-      return *this;
-    }
+      return os;
+    };
 
-    /**
-     * @brief add an option to the option parser
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param defaultArgv the default arguement value
-     * @param desc the describe of the arguement
-     * @param prop the prop of option
-     * @return OptionParser&
-     */
-    template <typename ArgType>
-    OptionParser &setDefaultOption(const typename ArgType::value_type &defaultArgv,
-                                   const std::string &desc = "the default option",
-                                   OptionProp prop = OptionProp::OPTIONAL) {
-      Option defaultOption = Option::create<ArgType>(this->DEFAULT_OPTION_NAME, defaultArgv, desc, prop);
-      this->_options.insert({this->DEFAULT_OPTION_NAME, defaultOption});
-      return *this;
-    }
+    struct Option {
+    public:
+      // option's name
+      const std::string _optName;
+      // variable's name
+      const std::string _varName;
+      // the default value
+      void *_varDefault;
+      // the variable
+      void *_var;
+      // to describe this option
+      const std::string _desc;
+      // the properties of this option
+      const OptionProp _prop;
+      // the type of this variable
+      const ArgType _argType;
+      // assert function
+      std::function<void(void *)> _assert;
 
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getOptionDefaultArgv(const std::string &optionName) const {
-      if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionDefaultArgv, "there isn't option named '" + optionName + "'.");
-      } else {
-        return iter->second._arg->getDefaultArgv<ArgType>();
-      }
-    }
+      /**
+       * @brief Construct a new Option object
+       */
+      Option(std::string optName, std::string varName, void *varDefault, void *var,
+             std::string desc, const OptionProp &prop, const ArgType argType)
+          : _optName(std::move(optName)), _varName(std::move(varName)), _varDefault(varDefault), _var(var),
+            _desc(std::move(desc)), _prop(prop), _argType(argType) {}
 
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getOptionArgv(const std::string &optionName) const {
-      if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'.");
-      } else {
-        return iter->second._arg->getArgv<ArgType>();
-      }
-    }
-
-    /**
-     * @brief get the default arguement value of the option
-     *
-     * @tparam ArgType the arguement class type. eg: IntArg, DoubleArg
-     * @param optName the option's name
-     * @return ArgType::value_type
-     */
-    template <typename ArgType>
-    typename ArgType::value_type getDefaultOptionArgv() const {
-      if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
-        THROW_EXCEPTION(getDefaultOptionArgv, "you haven't set the 'default-option'.");
-      } else {
-        return iter->second._arg->getArgv<ArgType>();
-      }
-    }
-
-    /**
-     * @brief set up the parser
-     *
-     * @param argc the count of the arguement
-     * @param argv the value of the arguement
-     * @return OptionParser&
-     */
-    OptionParser &setupParser(int argc, char const *argv[]) {
-      // first, generate the corresponding help document and version number according to the set options
-      if (this->_options.at(this->VERSION_OPTION_NAME)._arg->getArgv<StringArg>().empty()) {
-        this->autoGenerateVersion();
-      }
-      if (this->_options.at(this->HELP_OPTION_NAME)._arg->getArgv<StringArg>().empty()) {
-        this->autoGenerateHelp(argv[0]);
-      }
-
-      // find all valid options in the parameter list and record their names and locations
-      std::vector<std::pair<std::string, std::size_t>> optionInfo;
-      std::unordered_set<std::string> optionsPassed;
-      for (int i = 1; i != argc; ++i) {
-        if (this->optionOrArgv(argv[i])) {
-          // is an option
-          auto optionName = std::string(argv[i]).substr(2);
-
-          // is help or version options
-          if (optionName == this->HELP_OPTION_NAME) {
-            throw std::runtime_error(this->getOptionArgv<StringArg>(this->HELP_OPTION_NAME));
-          } else if (optionName == this->VERSION_OPTION_NAME) {
-            throw std::runtime_error(argv[0] + std::string(" version: ") +
-                                     this->getOptionArgv<StringArg>(this->VERSION_OPTION_NAME));
-          }
-
-          optionInfo.push_back({optionName, i});
-          optionsPassed.insert(optionName);
+      ~Option() {
+        // delete the variable's default value pointer
+        // before that, cast the (void *) type to target type
+        // it's unnecessary for 'HELP' and 'VERSION' options
+        switch (this->_argType) {
+        case ArgType::INT:
+          delete ((int *)(this->_varDefault));
+          break;
+        case ArgType::INT_VEC:
+          delete ((std::vector<int> *)(this->_varDefault));
+          break;
+        case ArgType::DOUBLE:
+          delete ((double *)(this->_varDefault));
+          break;
+        case ArgType::DOUBLE_VEC:
+          delete ((std::vector<double> *)(this->_varDefault));
+          break;
+        case ArgType::FLOAT:
+          delete ((float *)(this->_varDefault));
+          break;
+        case ArgType::FLOAT_VEC:
+          delete ((std::vector<float> *)(this->_varDefault));
+          break;
+        case ArgType::BOOL:
+          delete ((bool *)(this->_varDefault));
+          break;
+        case ArgType::BOOL_VEC:
+          delete ((std::vector<bool> *)(this->_varDefault));
+          break;
+        case ArgType::STRING:
+          delete ((std::string *)(this->_varDefault));
+          break;
+        case ArgType::STRING_VEC:
+          delete ((std::vector<std::string> *)(this->_varDefault));
+          break;
+        case ArgType::HELP:
+          delete ((std::string *)(this->_varDefault));
+          break;
+        case ArgType::VERSION:
+          delete ((std::string *)(this->_varDefault));
+          break;
+        default:
+          break;
         }
       }
 
-      // check whether any missing options have not been passed in according to the properties of the set options
-      if (argc > 1) {
-        if (optionInfo.empty() || optionInfo.front().second > 1) {
-          optionsPassed.insert(this->DEFAULT_OPTION_NAME);
-        }
-      }
-      for (const auto &[name, option] : this->_options) {
-        if (option._prop == OptionProp::REQUIRED) {
-          auto iter = optionsPassed.find(name);
-          if (iter == optionsPassed.cend()) {
-            THROW_EXCEPTION(setupParser, "the option named '--" + name + "' is 'OptionProp::REQUIRED', but you didn't use it.");
-          }
+      /**
+       * @brief assert for the variable's value
+       */
+      void assertVar() {
+        if (this->_assert != nullptr) {
+          this->_assert(this->_var);
         }
       }
 
-      // divide the parameter list according to the position of the option
-      // and set it to the value of the corresponding option
-      if (optionInfo.empty()) {
-        return *this;
+      /**
+       * @brief assign the variable using value
+       */
+      template <typename Type>
+      void assignVar(const Type &val) {
+        *((Type *)(this->_var)) = val;
       }
 
-      std::vector<std::string> strVec;
-      for (int i = 1; i != optionInfo.front().second; ++i) {
-        strVec.push_back(argv[i]);
-      }
-      if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter != this->_options.end()) {
-        this->_options.at(this->DEFAULT_OPTION_NAME)._arg->setArgv(strVec);
-      }
-
-      for (int i = 0; i < optionInfo.size() - 1; ++i) {
-        strVec.clear();
-        auto curOption = optionInfo.at(i);
-        auto nextOption = optionInfo.at(i + 1);
-        for (int j = curOption.second + 1; j < nextOption.second; ++j) {
-          strVec.push_back(argv[j]);
+      /**
+       * @brief print a vector
+       */
+      template <typename ElemType>
+      static void printVec(std::ostream &os, const std::vector<ElemType> &vec) {
+        os << '[';
+        if (vec.empty()) {
+          os << ']';
+          return;
         }
-        this->_options.at(curOption.first)._arg->setArgv(strVec);
+        for (int i = 0; i != vec.size() - 1; ++i) {
+          os << vec.at(i) << ", ";
+        }
+        os << vec.back();
+        os << ']';
+      }
+    };
+
+    /**
+     * @brief override operator '<<' for type 'Option'
+     */
+    static std::ostream &operator<<(std::ostream &os, const Option &obj) {
+      os << '{';
+      os << "'optName': \"" << obj._optName << "\", ";
+      os << "'varName': \"" << obj._varName << "\", ";
+      switch (obj._argType) {
+      case ArgType::INT:
+        os << "'varDefVal': " << *((int *)(obj._varDefault)) << ", ";
+        os << "'varVal': " << *((int *)(obj._var)) << ", ";
+        break;
+      case ArgType::INT_VEC:
+        os << "'varDefVal': ";
+        Option::printVec(os, *((std::vector<int> *)(obj._varDefault)));
+        os << ", 'varVal': ";
+        Option::printVec(os, *((std::vector<int> *)(obj._var)));
+        os << ", ";
+        break;
+      case ArgType::DOUBLE:
+        os << "'varDefVal': " << *((double *)(obj._varDefault)) << ", ";
+        os << "'varVal': " << *((double *)(obj._var)) << ", ";
+        break;
+      case ArgType::DOUBLE_VEC:
+        os << "'varDefVal': ";
+        Option::printVec(os, *((std::vector<double> *)(obj._varDefault)));
+        os << ", 'varVal': ";
+        Option::printVec(os, *((std::vector<double> *)(obj._var)));
+        os << ", ";
+        break;
+      case ArgType::FLOAT:
+        os << "'varDefVal': " << *((float *)(obj._varDefault)) << ", ";
+        os << "'varVal': " << *((float *)(obj._var)) << ", ";
+        break;
+      case ArgType::FLOAT_VEC:
+        os << "'varDefVal': ";
+        Option::printVec(os, *((std::vector<float> *)(obj._varDefault)));
+        os << ", 'varVal': ";
+        Option::printVec(os, *((std::vector<float> *)(obj._var)));
+        os << ", ";
+        break;
+      case ArgType::BOOL:
+        os << "'varDefVal': " << *((bool *)(obj._varDefault)) << ", ";
+        os << "'varVal': " << *((bool *)(obj._var)) << ", ";
+        break;
+      case ArgType::BOOL_VEC:
+        os << "'varDefVal': ";
+        Option::printVec(os, *((std::vector<bool> *)(obj._varDefault)));
+        os << ", 'varVal': ";
+        Option::printVec(os, *((std::vector<bool> *)(obj._var)));
+        os << ", ";
+        break;
+      case ArgType::STRING:
+        os << "'varDefVal': \"" << *((std::string *)(obj._varDefault)) << "\", ";
+        os << "'varVal': \"" << *((std::string *)(obj._var)) << "\", ";
+        break;
+      case ArgType::STRING_VEC:
+        os << "'varDefVal': ";
+        Option::printVec(os, *((std::vector<std::string> *)(obj._varDefault)));
+        os << ", 'varVal': ";
+        Option::printVec(os, *((std::vector<std::string> *)(obj._var)));
+        os << ", ";
+        break;
+      case ArgType::HELP:
+        os << "'value': \"...\", ";
+        break;
+      case ArgType::VERSION:
+        os << "'value': \"" << *((std::string *)(obj._varDefault)) << "\", ";
+        break;
+      default:
+        break;
+      }
+      os << "'desc': \"" << obj._desc << "\", ";
+      os << "'prop': " << obj._prop << ", ";
+      os << "'argType': " << obj._argType;
+      os << '}';
+      return os;
+    };
+
+    // Inherited from std::unordered_map, it stores the option information set by the user in advance
+    class OptionParser : public std::unordered_map<std::string, std::shared_ptr<ns_priv::Option>> {
+    public:
+      using parent_type = std::unordered_map<std::string, std::shared_ptr<ns_priv::Option>>;
+      using parent_type::parent_type;
+
+    private:
+      // Determine whether to automatically generate corresponding content
+      // If the user explicitly sets the corresponding content, we refuse to generate it automatically
+      bool _autoGenHelpDocs;
+      bool _autoGenVersion;
+      const std::string __NOPT__ = "__NOPT__";
+
+    public:
+      OptionParser() : _autoGenHelpDocs(true), _autoGenVersion(true) {
+        // add help and version options
+        // Note that the address corresponding to the variable is nullptr
+        this->insert({"help", std::make_shared<Option>("help", "null", (void *)(new std::string("")), nullptr,
+                                                       "display the help docs", OptionProp::OPTIONAL, ArgType::HELP)});
+        this->insert({"version", std::make_shared<Option>("version", "null", (void *)(new std::string("")), nullptr,
+                                                          "display the version of this program", OptionProp::OPTIONAL, ArgType::VERSION)});
       }
 
-      strVec.clear();
-      for (int j = optionInfo.back().second + 1; j < argc; ++j) {
-        strVec.push_back(argv[j]);
+      /**
+       * @brief Set the Version
+       */
+      void setVersion(const std::string &version) {
+        (*(std::string *)(this->at("version")->_varDefault)) = version;
+        this->_autoGenVersion = false;
       }
-      this->_options.at(optionInfo.back().first)._arg->setArgv(strVec);
 
-      return *this;
-    }
-
-    /**
-     * @brief set the version string
-     *
-     * @param version the string
-     * @return OptionParser&
-     */
-    OptionParser &setVersion(const std::string &version) {
-      this->_options.at(this->VERSION_OPTION_NAME)._arg->setArgv({version});
-      return *this;
-    }
-
-    /**
-     * @brief set the help string
-     *
-     * @param help the string
-     * @return OptionParser&
-     */
-    OptionParser &setHelp(const std::string &help) {
-      this->_options.at(this->HELP_OPTION_NAME)._arg->setArgv({help});
-      return *this;
-    }
-
-    /**
-     * @brief get the option's info
-     *
-     * @tparam ArgType the type of arguement
-     * @param optionName the name of option
-     * @return std::string
-     */
-    template <typename ArgType>
-    std::string getOptionInfo(const std::string &optionName) const {
-      if (auto iter = this->_options.find(optionName); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + optionName + "'.");
-      } else {
-        return iter->second.info<ArgType>();
+      /**
+       * @brief Set the Help Docs
+       */
+      void setHelpDocs(const std::string &help) {
+        (*(std::string *)(this->at("help")->_varDefault)) = help;
+        this->_autoGenHelpDocs = false;
       }
-    }
 
-    /**
-     * @brief get the default option's Info
-     *
-     * @tparam ArgType the type of arguement
-     * @return std::string
-     */
-    template <typename ArgType>
-    std::string getDefaultOptionInfo() const {
-      if (auto iter = this->_options.find(this->DEFAULT_OPTION_NAME); iter == this->_options.end()) {
-        THROW_EXCEPTION(getOptionArgv, "there isn't option named '" + this->DEFAULT_OPTION_NAME + "'.");
-      } else {
-        return iter->second.info<ArgType>();
-      }
-    }
+      /**
+       * @brief set up the option parser
+       *
+       * @param argc the count of the argument
+       * @param argv the value of the argument
+       */
+      void setupFlags(int argc, char const *argv[]) {
+        if (this->_autoGenVersion) {
+          this->autoGenVersion();
+        }
 
-  protected:
-    /**
-     * @brief handle the param
-     *
-     * @param str the param
-     * @return true is an option
-     * @return false is an argv
-     * @throw std::runtime_error invalid option
-     */
-    bool optionOrArgv(const std::string &str) const {
-      if (str.size() < 3) {
-        return false;
-      } else {
-        if (str.substr(0, 2) == "--") {
-          auto optionName = str.substr(2);
-          // is not an valid option
-          if (auto iter = this->_options.find(optionName) == this->_options.end()) {
-            THROW_EXCEPTION(setupParser, "the option named '--" + optionName + "' is invalid.");
+        if (this->_autoGenHelpDocs) {
+          this->autoGenHelpDocs(argv[0]);
+        }
+
+        std::map<std::string, std::vector<std::string>> inputArgs;
+        std::vector<std::string> optNames;
+        std::string curOption = __NOPT__;
+
+        for (int i = 1; i != argc; ++i) {
+          std::string str = argv[i];
+          if (ns_flags_v2::ns_priv::OptionParser::isAnOption(str)) {
+            curOption = str.substr(2);
+            inputArgs[curOption] = std::vector<std::string>();
+            optNames.push_back(curOption);
+            // is help or version options
+            if (curOption == "help") {
+              throw std::runtime_error((*(std::string *)(this->at("help")->_varDefault)));
+            } else if (curOption == "version") {
+              throw std::runtime_error(std::string(argv[0]) + ": ['version': '" +
+                                       (*(std::string *)(this->at("version")->_varDefault)) + "']");
+            }
           } else {
-            return true;
+            inputArgs[curOption].push_back(str);
           }
+        }
+
+        // the 'no-option' option is not set in the current program but user pass the 'no-option' argv(s)
+        // so we need to remove it.
+        if (this->find(__NOPT__) == this->cend()) {
+          if (inputArgs.find(__NOPT__) != inputArgs.cend()) {
+            inputArgs.erase(__NOPT__);
+          }
+        }
+
+        // check invalid options
+        for (const auto &optName : optNames) {
+          if (!this->isAValidOption(optName)) {
+            _FLAG_THROW_EXCEPTION_(setupFlags, "there isn't option named '--" + optName + "'");
+          }
+        }
+
+        // check whether any missing options have not been passed in according to the properties of the set options
+        for (const auto &[optName, opt] : *this) {
+          if (opt->_prop == OptionProp::OPTIONAL) {
+            continue;
+          }
+          if (inputArgs.find(optName) == inputArgs.cend()) {
+            if (optName == __NOPT__) {
+              _FLAG_THROW_EXCEPTION_(setupFlags, "the 'no-option' argv is 'OptionProp::REQUIRED', but you didn't pass it");
+            } else {
+              _FLAG_THROW_EXCEPTION_(setupFlags, "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it");
+            }
+          }
+        }
+
+        // assert and assign
+        for (const auto &[optName, inputOpt] : inputArgs) {
+          auto &opt = *this->find(optName)->second;
+
+          switch (opt._argType) {
+          case ArgType::INT:
+            if (!inputOpt.empty()) {
+              opt.assignVar<int>(std::stoi(inputOpt.front()));
+            }
+            break;
+          case ArgType::INT_VEC:
+            if (!inputOpt.empty()) {
+              std::vector<int> vec;
+              for (const auto &elem : inputOpt) {
+                vec.push_back(std::stoi(elem));
+              }
+              opt.assignVar<std::vector<int>>(vec);
+            }
+            break;
+          case ArgType::DOUBLE:
+            if (!inputOpt.empty()) {
+              opt.assignVar<double>(std::stod(inputOpt.front()));
+            }
+            break;
+          case ArgType::DOUBLE_VEC:
+            if (!inputOpt.empty()) {
+              std::vector<double> vec;
+              for (const auto &elem : inputOpt) {
+                vec.push_back(std::stod(elem));
+              }
+              opt.assignVar<std::vector<double>>(vec);
+            }
+            break;
+          case ArgType::FLOAT:
+            if (!inputOpt.empty()) {
+              opt.assignVar<float>(std::stof(inputOpt.front()));
+            }
+            break;
+          case ArgType::FLOAT_VEC:
+            if (!inputOpt.empty()) {
+              std::vector<float> vec;
+              for (const auto &elem : inputOpt) {
+                vec.push_back(std::stof(elem));
+              }
+              opt.assignVar<std::vector<float>>(vec);
+            }
+            break;
+          case ArgType::BOOL:
+            if (inputOpt.empty()) {
+              opt.assignVar<bool>(true);
+            } else {
+              opt.assignVar<bool>(ns_flags_v2::ns_priv::OptionParser::toBool(inputOpt.front()));
+            }
+            break;
+          case ArgType::BOOL_VEC:
+            if (!inputOpt.empty()) {
+              std::vector<bool> vec;
+              for (const auto &elem : inputOpt) {
+                vec.push_back(ns_flags_v2::ns_priv::OptionParser::toBool(elem));
+              }
+              opt.assignVar<std::vector<bool>>(vec);
+            }
+            break;
+          case ArgType::STRING:
+            if (!inputOpt.empty()) {
+              opt.assignVar<std::string>(inputOpt.front());
+            }
+            break;
+          case ArgType::STRING_VEC:
+            if (!inputOpt.empty()) {
+              opt.assignVar<std::vector<std::string>>(inputOpt);
+            }
+            break;
+          case ArgType::HELP:
+            break;
+          case ArgType::VERSION:
+            break;
+          default:
+            break;
+          }
+
+          opt.assertVar();
+        }
+      }
+
+    protected:
+      void autoGenHelpDocs(const std::string &programName) {
+        std::stringstream stream;
+
+        // the main usage of this program
+        stream << "Usage: " << programName;
+        if (this->find(__NOPT__) != this->cend()) {
+          stream << " [no-opt argv(s)]";
+        }
+        stream << " [--optName argv(s)] ...\n\n";
+
+        // the header of the help docs
+        stream << "    " << std::setw(15) << std::left << "Options"
+               << std::setw(15) << std::left << "Property"
+               << std::setw(15) << std::left << "Type"
+               << "Describes\n";
+        stream << std::string(62, '-') << '\n';
+
+        if (this->find(__NOPT__) != this->cend()) {
+          auto &nopt = this->at(__NOPT__);
+          stream << "  --" << std::setw(15) << std::left << "no-opt"
+                 << std::setw(15) << std::left << nopt->_prop
+                 << std::setw(15) << std::left << nopt->_argType
+                 << nopt->_desc << "\n\n";
+        }
+
+        for (const auto &elem : *this) {
+          if (elem.first == "help" || elem.first == "version" || elem.first == __NOPT__) {
+            continue;
+          }
+          stream << "  --" << std::setw(15) << std::left << elem.second->_optName
+                 << std::setw(15) << std::left << elem.second->_prop
+                 << std::setw(15) << std::left << elem.second->_argType
+                 << elem.second->_desc << '\n';
+        }
+
+        // help and version
+        auto &help = this->at("help");
+        auto &version = this->at("version");
+        stream << "\n  --" << std::setw(15) << std::left << help->_optName
+               << std::setw(15) << std::left << help->_prop
+               << std::setw(15) << std::left << help->_argType
+               << help->_desc;
+        stream << "\n  --" << std::setw(15) << std::left << version->_optName
+               << std::setw(15) << std::left << version->_prop
+               << std::setw(15) << std::left << version->_argType
+               << version->_desc;
+
+        // suffix
+        stream << "\n\nhelp docs for program \"" + programName + "\"";
+
+        // assign
+        (*(std::string *)(this->at("help")->_varDefault)) = stream.str();
+      }
+
+      void autoGenVersion() {
+        (*(std::string *)(this->at("version")->_varDefault)) = "1.0.0";
+      }
+
+      /**
+       * @brief Judge whether a parameter is an option name
+       *
+       * @param str the argv
+       * @return true
+       * @return false
+       */
+      static bool isAnOption(const std::string &str) {
+        return str.size() > 3 && str.substr(0, 2) == "--";
+      }
+
+      /**
+       * @brief Judge whether an option is valid (whether it has been set)
+       *
+       * @param str the option name
+       * @return true
+       * @return false
+       */
+      bool isAValidOption(const std::string &str) {
+        return this->find(str) != this->cend();
+      }
+
+      /**
+       * @brief Converts a string to lowercase
+       *
+       * @param str the string
+       * @return std::string
+       */
+      static std::string tolower(const std::string &str) {
+        std::string lowerStr;
+        for (char i : str) {
+          lowerStr.push_back(std::tolower(i));
+        }
+        return lowerStr;
+      }
+
+      /**
+       * @brief Convert a string to Boolean
+       *
+       * @param str the string
+       */
+      static bool toBool(const std::string &str) {
+        std::string val = ns_flags_v2::ns_priv::OptionParser::tolower(str);
+        bool b;
+        if (val == "on" || val == "1" || val == "true") {
+          b = true;
+        } else if (val == "off" || val == "0" || val == "false") {
+          b = false;
+        } else if (val.empty()) {
+          b = true;
         } else {
-          return false;
+          b = std::stoi(str);
         }
+        return b;
       }
-    }
-
+    } parser;
     /**
-     * @brief automatically generate the help document of the program according to the set options
-     *
-     * @param programName the name of the program
-     * @return OptionParser&
+     * @brief override operator '<<' for type 'Option'
      */
-    OptionParser &autoGenerateHelp(const std::string &programName) {
-      auto defaulrOptionIter = this->_options.find(this->DEFAULT_OPTION_NAME);
-      auto helpOptionIter = this->_options.find(this->HELP_OPTION_NAME);
-      auto versionOptionIter = this->_options.find(this->VERSION_OPTION_NAME);
-      std::stringstream stream;
-      // the main usage of this program
-      stream << "Usage: " << programName;
-      if (defaulrOptionIter != this->_options.end()) {
-        stream << " [def-opt target(s)]";
+    static std::ostream &operator<<(std::ostream &os, const OptionParser &obj) {
+      for (const auto &elem : obj) {
+        os << *elem.second << std::endl;
       }
-      // the header of the help docs
-      stream << " [--option target(s)] ...\n\n    "
-             << std::setw(15) << std::left << "Options"
-             << std::setw(15) << std::left << "Property"
-             << std::setw(15) << std::left << "Type"
-             << "Describes\n";
-      stream << std::string(62, '-') << '\n';
-      // display help docs for default-option
-      if (defaulrOptionIter != this->_options.end()) {
-        stream << "  --" << std::setw(15) << std::left << defaulrOptionIter->first
-               << std::setw(15) << std::left << defaulrOptionIter->second._prop
-               << std::setw(15) << std::left << defaulrOptionIter->second._arg->type()
-               << defaulrOptionIter->second._desc << "\n\n";
-      }
-      // display help docs for options set by user
-      for (const auto &[name, option] : this->_options) {
-        if (name == this->VERSION_OPTION_NAME || name == this->HELP_OPTION_NAME || name == this->DEFAULT_OPTION_NAME) {
-          continue;
-        }
-        stream << "  --" << std::setw(15) << std::left << name
-               << std::setw(15) << std::left << option._prop
-               << std::setw(15) << std::left << option._arg->type()
-               << option._desc << '\n';
-      }
-      // display help docs for 'help' and 'version' options
-      stream << "\n  --" << std::setw(15) << std::left << this->HELP_OPTION_NAME
-             << std::setw(15) << std::left << helpOptionIter->second._prop
-             << std::setw(15) << std::left << helpOptionIter->second._arg->type()
-             << helpOptionIter->second._desc;
-      stream << "\n  --" << std::setw(15) << std::left << this->VERSION_OPTION_NAME
-             << std::setw(15) << std::left << versionOptionIter->second._prop
-             << std::setw(15) << std::left << versionOptionIter->second._arg->type()
-             << versionOptionIter->second._desc;
-      // the tail of the help docs
-      stream << "\n\nhelp docs for program \"" + programName + "\"";
-      this->_options.at(this->HELP_OPTION_NAME)._arg->setArgv({stream.str()});
-      return *this;
+      return os;
     }
 
-    /**
-     * @brief automatically generate the version of the program according to the set options
-     *
-     * @return OptionParser&
-     */
-    OptionParser &autoGenerateVersion() {
-      this->_options.at(this->VERSION_OPTION_NAME)._arg->setArgv({"0.0.1"});
-      return *this;
-    }
+  } // namespace ns_priv
 
-  private:
-    std::unordered_map<std::string, Option> _options;
+#define FLAGS_INSERT_OPTION(optName, varName, varDefault, var, desc, prop, argType) \
+  ns_flags_v2::ns_priv::parser                                                      \
+      .insert({optName, std::make_shared<ns_flags_v2::ns_priv::Option>(optName, #varName, varDefault, var, desc, prop, argType)});
 
-    const std::string HELP_OPTION_NAME = "help";
-    const std::string VERSION_OPTION_NAME = "version";
-    const std::string DEFAULT_OPTION_NAME = "def-opt";
-  };
+#define FLAGS_DEF(builtInType, argType, varName, optName, desc, prop, ...)                   \
+  builtInType flags_##varName = builtInType{__VA_ARGS__};                                    \
+  FLAGS_INSERT_OPTION(#optName, flags_##varName, (void *)(new builtInType(flags_##varName)), \
+                      (void *)(&flags_##varName), desc, prop,                                \
+                      argType);
 
   /**
-   * @brief overload the operator '<<' for 'OptionParser'
+   * @attention Here are the functions and macros you will use.
    */
-  std::ostream &operator<<(std::ostream &os, const OptionParser &parser) {
-    os << "OptionParser Info: {\n";
-    for (const auto &elem : parser._options) {
-      os << "  " << elem.second << ";\n";
-    }
-    os << "}";
-    return os;
-  }
-#undef THROW_EXCEPTION
-#undef EMPTY_STRVEC_HANDLER
 
-#pragma endregion
-} // namespace ns_flags
+  static void setVersion(const std::string &version) {
+    ns_priv::parser.setVersion(version);
+  }
+
+  static void setHelpDocs(const std::string &help) {
+    ns_priv::parser.setHelpDocs(help);
+  }
+
+  static void setupFlags(int argc, char const *argv[]) {
+    return ns_priv::parser.setupFlags(argc, argv);
+  }
+
+/**
+ * Macros for adding options for different parameter types
+ */
+#define FLAGS_DEF_INT(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(int, ns_flags_v2::ns_priv::ArgType::INT, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_INT_VEC(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::vector<int>, ns_flags_v2::ns_priv::ArgType::INT_VEC, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_FLOAT(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(float, ns_flags_v2::ns_priv::ArgType::FLOAT, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_FLOAT_VEC(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::vector<float>, ns_flags_v2::ns_priv::ArgType::FLOAT_VEC, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_DOUBLE(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(double, ns_flags_v2::ns_priv::ArgType::DOUBLE, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_DOUBLE_VEC(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::vector<double>, ns_flags_v2::ns_priv::ArgType::DOUBLE_VEC, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_BOOL(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(bool, ns_flags_v2::ns_priv::ArgType::BOOL, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_BOOL_VEC(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::vector<bool>, ns_flags_v2::ns_priv::ArgType::BOOL_VEC, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_STRING(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::string, ns_flags_v2::ns_priv::ArgType::STRING, varName, optName, desc, prop, __VA_ARGS__)
+
+#define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...) \
+  FLAGS_DEF(std::vector<std::string>, ns_flags_v2::ns_priv::ArgType::STRING_VEC, varName, optName, desc, prop, __VA_ARGS__)
+/**
+ * Define macros that do not require option parameters
+ */
+#define FLAGS_DEF_NO_OPTION(type, varName, desc, prop, ...) \
+  FLAGS_DEF_##type(varName, __NOPT__, desc, prop, __VA_ARGS__)
+
+/**
+ * Developers can judge the input value by adding assertion function to the option to see whether it is valid
+ * If the option to add an assertion function is not set in advance, an exception will be thrown to the developer
+ */
+#define FLAGS_ASSERT(builtInType, optName, invaildMsg, fun)                                                                \
+  if (ns_flags_v2::ns_priv::parser.find(#optName) == ns_flags_v2::ns_priv::parser.cend()) {                                \
+    _FLAG_THROW_EXCEPTION_DEV_(FLAGS_SET_ASSERT,                                                                           \
+                               "you cannot add an assertion function for an undefined option named '--" + #optName + "'"); \
+  } else {                                                                                                                 \
+    ns_flags_v2::ns_priv::parser.find(#optName)->second->_assert = [](void *val) -> void {                                 \
+      if (!(fun(*(builtInType *)(val)))) {                                                                                 \
+        _FLAG_THROW_EXCEPTION_(FLAGS_SET_ASSERT,                                                                           \
+                               "the value for option '--" + #optName + "' is invalid: \"" + invaildMsg + "\"");            \
+      }                                                                                                                    \
+    };                                                                                                                     \
+  }
+
+/**
+ * Define assertion function macros for different type
+ */
+#define FLAGS_ASSERT_INT(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(int, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_INT_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<int>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_FLOAT(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(float, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_FLOAT_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<float>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_DOUBLE(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(double, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_DOUBLE_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<double>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_BOOL(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(bool, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_BOOL_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<bool>, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_STRING(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::string, optName, invaildMsg, fun)
+
+#define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun) \
+  FLAGS_ASSERT(std::vector<std::string>, optName, invaildMsg, fun)
+
+} // namespace ns_flags_v2
+
+#endif

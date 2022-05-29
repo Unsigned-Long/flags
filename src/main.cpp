@@ -1,56 +1,55 @@
-#include "include/flags.hpp"
-
-using namespace ns_flags;
+#include "flags-v2.hpp"
 
 int main(int argc, char const *argv[]) {
-  /**
-   * @brief try-catch is not necessary but it is strongly recommended,
-   * because you can get a lot of advice when there are errors in your code
-   */
   try {
-    OptionParser parser;
-    /**
-     * @brief define some kinds of arguements
-     * [int, std::string, bool, double]
-     * std::vector<[int, std::string, bool, double]>
-     */
-    parser.addOption<IntArg>("id", 10, "the id of current thread");
-    parser.addOption<StringArg>("usr", "null", "the name of usr");
-    parser.addOption<BoolArg>("sex", true,
-                              "the sex of usr [male: true, female: false]");
-    parser.addOption<DoubleArg>("height", 1.7, "the height of usr", OptionProp::REQUIRED);
-    parser.addOption<IntVecArg>("ids", {1, 2, 3}, "the ids of threads");
-    parser.addOption<StringVecArg>("lans", {"cpp", "python"},
-                                   "the used langusges of usr");
-    parser.addOption<BoolVecArg>("choice", {true, false}, "the choice of usr");
-    parser.addOption<DoubleVecArg>("scores", {2.3, 4.5}, "the score of usr");
-    /**
-     * @brief set version and help docs
-     * @attention if you do not set the help docs, then the help docs
-     * will generate automatically
-     */
-    parser.setVersion("2.0.0");
-    // parser.set_help("");
+    FLAGS_DEF_INT(age, age, "the age of the student", ns_flags_v2::OptionProp::OPTIONAL, 18);
+    FLAGS_ASSERT_INT(age, "age must be greater than 0", [](int age) {
+      return age > 0;
+    });
 
-    parser.setDefaultOption<StringVecArg>({""}, "the default option", OptionProp::REQUIRED);
-    /**
-     * @brief finally, you can set up the parser and then use these arguements
-     */
-    parser.setupParser(argc, argv);
+    FLAGS_DEF_INT_VEC(odds, odds, "the odd number(s)", ns_flags_v2::OptionProp::OPTIONAL, 1, 3);
+    FLAGS_ASSERT_INT_VEC(odds, "not all numbers entered are odd", [](const std::vector<int> &vec) {
+      for (const auto &elem : vec) {
+        if (elem % 2 == 0) {
+          return false;
+        }
+      }
+      return true;
+    });
 
-    /**
-     * @brief print the info of arguements
-     */
-    std::cout << parser << std::endl;
-    std::cout << parser.getDefaultOptionInfo<StringVecArg>() << std::endl;
+    FLAGS_DEF_FLOAT(height, height, "the height", ns_flags_v2::OptionProp::OPTIONAL, 174.5f);
+    FLAGS_ASSERT_FLOAT(height, "the value of height must be positive", [](float val) {
+      return val > 0.0f;
+    });
 
-    /**
-     * @brief use the arguements
-     */
-    auto id = parser.getOptionArgv<IntArg>("id");
-    std::cout << "the 'id' I get is: " << id << std::endl;
+    FLAGS_DEF_FLOAT_VEC(floatVals, fvs, "the float-type parameter(s)", ns_flags_v2::OptionProp::OPTIONAL, 3.14f, 2.71f, 1.414f);
+
+    FLAGS_DEF_DOUBLE(weight, weight, "the weight", ns_flags_v2::OptionProp::OPTIONAL, 60.0);
+
+    FLAGS_DEF_DOUBLE_VEC(doubleVals, dvs, "the double-type parameter(s)", ns_flags_v2::OptionProp::OPTIONAL, 1.1, 2.2);
+
+    FLAGS_DEF_BOOL(sex, sex, "the sex(male[1], female[0])", ns_flags_v2::OptionProp::REQUIRED, true);
+
+    FLAGS_DEF_BOOL_VEC(boolVals, bvs, "the bool-type parameter(s)", ns_flags_v2::OptionProp::REQUIRED, true, false);
+
+    FLAGS_DEF_STRING(name, name, "the name", ns_flags_v2::OptionProp::REQUIRED);
+    FLAGS_ASSERT_STRING(name, "the name string cannot be an empty string", [](const std::string &str) {
+      return !str.empty();
+    });
+
+    FLAGS_DEF_STRING_VEC(likes, likes, "the likes", ns_flags_v2::OptionProp::OPTIONAL, "eat", "sleep");
+
+    FLAGS_DEF_NO_OPTION(STRING, note, "a note", ns_flags_v2::OptionProp::OPTIONAL, "hello, world");
+
+    std::cout << ns_flags_v2::ns_priv::parser << std::endl;
+
+    ns_flags_v2::setupFlags(argc, argv);
+
+    std::cout << ns_flags_v2::ns_priv::parser << std::endl;
+
   } catch (const std::exception &e) {
     std::cerr << e.what() << '\n';
   }
+
   return 0;
 }
