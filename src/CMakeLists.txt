@@ -6,4 +6,4 @@ add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 
 set(CMAKE_INSTALL_PREFIX /usr/local)
 
-install(FILES include/flags-v2.hpp DESTINATION include/artwork/flags)
+install(FILES include/flags.hpp DESTINATION include/artwork/flags)
