@@ -22,7 +22,7 @@
 #include <utility>
 #include <vector>
 
-namespace ns_flags_v2 {
+namespace ns_flags {
   /**
    * @brief throw exceptions for this lib
    */
@@ -372,7 +372,7 @@ namespace ns_flags_v2 {
 
         for (int i = 1; i != argc; ++i) {
           std::string str = argv[i];
-          if (ns_flags_v2::ns_priv::OptionParser::isAnOption(str)) {
+          if (ns_flags::ns_priv::OptionParser::isAnOption(str)) {
             curOption = str.substr(2);
             inputArgs[curOption] = std::vector<std::string>();
             optNames.push_back(curOption);
@@ -468,14 +468,14 @@ namespace ns_flags_v2 {
             if (inputOpt.empty()) {
               opt.assignVar<bool>(true);
             } else {
-              opt.assignVar<bool>(ns_flags_v2::ns_priv::OptionParser::toBool(inputOpt.front()));
+              opt.assignVar<bool>(ns_flags::ns_priv::OptionParser::toBool(inputOpt.front()));
             }
             break;
           case ArgType::BOOL_VEC:
             if (!inputOpt.empty()) {
               std::vector<bool> vec;
               for (const auto &elem : inputOpt) {
-                vec.push_back(ns_flags_v2::ns_priv::OptionParser::toBool(elem));
+                vec.push_back(ns_flags::ns_priv::OptionParser::toBool(elem));
               }
               opt.assignVar<std::vector<bool>>(vec);
             }
@@ -603,7 +603,7 @@ namespace ns_flags_v2 {
        * @param str the string
        */
       static bool toBool(const std::string &str) {
-        std::string val = ns_flags_v2::ns_priv::OptionParser::tolower(str);
+        std::string val = ns_flags::ns_priv::OptionParser::tolower(str);
         bool b;
         if (val == "on" || val == "1" || val == "true") {
           b = true;
@@ -630,8 +630,8 @@ namespace ns_flags_v2 {
   } // namespace ns_priv
 
 #define FLAGS_INSERT_OPTION(optName, varName, varDefault, var, desc, prop, argType) \
-  ns_flags_v2::ns_priv::parser                                                      \
-      .insert({optName, std::make_shared<ns_flags_v2::ns_priv::Option>(optName, #varName, varDefault, var, desc, prop, argType)});
+  ns_flags::ns_priv::parser                                                      \
+      .insert({optName, std::make_shared<ns_flags::ns_priv::Option>(optName, #varName, varDefault, var, desc, prop, argType)});
 
 #define FLAGS_DEF(builtInType, argType, varName, optName, desc, prop, ...)                   \
   builtInType flags_##varName = builtInType{__VA_ARGS__};                                    \
@@ -659,34 +659,34 @@ namespace ns_flags_v2 {
  * Macros for adding options for different parameter types
  */
 #define FLAGS_DEF_INT(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(int, ns_flags_v2::ns_priv::ArgType::INT, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(int, ns_flags::ns_priv::ArgType::INT, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_INT_VEC(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::vector<int>, ns_flags_v2::ns_priv::ArgType::INT_VEC, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::vector<int>, ns_flags::ns_priv::ArgType::INT_VEC, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_FLOAT(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(float, ns_flags_v2::ns_priv::ArgType::FLOAT, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(float, ns_flags::ns_priv::ArgType::FLOAT, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_FLOAT_VEC(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::vector<float>, ns_flags_v2::ns_priv::ArgType::FLOAT_VEC, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::vector<float>, ns_flags::ns_priv::ArgType::FLOAT_VEC, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_DOUBLE(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(double, ns_flags_v2::ns_priv::ArgType::DOUBLE, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(double, ns_flags::ns_priv::ArgType::DOUBLE, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_DOUBLE_VEC(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::vector<double>, ns_flags_v2::ns_priv::ArgType::DOUBLE_VEC, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::vector<double>, ns_flags::ns_priv::ArgType::DOUBLE_VEC, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_BOOL(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(bool, ns_flags_v2::ns_priv::ArgType::BOOL, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(bool, ns_flags::ns_priv::ArgType::BOOL, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_BOOL_VEC(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::vector<bool>, ns_flags_v2::ns_priv::ArgType::BOOL_VEC, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::vector<bool>, ns_flags::ns_priv::ArgType::BOOL_VEC, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_STRING(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::string, ns_flags_v2::ns_priv::ArgType::STRING, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::string, ns_flags::ns_priv::ArgType::STRING, varName, optName, desc, prop, __VA_ARGS__)
 
 #define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...) \
-  FLAGS_DEF(std::vector<std::string>, ns_flags_v2::ns_priv::ArgType::STRING_VEC, varName, optName, desc, prop, __VA_ARGS__)
+  FLAGS_DEF(std::vector<std::string>, ns_flags::ns_priv::ArgType::STRING_VEC, varName, optName, desc, prop, __VA_ARGS__)
 /**
  * Define macros that do not require option parameters
  */
@@ -698,11 +698,11 @@ namespace ns_flags_v2 {
  * If the option to add an assertion function is not set in advance, an exception will be thrown to the developer
  */
 #define FLAGS_ASSERT(builtInType, optName, invaildMsg, fun)                                                                \
-  if (ns_flags_v2::ns_priv::parser.find(#optName) == ns_flags_v2::ns_priv::parser.cend()) {                                \
+  if (ns_flags::ns_priv::parser.find(#optName) == ns_flags::ns_priv::parser.cend()) {                                \
     _FLAG_THROW_EXCEPTION_DEV_(FLAGS_SET_ASSERT,                                                                           \
                                "you cannot add an assertion function for an undefined option named '--" + #optName + "'"); \
   } else {                                                                                                                 \
-    ns_flags_v2::ns_priv::parser.find(#optName)->second->_assert = [](void *val) -> void {                                 \
+    ns_flags::ns_priv::parser.find(#optName)->second->_assert = [](void *val) -> void {                                 \
       if (!(fun(*(builtInType *)(val)))) {                                                                                 \
         _FLAG_THROW_EXCEPTION_(FLAGS_SET_ASSERT,                                                                           \
                                "the value for option '--" + #optName + "' is invalid: \"" + invaildMsg + "\"");            \
@@ -743,6 +743,6 @@ namespace ns_flags_v2 {
 #define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun) \
   FLAGS_ASSERT(std::vector<std::string>, optName, invaildMsg, fun)
 
-} // namespace ns_flags_v2
+} // namespace ns_flags
 
 #endif
