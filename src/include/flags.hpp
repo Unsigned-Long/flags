@@ -569,7 +569,7 @@ namespace ns_flags {
        * @return false
        */
       static bool isAnOption(const std::string &str) {
-        return str.size() > 3 && str.substr(0, 2) == "--";
+        return str.size() > 2 && str.substr(0, 2) == "--";
       }
 
       /**
