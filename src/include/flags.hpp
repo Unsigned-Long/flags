@@ -232,7 +232,8 @@ namespace ns_flags {
                 if (opt.property == OptionProp::OPTIONAL) {
                     continue;
                 }
-                if (inputArgs.find(optName) == inputArgs.cend()) {
+                auto iter = inputArgs.find(optName);
+                if (iter == inputArgs.cend()) {
                     if (optName == DEFAULT_OPTION_NAME) {
                         FLAGS_THROW_EXCEPTION(
                                 SetupFlags, "the default option is 'OptionProp::REQUIRED', but you didn't pass it"
@@ -243,6 +244,11 @@ namespace ns_flags {
                                 "the option named '--" + optName + "' is 'OptionProp::REQUIRED', but you didn't use it"
                         );
                     }
+                } else if (iter->second.empty()) {
+                    FLAGS_THROW_EXCEPTION(
+                            SetupFlags, "the option named '--" + optName +
+                                        "' is 'OptionProp::REQUIRED', you should pass some arguments to it"
+                    );
                 }
             }
 
