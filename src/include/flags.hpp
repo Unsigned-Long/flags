@@ -188,7 +188,7 @@ namespace ns_flags {
                 this->AutoGenHelpDocs(argv[0]);
             }
 
-            std::map<std::string, std::vector<std::string>> inputArgs;
+            std::map<std::string, std::vector<std::string>> optionInputArgs;
             std::vector<std::string> optNames;
             std::string curOption = DEFAULT_OPTION_NAME;
 
@@ -196,7 +196,7 @@ namespace ns_flags {
                 std::string str = argv[i];
                 if (IsAnOption(str)) {
                     curOption = str.substr(2);
-                    inputArgs[curOption] = std::vector<std::string>();
+                    optionInputArgs[curOption] = std::vector<std::string>();
                     optNames.push_back(curOption);
                     // is help or version options
                     if (curOption == "help") {
@@ -208,15 +208,15 @@ namespace ns_flags {
                         );
                     }
                 } else {
-                    inputArgs[curOption].push_back(str);
+                    optionInputArgs[curOption].push_back(str);
                 }
             }
 
             // the 'no-option' option is not set in the current program but user pass the 'no-option' argv(s)
             // so we need to remove it.
             if (this->find(DEFAULT_OPTION_NAME) == this->cend()) {
-                if (inputArgs.find(DEFAULT_OPTION_NAME) != inputArgs.cend()) {
-                    inputArgs.erase(DEFAULT_OPTION_NAME);
+                if (optionInputArgs.find(DEFAULT_OPTION_NAME) != optionInputArgs.cend()) {
+                    optionInputArgs.erase(DEFAULT_OPTION_NAME);
                 }
             }
 
@@ -232,8 +232,8 @@ namespace ns_flags {
                 if (opt.property == OptionProp::OPTIONAL) {
                     continue;
                 }
-                auto iter = inputArgs.find(optName);
-                if (iter == inputArgs.cend()) {
+                auto iter = optionInputArgs.find(optName);
+                if (iter == optionInputArgs.cend()) {
                     if (optName == DEFAULT_OPTION_NAME) {
                         FLAGS_THROW_EXCEPTION(
                                 SetupFlags, "the default option is 'OptionProp::REQUIRED', but you didn't pass it"
@@ -253,9 +253,14 @@ namespace ns_flags {
             }
 
             // assert and assign
-            for (const auto &[optName, inputOpt]: inputArgs) {
-                auto &opt = this->find(optName)->second;
-                opt.variable.value->DataFromStringVector(inputOpt);
+            for (const auto &[optionName, inputArgs]: optionInputArgs) {
+                auto &opt = this->find(optionName)->second;
+                if (auto msg = opt.variable.value->DataFromStringVector(inputArgs);msg) {
+                    FLAGS_THROW_EXCEPTION(
+                            AssertOptionValue,
+                            "the value(s) for option '--" + optionName + "' is(are) invalid: \"" + *msg + "\""
+                    );
+                }
                 opt.AssertOptionValue();
             }
         }

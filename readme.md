@@ -1,9 +1,9 @@
-# Flags-[V2]
+# Flags-[V3]
 
 >
->___name: shlChen___
+>___name: shlchen | ULong2___
 
->___E-Mail: 3079625093@qq.com___
+>___E-Mail: shlchen@whu.edu.cn___
 
 [TOC]
 
@@ -185,4 +185,47 @@ const typename ArgumentType::data_type &
 AddDefaultOption(const typename ArgumentType::data_type &defaultValue,
 const std::string &description, const OptionProp &property,
 assertor_type<ArgumentType> assertor = nullptr)
+```
+
+## 4. Self-define Option Example
+firstly, you should write the code below:
+```c++
+struct Person {
+    std::string name;
+    float age;
+    bool sex;
+
+    friend std::ostream &operator<<(std::ostream &os, const Person &person) {
+        os << std::boolalpha;
+        os << "name: " << person.name << " age: " << person.age << " sex: " << person.sex;
+        return os;
+    }
+};
+
+FLAGS_ARGUMENT_TEMPLATE_GENERATOR_BEGIN(PersonOption, Person)
+
+    std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) override {
+        if (strVec.size() < 3) {
+            return "3 elems are needed to create a person";
+        }
+        data.name = strVec.at(0);
+        data.age = std::stof(strVec.at(1));
+        data.sex = ns_flags::Utils::StrToBool(strVec.at(2));
+        return {};
+    }
+FLAGS_ARGUMENT_TEMPLATE_GENERATOR_END
+```
+than:
+```c++
+int main(int argc, char const *argv[]) {
+    try {
+        using namespace ns_flags;
+        const auto &p = parser.AddOption<PersonOption>("p", {}, "the person", OptionProp::REQUIRED);
+        parser.SetupFlags(argc, argv);
+        LOG_VAR(p)
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << '\n';
+    }
+    return 0;
+}
 ```
