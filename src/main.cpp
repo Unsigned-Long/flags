@@ -47,6 +47,7 @@ int main(int argc, char const *argv[]) {
         const auto &note = parser.AddDefaultOption<String>(
                 "hello, world!", "a note", OptionProp::OPTIONAL
         );
+        LOG_VAR(parser)
         parser.SetupFlags(argc, argv);
         LOG_VAR(age, odds, height, note)
         LOG_VAR(parser)
