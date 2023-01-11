@@ -102,7 +102,7 @@ namespace ns_flags {
                 if (auto msg = this->assertor(this->variable.value);msg) {
                     FLAGS_THROW_EXCEPTION(
                             AssertOptionValue,
-                            "the value for option '--" + optionName + "' is invalid: \"" + *msg + "\""
+                            "the value(s) for option '--" + optionName + "' is(are) invalid: \"" + *msg + "\""
                     );
                 }
             }
@@ -129,13 +129,15 @@ namespace ns_flags {
     public:
         using parent_type = std::unordered_map<std::string, ns_priv::Option>;
         using parent_type::parent_type;
+        template<class ArgumentType>
+        using assertor_type = std::function<std::optional<std::string>(const typename ArgumentType::data_type &)>;
 
     private:
         // Determine whether to automatically generate corresponding content
         // If the user explicitly sets the corresponding content, we refuse to generate it automatically
         bool _autoGenHelpDocs;
         bool _autoGenVersion;
-        const std::string DEFAULT_OPTION_NAME = "__DEFAULT__";
+        const std::string DEFAULT_OPTION_NAME = "def-opt";
 
     public:
         OptionParser() : _autoGenHelpDocs(true), _autoGenVersion(true) {
@@ -256,9 +258,15 @@ namespace ns_flags {
         const typename ArgumentType::data_type &
         AddOption(const std::string &optionName, const typename ArgumentType::data_type &defaultValue,
                   const std::string &description, const OptionProp &property,
-                  ns_priv::Option::assertor_type assertor = nullptr) {
+                  assertor_type<ArgumentType> assertor = nullptr) {
+            ns_priv::Option::assertor_type tarAssertor = nullptr;
+            if (assertor) {
+                tarAssertor = [assertor](const std::shared_ptr<Argument> &obj) -> std::optional<std::string> {
+                    return assertor(obj->template Boost<ArgumentType>()->GetData());
+                };
+            }
             auto option = ns_priv::Option(
-                    optionName, Variable::Create<ArgumentType>(defaultValue), description, property, assertor
+                    optionName, Variable::Create<ArgumentType>(defaultValue), description, property, tarAssertor
             );
             this->insert({optionName, option});
             return this->at(optionName).variable.value->template Boost<ArgumentType>()->GetData();
@@ -268,7 +276,7 @@ namespace ns_flags {
         const typename ArgumentType::data_type &
         AddDefaultOption(const typename ArgumentType::data_type &defaultValue,
                          const std::string &description, const OptionProp &property,
-                         ns_priv::Option::assertor_type assertor = nullptr) {
+                         assertor_type<ArgumentType> assertor = nullptr) {
             return AddOption<ArgumentType>(DEFAULT_OPTION_NAME, defaultValue, description, property, assertor);
         }
 
@@ -283,7 +291,7 @@ namespace ns_flags {
             // the main usage of this program
             stream << "Usage: " << programName;
             if (this->find(DEFAULT_OPTION_NAME) != this->cend()) {
-                stream << " [no-opt argv(s)]";
+                stream << " [def-opt argv(s)]";
             }
             stream << " [--optName argv(s)] ...\n\n";
 
@@ -296,7 +304,7 @@ namespace ns_flags {
 
             if (this->find(DEFAULT_OPTION_NAME) != this->cend()) {
                 auto &nopt = this->at(DEFAULT_OPTION_NAME);
-                stream << "  --" << std::setw(15) << std::left << "no-opt"
+                stream << "  --" << std::setw(15) << std::left << "def-opt"
                        << std::setw(15) << std::left << nopt.property
                        << std::setw(15) << std::left << nopt.variable.defaultValue->TypeNameString()
                        << nopt.description << "\n\n";

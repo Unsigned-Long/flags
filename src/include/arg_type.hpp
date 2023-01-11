@@ -158,6 +158,78 @@ namespace ns_flags {
     ARGUMENT_TEMPLATE_GENERATOR_END
 
     /**
+     * float type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Float, float)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = std::stof(strVec.front());
+            }
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * float vector type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(FloatVec, std::vector<float>)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            data.resize(strVec.size());
+            std::transform(strVec.cbegin(), strVec.cend(), data.begin(), [](const std::string &str) {
+                return std::stof(str);
+            });
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * double type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Double, double)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = std::stod(strVec.front());
+            }
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * double vector type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(DoubleVec, std::vector<double>)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            data.resize(strVec.size());
+            std::transform(strVec.cbegin(), strVec.cend(), data.begin(), [](const std::string &str) {
+                return std::stod(str);
+            });
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * string type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(String, std::string)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = strVec.front();
+            }
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * string vector type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(StringVec, std::vector<std::string>)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            data = strVec;
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
      * help type argument
      */
     ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Help, std::string)
