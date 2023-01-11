@@ -68,19 +68,19 @@ int main(int argc, char const *argv[]) {
 before setup:
 
 ```cpp
-{'optName': "likes", 'varName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [eat, sleep], 'desc': "the likes", 'prop': Optional, 'argType': STRING_VEC}
-{'optName': "name", 'varName': "flags_name", 'varDefVal': "", 'varVal': "", 'desc': "the name", 'prop': Required, 'argType': STRING}
-{'optName': "bvs", 'varName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [1, 0], 'desc': "the bool-type parameter(s)", 'prop': Required, 'argType': BOOL_VEC}
-{'optName': "sex", 'varName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'desc': "the sex(male[1], female[0])", 'prop': Required, 'argType': BOOL}
-{'optName': "weight", 'varName': "flags_weight", 'varDefVal': 60, 'varVal': 60, 'desc': "the weight", 'prop': Optional, 'argType': DOUBLE}
-{'optName': "fvs", 'varName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [3.14, 2.71, 1.414], 'desc': "the float-type parameter(s)", 'prop': Optional, 'argType': FLOAT_VEC}
-{'optName': "height", 'varName': "flags_height", 'varDefVal': 174.5, 'varVal': 174.5, 'desc': "the height", 'prop': Optional, 'argType': FLOAT}
-{'optName': "odds", 'varName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [1, 3], 'desc': "the odd number(s)", 'prop': Optional, 'argType': INT_VEC}
-{'optName': "version", 'varName': "null", 'value': "", 'desc': "display the version of this program", 'prop': Optional, 'argType': VERSION}
-{'optName': "__NOPT__", 'varName': "flags_note", 'varDefVal': "hello, world", 'varVal': "hello, world", 'desc': "a note", 'prop': Optional, 'argType': STRING}
-{'optName': "dvs", 'varName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [1.1, 2.2], 'desc': "the double-type parameter(s)", 'prop': Optional, 'argType': DOUBLE_VEC}
-{'optName': "age", 'varName': "flags_age", 'varDefVal': 18, 'varVal': 18, 'desc': "the age of the student", 'prop': Optional, 'argType': INT}
-{'optName': "help", 'varName': "null", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': HELP}
+{'optionName': "likes", 'variableName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [eat, sleep], 'description': "the likes", 'property': Optional, 'ArgType': STRING_VEC}
+{'optionName': "name", 'variableName': "flags_name", 'varDefVal': "", 'varVal': "", 'description': "the name", 'property': Required, 'ArgType': STRING}
+{'optionName': "bvs", 'variableName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [1, 0], 'description': "the bool-type parameter(s)", 'property': Required, 'ArgType': BOOL_VEC}
+{'optionName': "sex", 'variableName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'description': "the sex(male[1], female[0])", 'property': Required, 'ArgType': BOOL}
+{'optionName': "weight", 'variableName': "flags_weight", 'varDefVal': 60, 'varVal': 60, 'description': "the weight", 'property': Optional, 'ArgType': DOUBLE}
+{'optionName': "fvs", 'variableName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [3.14, 2.71, 1.414], 'description': "the float-type parameter(s)", 'property': Optional, 'ArgType': FLOAT_VEC}
+{'optionName': "height", 'variableName': "flags_height", 'varDefVal': 174.5, 'varVal': 174.5, 'description': "the height", 'property': Optional, 'ArgType': FLOAT}
+{'optionName': "odds", 'variableName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [1, 3], 'description': "the odd number(s)", 'property': Optional, 'ArgType': INT_VEC}
+{'optionName': "version", 'variableName': "null", 'value': "", 'description': "display the version of this program", 'property': Optional, 'ArgType': VERSION}
+{'optionName': "__NOPT__", 'variableName': "flags_note", 'varDefVal': "hello, world", 'varVal': "hello, world", 'description': "a note", 'property': Optional, 'ArgType': STRING}
+{'optionName': "dvs", 'variableName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [1.1, 2.2], 'description': "the double-type parameter(s)", 'property': Optional, 'ArgType': DOUBLE_VEC}
+{'optionName': "age", 'variableName': "flags_age", 'varDefVal': 18, 'varVal': 18, 'description': "the age of the student", 'property': Optional, 'ArgType': INT}
+{'optionName': "help", 'variableName': "null", 'value': "...", 'description': "display the help docs", 'property': Optional, 'ArgType': HELP}
 ```
 
 run this command below to set up parser:
@@ -92,19 +92,19 @@ run this command below to set up parser:
 will output:
 
 ```cpp
-{'optName': "likes", 'varName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [running, swimming], 'desc': "the likes", 'prop': Optional, 'argType': STRING_VEC}
-{'optName': "name", 'varName': "flags_name", 'varDefVal': "", 'varVal': "shlChen", 'desc': "the name", 'prop': Required, 'argType': STRING}
-{'optName': "bvs", 'varName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [0, 1, 1, 0, 0, 1], 'desc': "the bool-type parameter(s)", 'prop': Required, 'argType': BOOL_VEC}
-{'optName': "sex", 'varName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'desc': "the sex(male[1], female[0])", 'prop': Required, 'argType': BOOL}
-{'optName': "weight", 'varName': "flags_weight", 'varDefVal': 60, 'varVal': 59.9, 'desc': "the weight", 'prop': Optional, 'argType': DOUBLE}
-{'optName': "fvs", 'varName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [1, 2, 3], 'desc': "the float-type parameter(s)", 'prop': Optional, 'argType': FLOAT_VEC}
-{'optName': "height", 'varName': "flags_height", 'varDefVal': 174.5, 'varVal': 173.3, 'desc': "the height", 'prop': Optional, 'argType': FLOAT}
-{'optName': "odds", 'varName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [5, 7, 9], 'desc': "the odd number(s)", 'prop': Optional, 'argType': INT_VEC}
-{'optName': "version", 'varName': "null", 'value': "1.0.0", 'desc': "display the version of this program", 'prop': Optional, 'argType': VERSION}
-{'optName': "__NOPT__", 'varName': "flags_note", 'varDefVal': "hello, world", 'varVal': "That's all!", 'desc': "a note", 'prop': Optional, 'argType': STRING}
-{'optName': "dvs", 'varName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [2.12, 2.13], 'desc': "the double-type parameter(s)", 'prop': Optional, 'argType': DOUBLE_VEC}
-{'optName': "age", 'varName': "flags_age", 'varDefVal': 18, 'varVal': 14, 'desc': "the age of the student", 'prop': Optional, 'argType': INT}
-{'optName': "help", 'varName': "null", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': HELP}
+{'optionName': "likes", 'variableName': "flags_likes", 'varDefVal': [eat, sleep], 'varVal': [running, swimming], 'description': "the likes", 'property': Optional, 'ArgType': STRING_VEC}
+{'optionName': "name", 'variableName': "flags_name", 'varDefVal': "", 'varVal': "shlChen", 'description': "the name", 'property': Required, 'ArgType': STRING}
+{'optionName': "bvs", 'variableName': "flags_boolVals", 'varDefVal': [1, 0], 'varVal': [0, 1, 1, 0, 0, 1], 'description': "the bool-type parameter(s)", 'property': Required, 'ArgType': BOOL_VEC}
+{'optionName': "sex", 'variableName': "flags_sex", 'varDefVal': 1, 'varVal': 1, 'description': "the sex(male[1], female[0])", 'property': Required, 'ArgType': BOOL}
+{'optionName': "weight", 'variableName': "flags_weight", 'varDefVal': 60, 'varVal': 59.9, 'description': "the weight", 'property': Optional, 'ArgType': DOUBLE}
+{'optionName': "fvs", 'variableName': "flags_floatVals", 'varDefVal': [3.14, 2.71, 1.414], 'varVal': [1, 2, 3], 'description': "the float-type parameter(s)", 'property': Optional, 'ArgType': FLOAT_VEC}
+{'optionName': "height", 'variableName': "flags_height", 'varDefVal': 174.5, 'varVal': 173.3, 'description': "the height", 'property': Optional, 'ArgType': FLOAT}
+{'optionName': "odds", 'variableName': "flags_odds", 'varDefVal': [1, 3], 'varVal': [5, 7, 9], 'description': "the odd number(s)", 'property': Optional, 'ArgType': INT_VEC}
+{'optionName': "version", 'variableName': "null", 'value': "1.0.0", 'description': "display the version of this program", 'property': Optional, 'ArgType': VERSION}
+{'optionName': "__NOPT__", 'variableName': "flags_note", 'varDefVal': "hello, world", 'varVal': "That's all!", 'description': "a note", 'property': Optional, 'ArgType': STRING}
+{'optionName': "dvs", 'variableName': "flags_doubleVals", 'varDefVal': [1.1, 2.2], 'varVal': [2.12, 2.13], 'description': "the double-type parameter(s)", 'property': Optional, 'ArgType': DOUBLE_VEC}
+{'optionName': "age", 'variableName': "flags_age", 'varDefVal': 18, 'varVal': 14, 'description': "the age of the student", 'property': Optional, 'ArgType': INT}
+{'optionName': "help", 'variableName': "null", 'value': "...", 'description': "display the help docs", 'property': Optional, 'ArgType': HELP}
 ```
 
 help option:
@@ -114,7 +114,7 @@ help option:
 ```
 
 ```cpp
-Usage: ./flags-v2 [no-opt argv(s)] [--optName argv(s)] ...
+Usage: ./flags-v2 [no-opt argv(s)] [--optionName argv(s)] ...
 
     Options        Property       Type           Describes
 --------------------------------------------------------------
@@ -176,43 +176,43 @@ static void setupFlags(int argc, char const *argv[]);
 **Macros for adding options for different parameter types:**
 
 ```cpp
-#define FLAGS_DEF_INT(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_INT(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_INT_VEC(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_INT_VEC(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_FLOAT(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_FLOAT(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_FLOAT_VEC(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_FLOAT_VEC(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_DOUBLE(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_DOUBLE(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_DOUBLE_VEC(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_DOUBLE_VEC(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_BOOL(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_BOOL(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_BOOL_VEC(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_BOOL_VEC(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_STRING(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_STRING(variableName, optionName, description, property, ...)
 ```
 
 ```cpp
-#define FLAGS_DEF_STRING_VEC(varName, optName, desc, prop, ...)
+#define FLAGS_DEF_STRING_VEC(variableName, optionName, description, property, ...)
 ```
 
 
@@ -220,7 +220,7 @@ static void setupFlags(int argc, char const *argv[]);
 **Define macros that do not require option**:
 
 ```cpp
-#define FLAGS_DEF_NO_OPTION(type, varName, desc, prop, ...)
+#define FLAGS_DEF_NO_OPTION(type, variableName, description, property, ...)
 ```
 
 
@@ -228,42 +228,42 @@ static void setupFlags(int argc, char const *argv[]);
 **Define assertion function macros for different type:**
 
 ```cpp
-#define FLAGS_ASSERT_INT(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_INT(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_INT_VEC(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_INT_VEC(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_FLOAT(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_FLOAT(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_FLOAT_VEC(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_FLOAT_VEC(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_DOUBLE(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_DOUBLE(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_DOUBLE_VEC(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_DOUBLE_VEC(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_BOOL(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_BOOL(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_BOOL_VEC(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_BOOL_VEC(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_STRING(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_STRING(optionName, invaildMsg, fun)
 ```
 
 ```cpp
-#define FLAGS_ASSERT_STRING_VEC(optName, invaildMsg, fun)
+#define FLAGS_ASSERT_STRING_VEC(optionName, invaildMsg, fun)
 ```
 
