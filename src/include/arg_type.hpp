@@ -14,6 +14,36 @@
 #include "iostream"
 
 namespace ns_flags {
+    struct Utils {
+    public:
+        /**
+         * @brief Converts a string to lowercase
+         *
+         * @param str the string
+         * @return std::string
+         */
+        static std::string Tolower(const std::string &str) {
+            std::string lowerStr;
+            for (const auto i: str) {
+                lowerStr.push_back(static_cast<char>(std::tolower(static_cast<int>(i))));
+            }
+            return lowerStr;
+        }
+
+        static bool StrToBool(const std::string &str) {
+            std::string val = Tolower(str);
+            bool b;
+            if (val == "on" || val == "1" || val == "true" || val.empty()) {
+                b = true;
+            } else if (val == "off" || val == "0" || val == "false") {
+                b = false;
+            } else {
+                b = std::stoi(str);
+            }
+            return b;
+        }
+    };
+
     template<typename ElemType>
     static std::ostream &operator<<(std::ostream &os, const std::vector<ElemType> &vec) {
         os << '[';
@@ -41,9 +71,7 @@ namespace ns_flags {
         template<class BoostType>
         BoostType *Boost() { return dynamic_cast<BoostType *>(this); }
 
-    protected:
-
-        virtual std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) = 0;
+        virtual void DataFromStringVector(const std::vector<std::string> &strVec) = 0;
     };
 
 #define ARGUMENT_TEMPLATE_GENERATOR_BEGIN(ArgType, DataType)                \
@@ -65,11 +93,11 @@ namespace ns_flags {
                                                                             \
     [[nodiscard]] std::string ValueString() const override {                \
       std::stringstream stream;                                             \
-      stream << data;                                                       \
+      stream << std::boolalpha << data;                                     \
       return stream.str();                                                  \
     }                                                                       \
                                                                             \
-    [[nodiscard]] DataType GetData() const {                                \
+    [[nodiscard]] const DataType &GetData() const {                         \
       return data;                                                          \
     }                                                                       \
                                                                             \
@@ -84,13 +112,9 @@ namespace ns_flags {
      */
     ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Int, int)
 
-    protected:
-        std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) override {
-            if (strVec.empty()) {
-                return "At least one parameter is required to initialize 'Int' type argument";
-            } else {
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
                 data = std::stoi(strVec.front());
-                return {};
             }
         }
     ARGUMENT_TEMPLATE_GENERATOR_END
@@ -100,16 +124,59 @@ namespace ns_flags {
      */
     ARGUMENT_TEMPLATE_GENERATOR_BEGIN(IntVec, std::vector<int>)
 
-    protected:
-        std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) override {
-            if (strVec.empty()) {
-                return "At least one parameter is required to initialize 'IntVec' type argument";
-            } else {
-                data.resize(strVec.size());
-                std::transform(strVec.cbegin(), strVec.cend(), data.begin(), [](const std::string &str) {
-                    return std::stoi(str);
-                });
-                return {};
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            data.resize(strVec.size());
+            std::transform(strVec.cbegin(), strVec.cend(), data.begin(), [](const std::string &str) {
+                return std::stoi(str);
+            });
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * bool type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Bool, bool)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = Utils::StrToBool(strVec.front());
+            }
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * bool vector type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(BoolVec, std::vector<bool>)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            data.resize(strVec.size());
+            std::transform(strVec.cbegin(), strVec.cend(), data.begin(), [](const std::string &str) {
+                return Utils::StrToBool(str);
+            });
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * help type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Help, std::string)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = strVec.front();
+            }
+        }
+    ARGUMENT_TEMPLATE_GENERATOR_END
+
+    /**
+     * version type argument
+     */
+    ARGUMENT_TEMPLATE_GENERATOR_BEGIN(Version, std::string)
+
+        void DataFromStringVector(const std::vector<std::string> &strVec) override {
+            if (!strVec.empty()) {
+                data = strVec.front();
             }
         }
     ARGUMENT_TEMPLATE_GENERATOR_END
