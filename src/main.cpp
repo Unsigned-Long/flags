@@ -38,7 +38,7 @@ int main(int argc, char const *argv[]) {
          */
         using namespace ns_flags;
 
-        auto age = parser.AddOption<Int>(
+        const auto &age = parser.AddOption<Int>(
                 "age", 18, "the age of the student", OptionProp::OPTIONAL,
                 [](const Int::data_type &val) -> std::optional<std::string> {
                     if (val > 0) {
@@ -47,7 +47,7 @@ int main(int argc, char const *argv[]) {
                     return "age must be greater than 0";
                 }
         );
-        auto odds = parser.AddOption<IntVec>(
+        const auto &odds = parser.AddOption<IntVec>(
                 "odds", {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
                 [](const IntVec::data_type &vec) -> std::optional<std::string> {
                     for (const auto &item: vec) {
@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
                     return {};
                 }
         );
-        auto height = parser.AddOption<Float>(
+        const auto &height = parser.AddOption<Float>(
                 "height", 174.5f, "the height", OptionProp::OPTIONAL,
                 [](const Float::data_type &val) -> std::optional<std::string> {
                     if (val > 0.0f) {
@@ -68,7 +68,7 @@ int main(int argc, char const *argv[]) {
                     }
                 }
         );
-        auto note = parser.AddDefaultOption<String>(
+        const auto &note = parser.AddDefaultOption<String>(
                 "hello, world!", "a note", OptionProp::OPTIONAL
         );
         parser.SetupFlags(argc, argv);

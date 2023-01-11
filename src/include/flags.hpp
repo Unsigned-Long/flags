@@ -254,6 +254,18 @@ namespace ns_flags {
             }
         }
 
+        /**
+         * @tparam ArgumentType the type of the option's argument
+         *
+         * @param optionName the option name
+         * @param defaultValue the default value of the option argument
+         * @param description the description of this option
+         * @param property the property of this option
+         * @param assertor the assertor to judge whether the entered args are valid
+         * @return the value address of the option argument
+         *
+         * @attention user should use reference to receive the return value
+         */
         template<class ArgumentType>
         const typename ArgumentType::data_type &
         AddOption(const std::string &optionName, const typename ArgumentType::data_type &defaultValue,
@@ -272,6 +284,17 @@ namespace ns_flags {
             return this->at(optionName).variable.value->template Boost<ArgumentType>()->GetData();
         }
 
+        /**
+         * @tparam ArgumentType the type of the option's argument
+         *
+         * @param defaultValue the default value of the default option argument
+         * @param description the description of this default option
+         * @param property the property of this default option
+         * @param assertor the assertor to judge whether the entered args are valid
+         * @return the value address of the default option argument
+         *
+         * @attention user should use reference to receive the return value
+         */
         template<class ArgumentType>
         const typename ArgumentType::data_type &
         AddDefaultOption(const typename ArgumentType::data_type &defaultValue,
