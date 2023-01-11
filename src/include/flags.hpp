@@ -18,6 +18,15 @@
 #include "exception"
 
 namespace ns_flags {
+
+#define FLAGS_THROW_EXCEPTION(where, msg)                                                \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' ] " + \
+                           msg + ". (use option '--help' to get more info)")
+
+#define FLAGS_THROW_EXCEPTION_DEV(where, msg)                                                         \
+  throw std::runtime_error(std::string("[ error from 'lib-flags':'") + #where + "' to developer ] " + \
+                           msg + ".")
+
     enum class OptionProp {
         // the option is optional
         OPTIONAL,
@@ -93,9 +102,14 @@ namespace ns_flags {
             /**
              * @brief assertor for the variable's value
              */
-            void AssertVariable() const {
-                if (this->assertor != nullptr) {
-                    this->assertor(this->variable.value);
+            void AssertOptionValue() const {
+                if (this->assertor == nullptr) { return; }
+
+                if (auto msg = this->assertor(this->variable.value);msg) {
+                    FLAGS_THROW_EXCEPTION(
+                            AssertOptionValue,
+                            "the value for option '--" + optionName + "' is invalid: \"" + *msg + "\""
+                    );
                 }
             }
 
@@ -117,6 +131,8 @@ namespace ns_flags {
             };
         };
     }
+
+#undef FLAGS_THROW_EXCEPTION_DEV
 }
 
 
