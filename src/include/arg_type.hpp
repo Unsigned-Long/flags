@@ -38,6 +38,9 @@ namespace ns_flags {
 
         [[nodiscard]] virtual std::string TypeNameString() const = 0;
 
+        template<class BoostType>
+        BoostType *Boost() { return dynamic_cast<BoostType *>(this); }
+
     protected:
 
         virtual std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) = 0;
@@ -49,13 +52,16 @@ namespace ns_flags {
     using data_type = DataType;                                             \
                                                                             \
   protected:                                                                \
-    data_type data;                                                         \
+    DataType data;                                                          \
                                                                             \
   public:                                                                   \
-    explicit ArgType(const DataType &data = {})                             \
-        : Argument(), data(data) {}                                         \
+    explicit ArgType(const DataType &data = {}) : Argument(), data(data) {} \
                                                                             \
     ~ArgType() override = default;                                          \
+                                                                            \
+    [[nodiscard]] std::string TypeNameString() const override {             \
+      return #ArgType;                                                      \
+    }                                                                       \
                                                                             \
     [[nodiscard]] std::string ValueString() const override {                \
       std::stringstream stream;                                             \
@@ -63,19 +69,15 @@ namespace ns_flags {
       return stream.str();                                                  \
     }                                                                       \
                                                                             \
-  protected:                                                                \
+    [[nodiscard]] DataType GetData() const {                                \
+      return data;                                                          \
+    }                                                                       \
                                                                             \
     friend std::ostream &operator<<(std::ostream &os, const ArgType &obj) { \
       os << obj.TypeNameString() << "{data: " << obj.data << '}';           \
       return os;                                                            \
-    }                                                                       \
-                                                                            \
-    [[nodiscard]] std::string TypeNameString() const override {             \
-      return #ArgType;                                                      \
     }
-
 #define ARGUMENT_TEMPLATE_GENERATOR_END };
-
 
     /**
      * int type argument
