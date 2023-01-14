@@ -42,6 +42,15 @@ namespace ns_flags {
             }
             return b;
         }
+
+        template<class KeyType, class ValueType>
+        static bool MapKeyExist(const std::unordered_map<KeyType, ValueType> &m, const KeyType &key) {
+            return m.find(key) != m.cend();
+        }
+
+        static bool IsALetter(char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
     };
 
     template<typename ElemType>

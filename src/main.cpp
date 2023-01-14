@@ -5,8 +5,10 @@ int main(int argc, char const *argv[]) {
     try {
         using namespace ns_flags;
 
+        parser.SetProgDescription("This is a test program for lib-flags.");
+
         const auto &age = parser.AddOption<Int>(
-                "age", 18, "the age of the student", OptionProp::OPTIONAL,
+                "age", 'a', 18, "the age of the student", OptionProp::OPTIONAL,
                 [](const Int::data_type &val) -> std::optional<std::string> {
                     if (val > 0) {
                         return {};
@@ -47,9 +49,9 @@ int main(int argc, char const *argv[]) {
         const auto &note = parser.AddDefaultOption<String>(
                 "hello, world!", "a note", OptionProp::OPTIONAL
         );
-        LOG_VAR(parser)
+        // LOG_VAR(parser)
         parser.SetupFlags(argc, argv);
-        LOG_VAR(age, odds, height, note)
+        // LOG_VAR(age, odds, height, note)
         LOG_VAR(parser)
     } catch (const std::exception &e) {
         std::cerr << e.what() << '\n';
