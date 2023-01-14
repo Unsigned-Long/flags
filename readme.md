@@ -21,16 +21,21 @@ test code
 int main(int argc, char const *argv[]) {
     try {
         using namespace ns_flags;
-
-        // ...
-        const auto &odds = parser.AddOption<IntVec>(
-                "odds", {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
-                [](const IntVec::data_type &vec) -> std::optional<std::string> {
-                    for (const auto &item: vec) {
-                        if (item % 2 == 0) {
-                            return "not all numbers entered are odd";
-                        }
+        
+        parser.SetProgDescription("This is a test program for lib-flags.");
+        
+        const auto &age = parser.AddOption<Int>(
+                "age", 'a', 18, "the age of the student", OptionProp::OPTIONAL,
+                [](const Int::data_type &val) -> std::optional<std::string> {
+                    if (val > 0) {
+                        return {};
                     }
+                    return "age must be greater than 0";
+                }
+        );
+        const auto &sex = parser.AddOption<Bool>(
+                "sex", 's', false, "the sex of the student", OptionProp::OPTIONAL,
+                [](const Int::data_type &val) -> std::optional<std::string> {
                     return {};
                 }
         );
@@ -61,41 +66,43 @@ int main(int argc, char const *argv[]) {
 before setup:
 
 ```cpp
-{'optionName': "def-opt", 'defaultValue': hello, world!, 'value': hello, world!, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
-{'optionName': "name", 'defaultValue': null, 'value': null, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
-{'optionName': "height", 'defaultValue': 174.5, 'value': 174.5, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
-{'optionName': "odds", 'defaultValue': [1, 3], 'value': [1, 3], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
-{'optionName': "age", 'defaultValue': 18, 'value': 18, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
-{'optionName': "help", 'defaultValue': "...", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': Help, 'hasAssertor': false}
-{'optionName': "version", 'defaultValue': "...", 'value': "...", 'desc': "display the version of this program", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "def-opt", 'optionShortName': "", 'defaultValue': hello, world!, 'value': hello, world!, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
+{'optionLongName': "name", 'optionShortName': "", 'defaultValue': null, 'value': null, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
+{'optionLongName': "height", 'optionShortName': "", 'defaultValue': 174.5, 'value': 174.5, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
+{'optionLongName': "odds", 'optionShortName': "o", 'defaultValue': [1, 3], 'value': [1, 3], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
+{'optionLongName': "sex", 'optionShortName': "s", 'defaultValue': false, 'value': false, 'desc': "the sex of the student", 'prop': Optional, 'argType': Bool, 'hasAssertor': true}
+{'optionLongName': "age", 'optionShortName': "a", 'defaultValue': 18, 'value': 18, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
+{'optionLongName': "help", 'optionShortName': "h", 'defaultValue': "...", 'value': "...", 'desc': "show this help message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "version", 'optionShortName': "v", 'defaultValue': "...", 'value': "...", 'desc': "show the version message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
 ```
 
 run this command below to set up parser:
 
 ```sh
- ./flags-v3 "I'm ULong2" --name ULong2 --age 22 --height 174.0f --odds 9 11 97
-```
+./flags_v3 "I'm ULong2" --name ULong2 -a 22 -s 1 --height 174.0f --odds 9 11 97```
 
 will output:
 
 ```cpp
-{'optionName': "def-opt", 'defaultValue': hello, world!, 'value': I'm ULong2, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
-{'optionName': "name", 'defaultValue': null, 'value': ULong2, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
-{'optionName': "height", 'defaultValue': 174.5, 'value': 174, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
-{'optionName': "odds", 'defaultValue': [1, 3], 'value': [9, 11, 97], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
-{'optionName': "age", 'defaultValue': 18, 'value': 22, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
-{'optionName': "help", 'defaultValue': "...", 'value': "...", 'desc': "display the help docs", 'prop': Optional, 'argType': Help, 'hasAssertor': false}
-{'optionName': "version", 'defaultValue': "...", 'value': "...", 'desc': "display the version of this program", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "def-opt", 'optionShortName': "", 'defaultValue': hello, world!, 'value': I'm ULong2, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
+{'optionLongName': "name", 'optionShortName': "", 'defaultValue': null, 'value': ULong2, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
+{'optionLongName': "height", 'optionShortName': "", 'defaultValue': 174.5, 'value': 174, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
+{'optionLongName': "odds", 'optionShortName': "o", 'defaultValue': [1, 3], 'value': [9, 11, 97], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
+{'optionLongName': "sex", 'optionShortName': "s", 'defaultValue': false, 'value': true, 'desc': "the sex of the student", 'prop': Optional, 'argType': Bool, 'hasAssertor': true}
+{'optionLongName': "age", 'optionShortName': "a", 'defaultValue': 18, 'value': 22, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
+{'optionLongName': "help", 'optionShortName': "h", 'defaultValue': "...", 'value': "...", 'desc': "show this help message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "version", 'optionShortName': "v", 'defaultValue': "...", 'value': "...", 'desc': "show the version message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
 ```
-
 help option:
 
 ```sh
-./flags-v3 --help
+./flags_v3 --help
 ```
 
 ```cpp
-Usage: ./flags-v3 [def-opt argv(s)] [--optName argv(s)] ...
+This is a test program for lib-flags.
+
+Usage: ./flags_v3 [def-opt argv(s)] [opt-name argv(s)] ...
 
     Options        Property       Type           Describes
 --------------------------------------------------------------
@@ -103,56 +110,62 @@ Usage: ./flags-v3 [def-opt argv(s)] [--optName argv(s)] ...
 
   --name           Required       String         the name string
   --height         Optional       Float          the height
-  --odds           Optional       IntVec         the odd number(s)
-  --age            Optional       Int            the age of the student
+  --odds, -o       Optional       IntVec         the odd number(s)
+  --sex, -s        Optional       Bool           the sex of the student
+  --age, -a        Optional       Int            the age of the student
 
-  --help           Optional       Help           display the help docs
-  --version        Optional       Version        display the version of this program
+  --help, -h       Optional       Version        show this help message and exit
+  --version, -v    Optional       Version        show the version message and exit
 
-help docs for program "./flags-v3"
+help docs for program "./flags_v3"
 ```
 
 version option:
 
 ```sh
-./flags-v3 --version
+./flags_v3 --version
 ```
 
 ```cpp
-./flags-v3: ['version': '1.0.0']
+./flags_v3: ['version': '1.0.0']
 ```
 
 run the command:
 
 ```sh
-./flags-v3 --name ""
+./flags_v3 --name ""
 ```
 
 will output:
 
 ```c++
-[ error from 'lib-flags':'AssertOptionValue' ] the value(s) for option '--name' is(are) invalid: "the name string cannot be an empty string". (use option '--help' to get more info)
+[ error from 'lib-flags':'AssertOptionValue' ] the value(s) for option "--name" is(are) invalid: "the name string cannot be an empty string". (use option '--help' to get more info)
 ```
 
 ## 3. Details
 
 ```cpp
-static void SetVersion(const std::string &version);
+void SetVersion(const std::string &version);
 ```
 
 ```cpp
-static void SetHelp(const std::string &help);
+void SetHelp(const std::string &help);
 ```
 
 ```cpp
-static void SetupFlags(int argc, char const *argv[]);
+void SetupFlags(int argc, char const *argv[]);
+```
+
+```c++
+void SetProgDescription(const std::string &progDesc);
 ```
 
 ```cpp
 /**
  * @tparam ArgumentType the type of the option's argument
  *
- * @param optionName the option name
+ * @param optionLongName the option long name
+ * @param optionShortName the option short name
  * @param defaultValue the default value of the option argument
  * @param description the description of this option
  * @param property the property of this option
@@ -163,9 +176,29 @@ static void SetupFlags(int argc, char const *argv[]);
  */
 template<class ArgumentType>
 const typename ArgumentType::data_type &
-AddOption(const std::string &optionName, const typename ArgumentType::data_type &defaultValue,
-const std::string &description, const OptionProp &property,
-assertor_type<ArgumentType> assertor = nullptr);
+AddOption(const std::string &optionLongName, char optionShortName,
+const typename ArgumentType::data_type &defaultValue, const std::string &description,
+const OptionProp &property, assertor_type<ArgumentType> assertor = nullptr);
+```
+
+```c++
+/**
+ * @tparam ArgumentType the type of the option's argument
+ *
+ * @param optionLongName the option long name
+ * @param defaultValue the default value of the option argument
+ * @param description the description of this option
+ * @param property the property of this option
+ * @param assertor the assertor to judge whether the entered args are valid
+ * @return the value address of the option argument
+ *
+ * @attention user should use reference to receive the return value
+ */
+template<class ArgumentType>
+const typename ArgumentType::data_type &
+AddOption(const std::string &optLongName, const typename ArgumentType::data_type &defaultValue,
+          const std::string &description, const OptionProp &property,
+          assertor_type<ArgumentType> assertor = nullptr);
 ```
 
 ```cpp

@@ -322,6 +322,19 @@ namespace ns_flags {
             }
         }
 
+        /**
+         * @tparam ArgumentType the type of the option's argument
+         *
+         * @param optionLongName the option long name
+         * @param optionShortName the option short name
+         * @param defaultValue the default value of the option argument
+         * @param description the description of this option
+         * @param property the property of this option
+         * @param assertor the assertor to judge whether the entered args are valid
+         * @return the value address of the option argument
+         *
+         * @attention user should use reference to receive the return value
+         */
         template<class ArgumentType>
         const typename ArgumentType::data_type &
         AddOption(const std::string &optionLongName, char optionShortName,
@@ -374,7 +387,7 @@ namespace ns_flags {
         /**
          * @tparam ArgumentType the type of the option's argument
          *
-         * @param optLongName the option name
+         * @param optionLongName the option long name
          * @param defaultValue the default value of the option argument
          * @param description the description of this option
          * @param property the property of this option
