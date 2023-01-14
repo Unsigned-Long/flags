@@ -79,7 +79,8 @@ before setup:
 run this command below to set up parser:
 
 ```sh
-./flags_v3 "I'm ULong2" --name ULong2 -a 22 -s 1 --height 174.0f --odds 9 11 97```
+./flags_v3 "I'm ULong2" --name ULong2 -a 22 -s 1 --height 174.0f --odds 9 11 97
+```
 
 will output:
 

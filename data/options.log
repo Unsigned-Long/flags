@@ -1,0 +1,45 @@
+info csl@csl-whu:~/CppWorks/artwork/flags/cmake-build-debug$ ./flags_v3 "I'm ULong2" --name ULong2 -a 22 -s 1 --height 174.0f --odds 9 11 97
+
+-- parser: {'optionLongName': "def-opt", 'optionShortName': "", 'defaultValue': hello, world!, 'value': hello, world!, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
+{'optionLongName': "name", 'optionShortName': "", 'defaultValue': null, 'value': null, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
+{'optionLongName': "height", 'optionShortName': "", 'defaultValue': 174.5, 'value': 174.5, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
+{'optionLongName': "odds", 'optionShortName': "o", 'defaultValue': [1, 3], 'value': [1, 3], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
+{'optionLongName': "sex", 'optionShortName': "s", 'defaultValue': false, 'value': false, 'desc': "the sex of the student", 'prop': Optional, 'argType': Bool, 'hasAssertor': true}
+{'optionLongName': "age", 'optionShortName': "a", 'defaultValue': 18, 'value': 18, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
+{'optionLongName': "help", 'optionShortName': "h", 'defaultValue': "...", 'value': "...", 'desc': "show this help message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "version", 'optionShortName': "v", 'defaultValue': "...", 'value': "...", 'desc': "show the version message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+
+-- age: 22, odds: [9, 11, 97], height: 174.00000, note: I'm ULong2
+-- parser: {'optionLongName': "def-opt", 'optionShortName': "", 'defaultValue': hello, world!, 'value': I'm ULong2, 'desc': "a note", 'prop': Optional, 'argType': String, 'hasAssertor': false}
+{'optionLongName': "name", 'optionShortName': "", 'defaultValue': null, 'value': ULong2, 'desc': "the name string", 'prop': Required, 'argType': String, 'hasAssertor': true}
+{'optionLongName': "height", 'optionShortName': "", 'defaultValue': 174.5, 'value': 174, 'desc': "the height", 'prop': Optional, 'argType': Float, 'hasAssertor': true}
+{'optionLongName': "odds", 'optionShortName': "o", 'defaultValue': [1, 3], 'value': [9, 11, 97], 'desc': "the odd number(s)", 'prop': Optional, 'argType': IntVec, 'hasAssertor': true}
+{'optionLongName': "sex", 'optionShortName': "s", 'defaultValue': false, 'value': true, 'desc': "the sex of the student", 'prop': Optional, 'argType': Bool, 'hasAssertor': true}
+{'optionLongName': "age", 'optionShortName': "a", 'defaultValue': 18, 'value': 22, 'desc': "the age of the student", 'prop': Optional, 'argType': Int, 'hasAssertor': true}
+{'optionLongName': "help", 'optionShortName': "h", 'defaultValue': "...", 'value': "...", 'desc': "show this help message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+{'optionLongName': "version", 'optionShortName': "v", 'defaultValue': "...", 'value': "...", 'desc': "show the version message and exit", 'prop': Optional, 'argType': Version, 'hasAssertor': false}
+
+info csl@csl-whu:~/CppWorks/artwork/flags/cmake-build-debug$ ./flags_v3 -h
+This is a test program for lib-flags. Any question, please keep in touch with me:
+   [1] E-Mail: shlchen@whu.edu.cn
+or [2] Github: https://github.com/Unsigned-Long
+
+Usage: ./flags_v3 [def-opt argv(s)] [opt-name argv(s)] ...
+
+    Options        Property       Type           Describes
+--------------------------------------------------------------
+  --def-opt        Optional       String         a note
+
+  --name           Required       String         the name string
+  --height         Optional       Float          the height
+  --odds, -o       Optional       IntVec         the odd number(s)
+  --sex, -s        Optional       Bool           the sex of the student
+  --age, -a        Optional       Int            the age of the student
+
+  --help, -h       Optional       Version        show this help message and exit
+  --version, -v    Optional       Version        show the version message and exit
+
+help docs for program "./flags_v3"
+
+info csl@csl-whu:~/CppWorks/artwork/flags/cmake-build-debug$ ./flags_v3 -v
+./flags_v3: ['version': '1.0.0']

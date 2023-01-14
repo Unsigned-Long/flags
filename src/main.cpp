@@ -5,7 +5,8 @@ int main(int argc, char const *argv[]) {
     try {
         using namespace ns_flags;
 
-        parser.SetProgDescription("This is a test program for lib-flags.");
+        // parser.SetProgDescription("This is a test program for lib-flags.");
+        parser.SetProgDescriptionFromFile("../data/prog_desc.txt");
 
         const auto &age = parser.AddOption<Int>(
                 "age", 'a', 18, "the age of the student", OptionProp::OPTIONAL,

@@ -217,6 +217,12 @@ namespace ns_flags {
             _progDescription = progDesc;
         }
 
+        void SetProgDescriptionFromFile(const std::string &filename) {
+            std::ifstream file(filename, std::ios::in);
+            _progDescription = Utils::ReadStringFromFile(file);
+            file.close();
+        }
+
         /**
          * @brief set up the option parser
          *

@@ -12,6 +12,7 @@
 #include "algorithm"
 #include "sstream"
 #include "iostream"
+#include "fstream"
 
 namespace ns_flags {
     struct Utils {
@@ -50,6 +51,20 @@ namespace ns_flags {
 
         static bool IsALetter(char c) {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
+
+        /**
+         * @brief a function to read all chars in the file and return a string
+         * @param file the opened output file stream reference
+         * @return the char string in the file
+         */
+        static std::string ReadStringFromFile(std::ifstream &file) {
+            file.seekg(0, std::ios::end);
+            auto size = file.tellg();
+            file.seekg(0, std::ios::beg);
+            std::string str(size, ' ');
+            file.read(const_cast<char *>(str.c_str()), size);
+            return str;
         }
     };
 
