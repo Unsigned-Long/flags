@@ -17,7 +17,7 @@ int main(int argc, char const *argv[]) {
                 }
         );
         const auto &odds = parser.AddOption<IntVec>(
-                "odds", {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
+                "odds",'o', {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
                 [](const IntVec::data_type &vec) -> std::optional<std::string> {
                     for (const auto &item: vec) {
                         if (item % 2 == 0) {

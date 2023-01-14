@@ -69,7 +69,7 @@ namespace ns_flags {
 
     namespace ns_priv {
         enum class OptionNameType {
-            SHORT_OPT_NAME, LONG_OPT_NAME, NONE
+            OPT_SHORT_NAME, OPT_LONG_NAME, NONE
         };
 
         /**
@@ -81,9 +81,9 @@ namespace ns_flags {
          */
         static OptionNameType IsAnOption(const std::string &str) {
             if (str.size() == 2 && str.front() == '-' && Utils::IsALetter(str.at(1))) {
-                return OptionNameType::SHORT_OPT_NAME;
+                return OptionNameType::OPT_SHORT_NAME;
             } else if (str.size() > 2 && str.substr(0, 2) == "--" && Utils::IsALetter(str.at(2))) {
-                return OptionNameType::LONG_OPT_NAME;
+                return OptionNameType::OPT_LONG_NAME;
             } else {
                 return OptionNameType::NONE;
             }
@@ -95,8 +95,8 @@ namespace ns_flags {
 
         public:
             // option's name
-            const std::string optionName;
-            const char shortOptionName;
+            const std::string optionLongName;
+            const char optionShortName;
 
             // the value
             Variable variable;
@@ -112,9 +112,9 @@ namespace ns_flags {
             /**
              * @brief Construct a new Option object
              */
-            Option(std::string optionName, char shortOptionName, Variable variable,
+            Option(std::string optionLongName, char optionShortName, Variable variable,
                    std::string description, const OptionProp &property, assertor_type assertor = nullptr)
-                    : optionName(std::move(optionName)), shortOptionName(shortOptionName),
+                    : optionLongName(std::move(optionLongName)), optionShortName(optionShortName),
                       variable(std::move(variable)), description(std::move(description)), property(property),
                       assertor(std::move(assertor)) {}
 
@@ -129,7 +129,7 @@ namespace ns_flags {
                 if (auto msg = this->assertor(this->variable.value);msg) {
                     FLAGS_THROW_EXCEPTION(
                             AssertOptionValue,
-                            "the value(s) for option '--" + optionName + "' is(are) invalid: \"" + *msg + "\""
+                            "the value(s) for option '--" + optionLongName + "' is(are) invalid: \"" + *msg + "\""
                     );
                 }
             }
@@ -140,8 +140,8 @@ namespace ns_flags {
             friend std::ostream &operator<<(std::ostream &os, const Option &obj) {
                 os << std::boolalpha;
                 os << '{';
-                os << "'optionName': \"" << obj.optionName << "\", ";
-                os << "'shortOptionName': \"" << obj.shortOptionName << "\", ";
+                os << "'optionLongName': \"" << obj.optionLongName << "\", ";
+                os << "'optionShortName': \"" << obj.optionShortName << "\", ";
                 os << obj.variable << ", ";
                 os << "'desc': \"" << obj.description << "\", ";
                 os << "'prop': " << obj.property << ", ";
@@ -163,13 +163,13 @@ namespace ns_flags {
         // If the user explicitly sets the corresponding content, we refuse to generate it automatically
         bool _autoGenHelpDocs;
         bool _autoGenVersion;
-        const std::string DEFAULT_OPTION_NAME = "def-opt";
-        const char EMPTY_SHORT_OPTION_NAME = '\0';
+        const std::string DEFAULT_OPTION_LONG_NAME = "def-opt";
+        const char EMPTY_OPTION_SHORT_NAME = '\0';
         std::string _progDescription;
 
         // data
-        std::unordered_map<std::string, ns_priv::Option> _longOptNameToOpt;
-        std::unordered_map<char, std::string> _shortOptNameToLongOptName;
+        std::unordered_map<std::string, ns_priv::Option> _optLongNameToOpt;
+        std::unordered_map<char, std::string> _optShortNameToOptLongName;
 
     public:
         OptionParser() : _autoGenHelpDocs(true), _autoGenVersion(true) {
@@ -180,7 +180,7 @@ namespace ns_flags {
         }
 
         const std::unordered_map<std::string, ns_priv::Option> &GetOptionMap() const {
-            return _longOptNameToOpt;
+            return _optLongNameToOpt;
         }
 
         /**
@@ -222,95 +222,93 @@ namespace ns_flags {
             }
 
             std::unordered_map<std::string, std::vector<std::string>> inputOptArgs;
-            std::vector<std::string> optNames;
-            std::string curOption = DEFAULT_OPTION_NAME;
+            std::string curOptLongName = DEFAULT_OPTION_LONG_NAME;
 
             for (int i = 1; i != argc; ++i) {
                 std::string str = argv[i];
                 switch (ns_priv::IsAnOption(str)) {
-                    case ns_priv::OptionNameType::SHORT_OPT_NAME:
-                        if (auto shortOptName = str.at(1);Utils::MapKeyExist(
-                                _shortOptNameToLongOptName, shortOptName)) {
-                            curOption = _longOptNameToOpt.at(_shortOptNameToLongOptName.at(shortOptName)).optionName;
-                            inputOptArgs[curOption] = std::vector<std::string>();
-                            optNames.push_back(curOption);
+                    case ns_priv::OptionNameType::OPT_SHORT_NAME:
+                        if (auto optShortName = str.at(1);Utils::MapKeyExist(
+                                _optShortNameToOptLongName, optShortName)) {
+                            curOptLongName = _optLongNameToOpt.at(
+                                    _optShortNameToOptLongName.at(optShortName)).optionLongName;
+                            inputOptArgs[curOptLongName] = std::vector<std::string>();
                             // is help or version options
-                            if (curOption == "help") {
+                            if (curOptLongName == "help") {
                                 throw std::runtime_error(GetHelpOption().variable.defaultValue->ValueString());
-                            } else if (curOption == "version") {
+                            } else if (curOptLongName == "version") {
                                 throw std::runtime_error(
                                         std::string(argv[0]) + ": ['version': '" +
                                         GetVersionOption().variable.defaultValue->ValueString() + "']"
                                 );
                             }
                         } else {
-                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '-" + shortOptName + "'");
+                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '-" + optShortName + "'");
                         }
                         break;
-                    case ns_priv::OptionNameType::LONG_OPT_NAME:
-                        if (auto longOptName = str.substr(2);Utils::MapKeyExist(_longOptNameToOpt, longOptName)) {
-                            curOption = longOptName;
-                            inputOptArgs[curOption] = std::vector<std::string>();
-                            optNames.push_back(curOption);
+                    case ns_priv::OptionNameType::OPT_LONG_NAME:
+                        if (auto optLongName = str.substr(2);Utils::MapKeyExist(_optLongNameToOpt, optLongName)) {
+                            curOptLongName = optLongName;
+                            inputOptArgs[curOptLongName] = std::vector<std::string>();
                             // is help or version options
-                            if (curOption == "help") {
+                            if (curOptLongName == "help") {
                                 throw std::runtime_error(GetHelpOption().variable.defaultValue->ValueString());
-                            } else if (curOption == "version") {
+                            } else if (curOptLongName == "version") {
                                 throw std::runtime_error(
                                         std::string(argv[0]) + ": ['version': '" +
                                         GetVersionOption().variable.defaultValue->ValueString() + "']"
                                 );
                             }
                         } else {
-                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '--" + longOptName + "'");
+                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '--" + optLongName + "'");
                         }
                         break;
                     case ns_priv::OptionNameType::NONE:
-                        inputOptArgs[curOption].push_back(str);
+                        inputOptArgs[curOptLongName].push_back(str);
                         break;
                 }
             }
 
             // the 'no-option' option is not set in the current program but user pass the 'no-option' argv(s)
             // so we need to remove it.
-            if (!Utils::MapKeyExist(_longOptNameToOpt, DEFAULT_OPTION_NAME)) {
-                if (Utils::MapKeyExist(inputOptArgs, DEFAULT_OPTION_NAME)) {
-                    inputOptArgs.erase(DEFAULT_OPTION_NAME);
+            if (!Utils::MapKeyExist(_optLongNameToOpt, DEFAULT_OPTION_LONG_NAME)) {
+                if (Utils::MapKeyExist(inputOptArgs, DEFAULT_OPTION_LONG_NAME)) {
+                    inputOptArgs.erase(DEFAULT_OPTION_LONG_NAME);
                 }
             }
 
             // check whether any missing options have not been passed in according to the properties of the set options
-            for (const auto &[longOptName, opt]: _longOptNameToOpt) {
+            for (const auto &[optLongName, opt]: _optLongNameToOpt) {
                 if (opt.property == OptionProp::OPTIONAL) {
                     continue;
                 }
-                if (auto iter = inputOptArgs.find(longOptName);iter == inputOptArgs.cend()) {
-                    if (longOptName == DEFAULT_OPTION_NAME) {
+                if (auto iter = inputOptArgs.find(optLongName);iter == inputOptArgs.cend()) {
+                    if (optLongName == DEFAULT_OPTION_LONG_NAME) {
                         FLAGS_THROW_EXCEPTION(
                                 SetupFlags, "the default option is 'OptionProp::REQUIRED', but you didn't pass it"
                         );
                     } else {
                         FLAGS_THROW_EXCEPTION(
                                 SetupFlags,
-                                "the option named '--" + longOptName +
+                                "the option named '--" + optLongName +
                                 "' is 'OptionProp::REQUIRED', but you didn't use it"
                         );
                     }
                 } else if (iter->second.empty()) {
                     FLAGS_THROW_EXCEPTION(
-                            SetupFlags, "the option named '--" + longOptName +
+                            SetupFlags, "the option named '--" + optLongName +
                                         "' is 'OptionProp::REQUIRED', you should pass some arguments to it"
                     );
                 }
             }
 
             // assert and assign
-            for (const auto &[optionName, inputArgs]: inputOptArgs) {
-                auto &opt = _longOptNameToOpt.find(optionName)->second;
+            for (const auto &[optLongName, inputArgs]: inputOptArgs) {
+                auto &opt = _optLongNameToOpt.find(optLongName)->second;
                 if (auto msg = opt.variable.value->DataFromStringVector(inputArgs);msg) {
                     FLAGS_THROW_EXCEPTION(
                             AssertOptionValue,
-                            "the value(s) for option '--" + optionName + "' is(are) invalid: \"" + *msg + "\""
+                            "the value(s) for option '--" + optLongName + "' is(are) invalid: \"" + *msg + "\""
                     );
                 }
                 opt.AssertOptionValue();
@@ -319,34 +317,35 @@ namespace ns_flags {
 
         template<class ArgumentType>
         const typename ArgumentType::data_type &
-        AddOption(const std::string &optionName, char shortOptionName,
+        AddOption(const std::string &optionLongName, char optionShortName,
                   const typename ArgumentType::data_type &defaultValue, const std::string &description,
                   const OptionProp &property, assertor_type<ArgumentType> assertor = nullptr) {
-            if (optionName.empty()) {
+            if (optionLongName.empty()) {
                 FLAGS_THROW_EXCEPTION_DEVELOPER(
                         AddOption, "the option name shouldn't be a empty string"
                 );
             }
-            if (!Utils::IsALetter(optionName.front())) {
-                FLAGS_THROW_EXCEPTION_DEVELOPER(
-                        AddOption, "the option long name should be capitalized. (for option \"--" + optionName + "\")"
-                );
-            }
-            if (shortOptionName != EMPTY_SHORT_OPTION_NAME && !Utils::IsALetter(shortOptionName)) {
+            if (!Utils::IsALetter(optionLongName.front())) {
                 FLAGS_THROW_EXCEPTION_DEVELOPER(
                         AddOption,
-                        "the option short name should be capitalized. (for option \"-" + shortOptionName + "\")"
+                        "the option long name should be capitalized. (for option \"--" + optionLongName + "\")"
                 );
             }
-            if (Utils::MapKeyExist(_longOptNameToOpt, optionName)) {
+            if (optionShortName != EMPTY_OPTION_SHORT_NAME && !Utils::IsALetter(optionShortName)) {
                 FLAGS_THROW_EXCEPTION_DEVELOPER(
-                        AddOption, "the option named \"--" + optionName + "\" is exists already"
+                        AddOption,
+                        "the option short name should be capitalized. (for option \"-" + optionShortName + "\")"
                 );
             }
-            if (shortOptionName != EMPTY_SHORT_OPTION_NAME &&
-                Utils::MapKeyExist(_shortOptNameToLongOptName, shortOptionName)) {
+            if (Utils::MapKeyExist(_optLongNameToOpt, optionLongName)) {
                 FLAGS_THROW_EXCEPTION_DEVELOPER(
-                        AddOption, "the option named \"-" + shortOptionName + "\" is exists already"
+                        AddOption, "the option named \"--" + optionLongName + "\" is exists already"
+                );
+            }
+            if (optionShortName != EMPTY_OPTION_SHORT_NAME &&
+                Utils::MapKeyExist(_optShortNameToOptLongName, optionShortName)) {
+                FLAGS_THROW_EXCEPTION_DEVELOPER(
+                        AddOption, "the option named \"-" + optionShortName + "\" is exists already"
                 );
             }
             ns_priv::Option::assertor_type tarAssertor = nullptr;
@@ -356,19 +355,19 @@ namespace ns_flags {
                 };
             }
             auto option = ns_priv::Option(
-                    optionName, shortOptionName, Variable::Create<ArgumentType>(defaultValue),
+                    optionLongName, optionShortName, Variable::Create<ArgumentType>(defaultValue),
                     description, property, tarAssertor
             );
             // save the option to map
-            _longOptNameToOpt.insert({optionName, option});
-            _shortOptNameToLongOptName.insert({shortOptionName, optionName});
-            return _longOptNameToOpt.at(optionName).variable.value->template Boost<ArgumentType>()->GetData();
+            _optLongNameToOpt.insert({optionLongName, option});
+            _optShortNameToOptLongName.insert({optionShortName, optionLongName});
+            return _optLongNameToOpt.at(optionLongName).variable.value->template Boost<ArgumentType>()->GetData();
         }
 
         /**
          * @tparam ArgumentType the type of the option's argument
          *
-         * @param optionName the option name
+         * @param optLongName the option name
          * @param defaultValue the default value of the option argument
          * @param description the description of this option
          * @param property the property of this option
@@ -379,11 +378,11 @@ namespace ns_flags {
          */
         template<class ArgumentType>
         const typename ArgumentType::data_type &
-        AddOption(const std::string &optionName, const typename ArgumentType::data_type &defaultValue,
+        AddOption(const std::string &optLongName, const typename ArgumentType::data_type &defaultValue,
                   const std::string &description, const OptionProp &property,
                   assertor_type<ArgumentType> assertor = nullptr) {
             return AddOption < ArgumentType > (
-                    optionName, EMPTY_SHORT_OPTION_NAME, defaultValue, description, property, assertor
+                    optLongName, EMPTY_OPTION_SHORT_NAME, defaultValue, description, property, assertor
             );
         }
 
@@ -403,13 +402,13 @@ namespace ns_flags {
         AddDefaultOption(const typename ArgumentType::data_type &defaultValue,
                          const std::string &description, const OptionProp &property,
                          assertor_type<ArgumentType> assertor = nullptr) {
-            return AddOption<ArgumentType>(DEFAULT_OPTION_NAME, defaultValue, description, property, assertor);
+            return AddOption<ArgumentType>(DEFAULT_OPTION_LONG_NAME, defaultValue, description, property, assertor);
         }
 
     protected:
-        ns_priv::Option GetVersionOption() { return _longOptNameToOpt.at("version"); }
+        ns_priv::Option GetVersionOption() { return _optLongNameToOpt.at("version"); }
 
-        ns_priv::Option GetHelpOption() { return _longOptNameToOpt.at("help"); }
+        ns_priv::Option GetHelpOption() { return _optLongNameToOpt.at("help"); }
 
         void AutoGenHelpDocs(const std::string &programName) {
             std::stringstream stream;
@@ -421,7 +420,7 @@ namespace ns_flags {
 
             // the main usage of this program
             stream << "Usage: " << programName;
-            if (_longOptNameToOpt.find(DEFAULT_OPTION_NAME) != _longOptNameToOpt.cend()) {
+            if (Utils::MapKeyExist(_optLongNameToOpt, DEFAULT_OPTION_LONG_NAME)) {
                 stream << " [def-opt argv(s)]";
             }
             stream << " [opt-name argv(s)] ...\n\n";
@@ -433,23 +432,23 @@ namespace ns_flags {
                    << "Describes\n";
             stream << std::string(62, '-') << '\n';
 
-            if (_longOptNameToOpt.find(DEFAULT_OPTION_NAME) != _longOptNameToOpt.cend()) {
-                auto &nopt = _longOptNameToOpt.at(DEFAULT_OPTION_NAME);
+            if (Utils::MapKeyExist(_optLongNameToOpt, DEFAULT_OPTION_LONG_NAME)) {
+                auto &nopt = _optLongNameToOpt.at(DEFAULT_OPTION_LONG_NAME);
                 stream << "  --" << std::setw(15) << std::left << "def-opt"
                        << std::setw(15) << std::left << nopt.property
                        << std::setw(15) << std::left << nopt.variable.defaultValue->TypeNameString()
                        << nopt.description << "\n\n";
             }
 
-            for (const auto &elem: _longOptNameToOpt) {
-                if (elem.first == "help" || elem.first == "version" || elem.first == DEFAULT_OPTION_NAME) {
+            for (const auto &elem: _optLongNameToOpt) {
+                if (elem.first == "help" || elem.first == "version" || elem.first == DEFAULT_OPTION_LONG_NAME) {
                     continue;
                 }
-                if (elem.second.shortOptionName != EMPTY_SHORT_OPTION_NAME) {
+                if (elem.second.optionShortName != EMPTY_OPTION_SHORT_NAME) {
                     stream << "  --" << std::setw(15) << std::left
-                           << elem.second.optionName + ", -" + elem.second.shortOptionName;
+                           << elem.second.optionLongName + ", -" + elem.second.optionShortName;
                 } else {
-                    stream << "  --" << std::setw(15) << std::left << elem.second.optionName;
+                    stream << "  --" << std::setw(15) << std::left << elem.second.optionLongName;
                 }
                 stream << std::setw(15) << std::left << elem.second.property
                        << std::setw(15) << std::left << elem.second.variable.defaultValue->TypeNameString()
@@ -457,13 +456,13 @@ namespace ns_flags {
             }
 
             // help and version
-            auto &help = _longOptNameToOpt.at("help");
-            auto &version = _longOptNameToOpt.at("version");
-            stream << "\n  --" << std::setw(15) << std::left << help.optionName + ", -" + help.shortOptionName
+            auto &help = _optLongNameToOpt.at("help");
+            auto &version = _optLongNameToOpt.at("version");
+            stream << "\n  --" << std::setw(15) << std::left << help.optionLongName + ", -" + help.optionShortName
                    << std::setw(15) << std::left << help.property
                    << std::setw(15) << std::left << help.variable.defaultValue->TypeNameString()
                    << help.description;
-            stream << "\n  --" << std::setw(15) << std::left << version.optionName + ", -" + version.shortOptionName
+            stream << "\n  --" << std::setw(15) << std::left << version.optionLongName + ", -" + version.optionShortName
                    << std::setw(15) << std::left << version.property
                    << std::setw(15) << std::left << version.variable.defaultValue->TypeNameString()
                    << version.description;
@@ -482,7 +481,7 @@ namespace ns_flags {
     private:
 
         void CreateMapForShortLongOptionName(const ns_priv::Option &option) {
-            _shortOptNameToLongOptName.insert({option.shortOptionName, option.optionName});
+            _optShortNameToOptLongName.insert({option.optionShortName, option.optionLongName});
         }
 
         /**
