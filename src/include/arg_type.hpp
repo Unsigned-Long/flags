@@ -151,6 +151,8 @@ namespace ns_flags {
         std::optional<std::string> DataFromStringVector(const std::vector<std::string> &strVec) override {
             if (!strVec.empty()) {
                 data = Utils::StrToBool(strVec.front());
+            } else {
+                data = true;
             }
             return {};
         }
