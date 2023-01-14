@@ -16,8 +16,14 @@ int main(int argc, char const *argv[]) {
                     return "age must be greater than 0";
                 }
         );
+        const auto &sex = parser.AddOption<Bool>(
+                "sex", 's', false, "the sex of the student", OptionProp::OPTIONAL,
+                [](const Int::data_type &val) -> std::optional<std::string> {
+                    return {};
+                }
+        );
         const auto &odds = parser.AddOption<IntVec>(
-                "odds",'o', {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
+                "odds", 'o', {1, 3}, "the odd number(s)", OptionProp::OPTIONAL,
                 [](const IntVec::data_type &vec) -> std::optional<std::string> {
                     for (const auto &item: vec) {
                         if (item % 2 == 0) {

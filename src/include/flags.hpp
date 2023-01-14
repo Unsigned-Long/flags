@@ -107,6 +107,8 @@ namespace ns_flags {
             const OptionProp property;
             // assertor
             assertor_type assertor;
+        private:
+            const char EMPTY_OPTION_SHORT_NAME = '\0';
 
         public:
             /**
@@ -120,6 +122,15 @@ namespace ns_flags {
 
             ~Option() = default;
 
+            [[nodiscard]] std::string GetOptionName() const {
+                std::string optionName = "\"--" + optionLongName;
+                if (optionShortName != EMPTY_OPTION_SHORT_NAME) {
+                    optionName += std::string(", -") + optionShortName;
+                }
+                optionName += '\"';
+                return optionName;
+            }
+
             /**
              * @brief assertor for the variable's value
              */
@@ -129,7 +140,7 @@ namespace ns_flags {
                 if (auto msg = this->assertor(this->variable.value);msg) {
                     FLAGS_THROW_EXCEPTION(
                             AssertOptionValue,
-                            "the value(s) for option '--" + optionLongName + "' is(are) invalid: \"" + *msg + "\""
+                            "the value(s) for option " + GetOptionName() + " is(are) invalid: \"" + *msg + "\""
                     );
                 }
             }
@@ -243,7 +254,7 @@ namespace ns_flags {
                                 );
                             }
                         } else {
-                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '-" + optShortName + "'");
+                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named \"-" + optShortName + "\"");
                         }
                         break;
                     case ns_priv::OptionNameType::OPT_LONG_NAME:
@@ -260,7 +271,7 @@ namespace ns_flags {
                                 );
                             }
                         } else {
-                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named '--" + optLongName + "'");
+                            FLAGS_THROW_EXCEPTION(SetupFlags, "there isn't option named \"--" + optLongName + "\"");
                         }
                         break;
                     case ns_priv::OptionNameType::NONE:
@@ -290,15 +301,10 @@ namespace ns_flags {
                     } else {
                         FLAGS_THROW_EXCEPTION(
                                 SetupFlags,
-                                "the option named '--" + optLongName +
-                                "' is 'OptionProp::REQUIRED', but you didn't use it"
+                                "the option named " + opt.GetOptionName() +
+                                " is 'OptionProp::REQUIRED', but you didn't use it"
                         );
                     }
-                } else if (iter->second.empty()) {
-                    FLAGS_THROW_EXCEPTION(
-                            SetupFlags, "the option named '--" + optLongName +
-                                        "' is 'OptionProp::REQUIRED', you should pass some arguments to it"
-                    );
                 }
             }
 
@@ -308,7 +314,8 @@ namespace ns_flags {
                 if (auto msg = opt.variable.value->DataFromStringVector(inputArgs);msg) {
                     FLAGS_THROW_EXCEPTION(
                             AssertOptionValue,
-                            "the value(s) for option '--" + optLongName + "' is(are) invalid: \"" + *msg + "\""
+                            "the value(s) for option " + optLongName + opt.GetOptionName() +
+                            " is(are) invalid: \"" + *msg + "\""
                     );
                 }
                 opt.AssertOptionValue();
